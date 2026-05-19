@@ -9,7 +9,7 @@
 /* ── ESTADO GLOBAL ─────────────────────────────────────── */
 const STATE = { admin:false, currentView:'home', titleClicks:0, titleTimer:null };
 const HASH  = 'ec1fc759adf2c89257ef0de95bb2ab4ae41f3ec7b46b73a346597fccbf06b494';
-const ADMIN_EMAIL='admin@clasedeespanol.dk';
+const ADMIN_EMAIL='exploreandsports@gmail.com';
 
 /* ── SUPABASE ──────────────────────────────────────────────── */
 const SUPABASE_URL='https://akontludfisgxwlnayvs.supabase.co';

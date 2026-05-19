@@ -648,7 +648,12 @@ body{overflow:hidden}
 
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media(max-width:640px){
-  .home-inner{gap:1.5rem;padding:4.5rem 1rem 2rem}
+  /* justify-content:center + overflow rompe el scroll (el inicio queda
+     por encima del viewport y no es alcanzable). Con flex-start +
+     margin-block:auto el contenido se centra cuando cabe y queda en
+     el tope cuando desborda, permitiendo scroll natural. */
+  #view-home{justify-content:flex-start}
+  .home-inner{gap:1.5rem;padding:4.5rem 1rem 2rem;margin-block:auto}
   .cards-grid{grid-template-columns:1fr;gap:1rem}
   .card-inner{height:150px;padding:1.35rem}
   .top-bar{padding:.75rem 1.25rem}
