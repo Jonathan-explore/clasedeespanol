@@ -481,35 +481,41 @@ function renderYderligere(){
 <button class="tab-btn" id="tab-match">🃏 Match-par</button>
 <button class="tab-btn" id="tab-listening">🎧 Lytteøvelse</button>
 <button class="tab-btn" id="tab-scramble">🔤 Ord-puslespil</button>
+<button class="tab-btn" id="tab-flashcards">🗂️ Flashcards</button>
 </div>
 <div class="exercise-panel active" id="panel-dd"></div>
 <div class="exercise-panel" id="panel-match"></div>
 <div class="exercise-panel" id="panel-listening"></div>
 <div class="exercise-panel" id="panel-scramble"></div>
+<div class="exercise-panel" id="panel-flashcards"></div>
 </div>`;
   buildDragDrop(vocab);
   buildMatchPairs(vocab);
   buildListening(vocab);
   buildWordScramble(vocab);
-  
+  buildFlashcards(vocab);
+
   const tDD = document.getElementById('tab-dd');
   const tMatch = document.getElementById('tab-match');
   const tList = document.getElementById('tab-listening');
   const tScr = document.getElementById('tab-scramble');
+  const tFC = document.getElementById('tab-flashcards');
   const pDD = document.getElementById('panel-dd');
   const pMatch = document.getElementById('panel-match');
   const pList = document.getElementById('panel-listening');
   const pScr = document.getElementById('panel-scramble');
+  const pFC = document.getElementById('panel-flashcards');
 
   function activateTab(activeT, activeP) {
-    [tDD,tMatch,tList,tScr].forEach(t=>t.classList.remove('active'));
-    [pDD,pMatch,pList,pScr].forEach(p=>p.classList.remove('active'));
+    [tDD,tMatch,tList,tScr,tFC].forEach(t=>t.classList.remove('active'));
+    [pDD,pMatch,pList,pScr,pFC].forEach(p=>p.classList.remove('active'));
     activeT.classList.add('active'); activeP.classList.add('active');
   }
   tDD.addEventListener('click',()=>activateTab(tDD,pDD));
   tMatch.addEventListener('click',()=>activateTab(tMatch,pMatch));
   tList.addEventListener('click',()=>activateTab(tList,pList));
   tScr.addEventListener('click',()=>activateTab(tScr,pScr));
+  tFC.addEventListener('click',()=>activateTab(tFC,pFC));
 }
 function buildDragDrop(vocab){
   const panel=document.getElementById('panel-dd');
@@ -809,6 +815,56 @@ inp.addEventListener('keydown',e=>{if(e.key==='Enter')check();});
 
     document.getElementById('scr-reset').addEventListener('click',()=>buildWordScramble(vocab));
   })();
+}
+
+/* ── FLASHCARDS ──────────────────────────────────────────── */
+function buildFlashcards(vocab){
+  const panel=document.getElementById('panel-flashcards');
+  const deck=vocab.slice();
+  let idx=0;
+  const cache={};
+
+  function render(){
+    const word=deck[idx];
+    panel.innerHTML=`
+<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1.25rem;text-align:center">Klik på kortet for at se den danske oversættelse 🗂️</p>
+<div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem">
+<div class="fc-scene">
+<div class="fc-card" id="fc-card">
+<div class="fc-face fc-front">
+<span class="fc-word">${word}</span>
+<span class="fc-hint">🇪🇸 Español · Klik for at vende</span>
+</div>
+<div class="fc-face fc-back">
+<span class="fc-translation" id="fc-trans">${cache[word]||'…'}</span>
+<span class="fc-hint">🇩🇰 Dansk</span>
+</div>
+</div>
+</div>
+<div class="fc-counter">Tarjeta ${idx+1} de ${deck.length}</div>
+<div style="display:flex;gap:1rem">
+<button class="tab-btn" id="fc-prev" style="${idx===0?'opacity:.35;cursor:default':''}">← Anterior</button>
+<button class="tab-btn" id="fc-next" style="${idx===deck.length-1?'opacity:.35;cursor:default':''}">Næste →</button>
+</div>
+</div>`;
+
+    const card=document.getElementById('fc-card');
+    card.addEventListener('click',async()=>{
+      if(card.classList.contains('flipped')){card.classList.remove('flipped');return;}
+      if(!cache[word]){
+        const t=await myMemoryTranslate(word,'es|da');
+        cache[word]=t;
+        const transEl=document.getElementById('fc-trans');
+        if(transEl)transEl.textContent=t;
+      }
+      card.classList.add('flipped');
+    });
+
+    document.getElementById('fc-prev').addEventListener('click',()=>{if(idx>0){idx--;render();}});
+    document.getElementById('fc-next').addEventListener('click',()=>{if(idx<deck.length-1){idx++;render();}});
+  }
+
+  render();
 }
 
 /* ── INIT ──────────────────────────────────────────────── */
