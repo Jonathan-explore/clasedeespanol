@@ -32,7 +32,10 @@ async function dbSet(key,value){
   localStorage.setItem(key,value);
   const db=getDb();
   if(!db)return;
-  try{await db.from('config_clase').upsert({key,value},{onConflict:'key'});}catch{}
+  try{
+    await db.from('config_clase').delete().eq('key',key);
+    await db.from('config_clase').insert({key,value});
+  }catch{}
 }
 function formatDateKey(d){
   return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
