@@ -9,6 +9,7 @@
 /* ── ESTADO GLOBAL ─────────────────────────────────────── */
 const STATE = { admin:false, currentView:'home', titleClicks:0, titleTimer:null };
 const HASH  = 'ec1fc759adf2c89257ef0de95bb2ab4ae41f3ec7b46b73a346597fccbf06b494';
+const ADMIN_EMAIL='admin@clasedeespanol.dk';
 
 /* ── SUPABASE ──────────────────────────────────────────────── */
 const SUPABASE_URL='https://akontludfisgxwlnayvs.supabase.co';
@@ -307,7 +308,12 @@ function initAuth(){
   async function doLogin(){
     try {
       const h=await sha256(input.value.trim());
-      if(h===HASH){STATE.admin=true;modal.hidden=true;badge.hidden=false;if(STATE.currentView!=='home')renderView(STATE.currentView);}
+      if(h===HASH){
+        const db=getDb();
+        if(db) await db.auth.signInWithPassword({email:ADMIN_EMAIL,password:input.value.trim()}).catch(()=>{});
+        STATE.admin=true;modal.hidden=true;badge.hidden=false;
+        if(STATE.currentView!=='home')renderView(STATE.currentView);
+      }
       else{errEl.textContent='Forkert adgangskode. Prøv igen.';input.value='';input.focus();}
     } catch (err) {
       errEl.textContent='Fejl under login. Prøv igen.';
@@ -315,7 +321,12 @@ function initAuth(){
   }
   submitBtn.addEventListener('click',doLogin);
   input.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-  logoutBtn.addEventListener('click',()=>{STATE.admin=false;badge.hidden=true;if(STATE.currentView!=='home')renderView(STATE.currentView);});
+  logoutBtn.addEventListener('click',()=>{
+    STATE.admin=false;badge.hidden=true;
+    const db=getDb();
+    if(db) db.auth.signOut().catch(()=>{});
+    if(STATE.currentView!=='home')renderView(STATE.currentView);
+  });
   const panelBtn=$('admin-panel-btn');
   if(panelBtn)panelBtn.addEventListener('click',()=>{if(window._openAdminPanel)window._openAdminPanel();});
 }
