@@ -171,10 +171,10 @@
     </section>
 
     <!-- CONTENT VIEWS (injected by JS) -->
-    <section id="view-tablon"       class="view content-view" aria-label="Tablón"></section>
-    <section id="view-fremlaeggelse" class="view content-view" aria-label="Fremlæggelse"></section>
-    <section id="view-ordbog"       class="view content-view" aria-label="Ordbog"></section>
-    <section id="view-yderligere"   class="view content-view" aria-label="Yderligere materiale"></section>
+    <section id="view-tablon"       class="view" aria-label="Tablón"></section>
+    <section id="view-fremlaeggelse" class="view" aria-label="Fremlæggelse"></section>
+    <section id="view-ordbog"       class="view" aria-label="Ordbog"></section>
+    <section id="view-yderligere"   class="view" aria-label="Yderligere materiale"></section>
 
     <!-- LINGUASTRIKE GAME VIEW -->
     <section id="view-spil" class="view" aria-label="LinguaStrike">
@@ -375,6 +375,7 @@
     <div id="admin-badge" class="admin-badge" hidden>
       <span class="admin-icon">🔑</span>
       <span>Admin</span>
+      <button id="admin-panel-btn" aria-label="Abrir panel de administración">🗂️ Panel</button>
       <button id="admin-logout-btn" aria-label="Log ud">Log ud</button>
     </div>
 
@@ -421,6 +422,7 @@
   <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="game.js"></script>
   <script src="script.js"></script>
 </body>

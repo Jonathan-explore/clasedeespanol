@@ -10,6 +10,62 @@
 const STATE = { admin:false, currentView:'home', titleClicks:0, titleTimer:null };
 const HASH  = 'ec1fc759adf2c89257ef0de95bb2ab4ae41f3ec7b46b73a346597fccbf06b494';
 
+/* ── SUPABASE ──────────────────────────────────────────────── */
+const SUPABASE_URL='https://akontludfisgxwlnayvs.supabase.co';
+const SUPABASE_KEY='sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq';
+let _db=null;
+function getDb(){
+  if(!_db&&window.supabase)_db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  return _db;
+}
+async function dbGet(key){
+  const db=getDb();
+  if(!db)return localStorage.getItem(key);
+  try{
+    const{data,error}=await db.from('config_clase').select('value').eq('key',key).single();
+    if(error||!data)return localStorage.getItem(key);
+    localStorage.setItem(key,data.value);
+    return data.value;
+  }catch{return localStorage.getItem(key);}
+}
+async function dbSet(key,value){
+  localStorage.setItem(key,value);
+  const db=getDb();
+  if(!db)return;
+  try{await db.from('config_clase').upsert({key,value},{onConflict:'key'});}catch{}
+}
+function formatDateKey(d){
+  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+}
+function prevOrCurrentWednesday(d){
+  const day=d.getDay(); // 0=Dom … 3=Mié
+  const diff=(day>=3)?(day-3):(day+4);
+  const w=new Date(d);w.setDate(d.getDate()-diff);return w;
+}
+async function syncFromCloud(){
+  const today=new Date();
+  const todayKey=formatDateKey(today);
+  const wedKey=formatDateKey(prevOrCurrentWednesday(today));
+
+  // Carga la sesión de hoy → tablón + presentaciones + vocab del día
+  const todayRaw=await dbGet('sesion_'+todayKey);
+  let todaySession=null;
+  if(todayRaw){try{todaySession=JSON.parse(todayRaw);}catch{}}
+  if(todaySession){
+    if(todaySession.tablon!=null)localStorage.setItem('tablon',todaySession.tablon);
+    if(todaySession.presentaciones)localStorage.setItem('slides-list',JSON.stringify(todaySession.presentaciones));
+    if(todaySession.vocab)localStorage.setItem('vocab',JSON.stringify(todaySession.vocab));
+  }
+
+  // Vocab para flashcards: usa la sesión del miércoles anterior/actual (rotación)
+  if(todayKey!==wedKey){
+    const wedRaw=await dbGet('sesion_'+wedKey);
+    if(wedRaw){
+      try{const s=JSON.parse(wedRaw);if(s.vocab)localStorage.setItem('vocab',JSON.stringify(s.vocab));}catch{}
+    }
+  }
+}
+
 /* ── UTILIDADES ────────────────────────────────────────── */
 async function sha256(msg) {
   if (window.crypto && window.crypto.subtle) {
@@ -103,7 +159,6 @@ function detectLang(text){
       stretchT+=16;
       const p=Math.min(stretchT/stretchDur,1);
       const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
-      const pBack=p>=1?1:0;
       blobs.forEach(b=>{
         const dx=stretchTarget.tx-b.x,dy=stretchTarget.ty-b.y;
         const dist=Math.sqrt(dx*dx+dy*dy)||1;
@@ -252,6 +307,8 @@ function initAuth(){
   submitBtn.addEventListener('click',doLogin);
   input.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   logoutBtn.addEventListener('click',()=>{STATE.admin=false;badge.hidden=true;if(STATE.currentView!=='home')renderView(STATE.currentView);});
+  const panelBtn=$('admin-panel-btn');
+  if(panelBtn)panelBtn.addEventListener('click',()=>{if(window._openAdminPanel)window._openAdminPanel();});
 }
 
 /* ── HURTIG ORDBOG (QUICK DICT) ───────────────────────── */
@@ -311,9 +368,9 @@ function renderTablon(){
 <p class="tablon-hint">💡 Ord med - gemmes automatisk som ordforråd til øvelser</p>
 <button class="save-btn" id="tablon-save">💾 Gem lektion</button>
 </div>`;
-    document.getElementById('tablon-save').addEventListener('click',()=>{
+    document.getElementById('tablon-save').addEventListener('click',async()=>{
       const txt=document.getElementById('tablon-ta').value;
-      localStorage.setItem('tablon',txt);
+      await dbSet('tablon',txt);
       const words=parseVocab(txt);
       localStorage.setItem('vocab',JSON.stringify(words));
       const btn=document.getElementById('tablon-save');
@@ -333,7 +390,8 @@ function renderTablon(){
 /* ── FREMLÆGGELSE ──────────────────────────────────────── */
 function renderFremlaeggelse(){
   const view=$('view-fremlaeggelse');
-  const saved=localStorage.getItem('slides-url')||'';
+  function getSlides(){try{return JSON.parse(localStorage.getItem('slides-list')||'[]');}catch{return[];}}
+  function saveSlides(arr){dbSet('slides-list',JSON.stringify(arr));}
   function toEmbed(url){
     try{
       if(url.includes('/pub'))return url.includes('embedded=true')?url:url+'&embedded=true';
@@ -341,21 +399,73 @@ function renderFremlaeggelse(){
       if(m)return`https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false&delayms=5000`;
     }catch{}return null;
   }
-  const embedUrl=toEmbed(saved);
-  const adminSection=STATE.admin?`
-<div class="slides-input-wrap">
-<input class="slides-input" id="slides-url-input" placeholder="Indsæt Google Slides deling-link her…" value="${saved}"/>
-<button class="save-btn" id="slides-save" style="white-space:nowrap">Gem link</button>
+
+  let selected=null;
+
+  function render(){
+    const list=getSlides();
+    let inner='';
+
+    if(selected!==null && list[selected]){
+      const pres=list[selected];
+      const embedUrl=toEmbed(pres.url);
+      inner=`
+<button class="save-btn" id="frem-back" style="margin-bottom:1.25rem;align-self:flex-start">← Tilbage</button>
+<h3 style="font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:1rem">${pres.name}</h3>
+${embedUrl
+  ?`<div class="slides-frame-wrap"><iframe src="${embedUrl}" allowfullscreen title="${pres.name}"></iframe></div>`
+  :`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>⚠️</span><p>Link no válido o sin permisos de incrustación.</p></div></div>`}`;
+    } else {
+      selected=null;
+      const adminForm=STATE.admin?`
+<div class="frem-add-form">
+<input class="slides-input" id="frem-name" placeholder="Nombre del alumno…" style="flex:1;min-width:130px"/>
+<input class="slides-input" id="frem-url" placeholder="Link de Google Slides…" style="flex:2;min-width:190px"/>
+<button class="save-btn" id="frem-add" style="margin:0;white-space:nowrap">＋ Añadir</button>
 </div>`:'';
-  const frameSection=embedUrl?`<div class="slides-frame-wrap"><iframe src="${embedUrl}" allowfullscreen title="Google Slides præsentation"></iframe></div>`
-  :`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>🎞️</span><p>Ingen præsentation tilgængelig endnu.</p>${STATE.admin?'<p style="font-size:.78rem;color:var(--text-dim)">Indsæt et link ovenfor for at starte.</p>':''}</div></div>`;
-  view.innerHTML=`<div class="content-view active" style="display:flex"><h2 class="section-title">🎞️ Fremlæggelse</h2>${adminSection}${frameSection}</div>`;
-  if(STATE.admin){
-    document.getElementById('slides-save').addEventListener('click',()=>{
-      const url=document.getElementById('slides-url-input').value.trim();
-      localStorage.setItem('slides-url',url);renderFremlaeggelse();
-    });
+      const adminList=STATE.admin&&list.length?`
+<div class="frem-admin-list">${list.map((p,i)=>`
+<div class="frem-admin-row">
+<span style="font-size:.88rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
+<span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .75rem">${p.url}</span>
+<button class="frem-del" data-idx="${i}" title="Eliminar">🗑️</button>
+</div>`).join('')}</div>`:'';
+      const grid=list.length?`
+<div class="frem-grid">${list.map((p,i)=>`
+<button class="frem-card" data-idx="${i}">
+<span class="frem-card-icon">🎞️</span>
+<span class="frem-card-name">${p.name}</span>
+</button>`).join('')}</div>`
+:`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>🎞️</span><p>Ingen præsentation tilgængelig endnu.</p>${STATE.admin?'<p style="font-size:.78rem;color:var(--text-dim)">Tilføj præsentationer ovenfor.</p>':''}</div></div>`;
+      inner=adminForm+adminList+grid;
+    }
+
+    view.innerHTML=`<div class="content-view active" style="display:flex"><h2 class="section-title">🎞️ Fremlæggelse</h2>${inner}</div>`;
+
+    if(selected===null){
+      if(STATE.admin){
+        document.getElementById('frem-add')?.addEventListener('click',()=>{
+          const name=document.getElementById('frem-name').value.trim();
+          const url=document.getElementById('frem-url').value.trim();
+          if(!name||!url)return;
+          const l=getSlides();l.push({name,url});saveSlides(l);render();
+        });
+        view.querySelectorAll('.frem-del').forEach(btn=>{
+          btn.addEventListener('click',e=>{
+            e.stopPropagation();
+            const l=getSlides();l.splice(+btn.dataset.idx,1);saveSlides(l);render();
+          });
+        });
+      }
+      view.querySelectorAll('.frem-card').forEach(card=>{
+        card.addEventListener('click',()=>{selected=+card.dataset.idx;render();});
+      });
+    } else {
+      document.getElementById('frem-back').addEventListener('click',()=>{selected=null;render();});
+    }
   }
+
+  render();
 }
 
 /* ── ORDBOG (MyMemory API) ─────────────────────────────── */
@@ -867,10 +977,134 @@ function buildFlashcards(vocab){
   render();
 }
 
+/* ── ADMIN PANEL ─────────────────────────────────────────── */
+function initAdminPanel(){
+  const modal=document.createElement('div');
+  modal.id='admin-panel-modal';
+  modal.className='modal-overlay';
+  modal.hidden=true;
+  modal.innerHTML=`
+<div class="modal-glass ap-glass">
+  <button id="ap-close" class="modal-close" aria-label="Cerrar panel">✕</button>
+  <h2 class="modal-title" style="text-align:left;font-size:1.3rem;margin-bottom:1.5rem">🗂️ Panel de Administración</h2>
+
+  <label class="ap-label">📅 Sesión del día</label>
+  <input type="date" id="ap-date" class="admin-input" style="margin-bottom:1.25rem"/>
+
+  <label class="ap-label">📋 Tablón de anuncios</label>
+  <textarea id="ap-tablon" class="ap-textarea" placeholder="Escribe el contenido del tablón de hoy…"></textarea>
+
+  <label class="ap-label">📚 Vocabulario <span style="font-size:.72rem;opacity:.55;font-weight:400;text-transform:none">(una palabra por línea)</span></label>
+  <textarea id="ap-vocab" class="ap-textarea" placeholder="rojo&#10;azul&#10;verde" style="min-height:90px"></textarea>
+
+  <label class="ap-label">🎞️ Presentaciones de este día</label>
+  <div id="ap-pres-list" class="ap-pres-list"></div>
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem;margin-bottom:1.5rem">
+    <input id="ap-pres-name" class="slides-input" placeholder="Nombre del alumno…" style="flex:1;min-width:130px"/>
+    <input id="ap-pres-url"  class="slides-input" placeholder="URL de Google Slides…" style="flex:2;min-width:170px"/>
+    <button id="ap-pres-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
+  </div>
+
+  <button id="ap-save" class="btn-primary">💾 Guardar Sesión</button>
+  <p id="ap-status" style="font-size:.8rem;color:var(--text-dim);margin-top:.6rem;min-height:1.2rem;text-align:center"></p>
+</div>`;
+  document.body.appendChild(modal);
+
+  let presList=[];
+
+  function todayInputStr(){
+    const d=new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+
+  function renderPresList(){
+    const c=document.getElementById('ap-pres-list');
+    if(!presList.length){
+      c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin presentaciones para este día.</p>';
+      return;
+    }
+    c.innerHTML=presList.map((p,i)=>`
+<div class="frem-admin-row">
+  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
+  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${p.url}</span>
+  <button class="frem-del" data-i="${i}">🗑️</button>
+</div>`).join('');
+    c.querySelectorAll('.frem-del').forEach(btn=>{
+      btn.addEventListener('click',()=>{presList.splice(+btn.dataset.i,1);renderPresList();});
+    });
+  }
+
+  async function loadForDate(dateStr){
+    const key='sesion_'+dateStr.replace(/-/g,'');
+    const raw=await dbGet(key);
+    if(raw){
+      try{
+        const s=JSON.parse(raw);
+        document.getElementById('ap-tablon').value=s.tablon||'';
+        document.getElementById('ap-vocab').value=(s.vocab||[]).join('\n');
+        presList=(s.presentaciones||[]).slice();
+      }catch{
+        document.getElementById('ap-tablon').value='';
+        document.getElementById('ap-vocab').value='';
+        presList=[];
+      }
+    } else {
+      document.getElementById('ap-tablon').value='';
+      document.getElementById('ap-vocab').value='';
+      presList=[];
+    }
+    renderPresList();
+  }
+
+  window._openAdminPanel=function(){
+    const dateInput=document.getElementById('ap-date');
+    if(!dateInput.value)dateInput.value=todayInputStr();
+    document.getElementById('ap-status').textContent='';
+    modal.hidden=false;
+    loadForDate(dateInput.value);
+  };
+
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true;});
+  document.getElementById('ap-close').addEventListener('click',()=>{modal.hidden=true;});
+  document.getElementById('ap-date').addEventListener('change',e=>loadForDate(e.target.value));
+
+  document.getElementById('ap-pres-add').addEventListener('click',()=>{
+    const name=document.getElementById('ap-pres-name').value.trim();
+    const url=document.getElementById('ap-pres-url').value.trim();
+    if(!name||!url)return;
+    presList.push({name,url});
+    document.getElementById('ap-pres-name').value='';
+    document.getElementById('ap-pres-url').value='';
+    renderPresList();
+  });
+
+  document.getElementById('ap-save').addEventListener('click',async()=>{
+    const dateStr=document.getElementById('ap-date').value;
+    if(!dateStr)return;
+    const tablon=document.getElementById('ap-tablon').value;
+    const vocab=document.getElementById('ap-vocab').value.split('\n').map(l=>l.trim()).filter(Boolean);
+    const statusEl=document.getElementById('ap-status');
+    statusEl.style.color='var(--text-dim)';
+    statusEl.textContent='Guardando…';
+    const key='sesion_'+dateStr.replace(/-/g,'');
+    const session=JSON.stringify({tablon,vocab,presentaciones:presList});
+    await dbSet(key,session);
+    // Refrescar caché local para que el resto de la SPA lo vea de inmediato
+    localStorage.setItem('tablon',tablon);
+    localStorage.setItem('vocab',JSON.stringify(vocab));
+    localStorage.setItem('slides-list',JSON.stringify(presList));
+    statusEl.style.color='#4ade80';
+    statusEl.textContent='✅ Sesión guardada en la nube.';
+    setTimeout(()=>{statusEl.textContent='';},3000);
+  });
+}
+
 /* ── INIT ──────────────────────────────────────────────── */
 function init(){
   initAuth();
   initQuickDict();
+  initAdminPanel();
+  syncFromCloud();
   document.querySelectorAll('.menu-card').forEach(card=>{
     card.addEventListener('click',()=>{
       const view=card.dataset.view;
