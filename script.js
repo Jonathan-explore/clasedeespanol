@@ -55,6 +55,12 @@ async function syncFromCloud(){
     if(todaySession.tablon!=null)localStorage.setItem('tablon',todaySession.tablon);
     if(todaySession.presentaciones)localStorage.setItem('slides-list',JSON.stringify(todaySession.presentaciones));
     if(todaySession.vocab)localStorage.setItem('vocab',JSON.stringify(todaySession.vocab));
+  } else {
+    // Fallback: lee las claves globales que usa el guardado rápido del tablón
+    const tRaw=await dbGet('tablon');
+    if(tRaw)localStorage.setItem('tablon',tRaw);
+    const sRaw=await dbGet('slides-list');
+    if(sRaw)localStorage.setItem('slides-list',sRaw);
   }
 
   // Vocab para flashcards: usa la sesión del miércoles anterior/actual (rotación)
