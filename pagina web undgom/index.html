@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Din klasseværelsets hjørne – en interaktiv platform til spansk læring for danske elever." />
+  <title>Din Klasseværelsets Hjørne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="game.css" />
+</head>
+<body>
+  <!-- Fluid canvas background -->
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+
+  <!-- Noise overlay -->
+  <div id="noise-overlay" aria-hidden="true"></div>
+
+  <!-- Orb decorations -->
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <!-- Main app shell -->
+  <div id="app-shell">
+
+    <!-- HOME VIEW -->
+    <section id="view-home" class="view active">
+
+      <!-- Top bar -->
+      <div class="top-bar">
+        <div class="top-bar-logo">
+          <span class="logo-icon">🌿</span>
+          <span class="logo-text">hjørne</span>
+        </div>
+        <button id="direct-admin-btn" title="Admin Login" style="background:none;border:none;color:var(--text-dim);cursor:pointer;opacity:0.4;font-size:1.1rem;transition:opacity 0.2s;">⚙️</button>
+      </div>
+
+      <div class="home-inner">
+        <header class="home-header">
+          <div class="title-wrap" id="title-trigger" title="Triple-klik for admin-adgang">
+            <p class="subtitle">Her kan du se og anmelde materiale på spansk</p>
+            <h1 class="main-title">din <em>klasseværelsets</em> hjørne</h1>
+            <p class="tagline">Spansk læring — enkelt, smukt, effektivt</p>
+          </div>
+        </header>
+
+        <nav class="cards-grid" id="main-nav" role="navigation" aria-label="Hovedmenu">
+
+          <!-- Tablón -->
+          <button class="menu-card" id="card-tablon" data-view="tablon" aria-label="Gå til Tablón">
+            <div class="card-bg-glow card-bg-glow-1"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">📋</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Tablón</h2>
+                <p class="card-desc">Dagens lektioner og ordforråd</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Fremlæggelse -->
+          <button class="menu-card" id="card-fremlaeggelse" data-view="fremlaeggelse" aria-label="Gå til Fremlæggelse">
+            <div class="card-bg-glow card-bg-glow-2"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🎞️</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Fremlæggelse</h2>
+                <p class="card-desc">Præsentationer og slides</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Ordbog -->
+          <button class="menu-card" id="card-ordbog" data-view="ordbog" aria-label="Gå til Ordbog">
+            <div class="card-bg-glow card-bg-glow-3"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">📖</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Ordbog</h2>
+                <p class="card-desc">Spansk–dansk ordbog med køn</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Yderligere materiale -->
+          <button class="menu-card" id="card-yderligere" data-view="yderligere" aria-label="Gå til Yderligere materiale">
+            <div class="card-bg-glow card-bg-glow-4"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🧩</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Øvelser</h2>
+                <p class="card-desc">Interaktive øvelser og spil</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- LinguaStrike spil -->
+          <button class="menu-card" id="card-spil" data-view="spil" aria-label="Gå til LinguaStrike">
+            <div class="card-bg-glow card-bg-glow-5"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🎮</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">LinguaStrike</h2>
+                <p class="card-desc">Bullet-heaven på spansk</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+        </nav>
+
+        <!-- Feature badges -->
+        <div class="features-strip">
+          <div class="feature-badge">
+            <div class="fb-icon">🎯</div>
+            <span>Interaktive øvelser</span>
+          </div>
+          <div class="feature-badge">
+            <div class="fb-icon">🔊</div>
+            <span>Udtalehjælp</span>
+          </div>
+          <div class="feature-badge">
+            <div class="fb-icon">📊</div>
+            <span>Spor dit fremskridt</span>
+          </div>
+          <div class="feature-badge">
+            <div class="fb-icon">🌐</div>
+            <span>ES ↔ DA oversættelse</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="home-footer">
+          <div class="footer-line"></div>
+          <p>© 2026 din klasseværelsets hjørne · Lavet med 💚 til spanskelever</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTENT VIEWS (injected by JS) -->
+    <section id="view-tablon"       class="view content-view" aria-label="Tablón"></section>
+    <section id="view-fremlaeggelse" class="view content-view" aria-label="Fremlæggelse"></section>
+    <section id="view-ordbog"       class="view content-view" aria-label="Ordbog"></section>
+    <section id="view-yderligere"   class="view content-view" aria-label="Yderligere materiale"></section>
+
+    <!-- LINGUASTRIKE GAME VIEW -->
+    <section id="view-spil" class="view" aria-label="LinguaStrike">
+      <div id="ls-root">
+        <canvas id="gameCanvas" aria-label="LinguaStrike spillebræt"></canvas>
+
+        <!-- HUD -->
+        <div id="ls-hud" class="ls-hud">
+          <div class="ls-hud-row">
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">NIVEAU</span>
+              <span class="ls-hud-val" id="hud-level">1</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">BØLGE</span>
+              <span class="ls-hud-val" id="hud-wave">1</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">KILLS</span>
+              <span class="ls-hud-val" id="hud-kills">0</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">ELITE</span>
+              <span class="ls-hud-val" id="hud-elites">0</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">PROJ</span>
+              <span class="ls-hud-val" id="hud-proj">1</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">RIGTIGE</span>
+              <span class="ls-hud-val" id="hud-correct">0</span>
+            </div>
+            <div class="ls-hud-block">
+              <span class="ls-hud-label">COMBO</span>
+              <span class="ls-hud-val" id="hud-combo">×0</span>
+            </div>
+          </div>
+
+          <div class="ls-bars">
+            <div class="ls-bar ls-bar-xp">
+              <div class="ls-bar-label">XP</div>
+              <div class="ls-bar-track"><div class="ls-bar-fill" id="xp-fill"></div></div>
+              <div class="ls-bar-txt" id="hud-xp-txt">0 / 120</div>
+            </div>
+            <div class="ls-bar ls-bar-hp">
+              <div class="ls-bar-label">HP</div>
+              <div class="ls-bar-track"><div class="ls-bar-fill" id="hp-fill"></div></div>
+              <div class="ls-bar-txt" id="hud-hp-txt">100</div>
+            </div>
+          </div>
+
+          <div class="ls-weapons">
+            <div class="ls-weapon" id="wi-orb" style="display:none">
+              <span class="ls-weapon-icon">💎</span>
+              <span class="ls-weapon-lv" id="wi-orb-lv">0</span>
+            </div>
+            <div class="ls-weapon" id="wi-exp" style="display:none">
+              <span class="ls-weapon-icon">💥</span>
+              <span class="ls-weapon-lv" id="wi-exp-lv">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toasts -->
+        <div id="toasts" class="ls-toasts"></div>
+
+        <!-- Capture bar -->
+        <div id="capture-bar-wrap" class="ls-capbar" style="display:none">
+          <span class="ls-capbar-lbl">🌀 Fanger zone…</span>
+          <div class="ls-capbar-track"><div class="ls-capbar-fill" id="capture-bar-fill"></div></div>
+        </div>
+
+        <!-- Zone countdown -->
+        <div id="zone-timer-box" class="ls-zonetimer">
+          <span class="ls-zonetimer-lbl">Fangzone om</span>
+          <span class="ls-zonetimer-val"><span id="zone-secs">10</span>s</span>
+        </div>
+
+        <!-- Elite warning -->
+        <div id="elite-warn" class="ls-elitewarn">⚠ ELITE INDKOMMENDE ⚠</div>
+
+        <!-- START OVERLAY -->
+        <div id="start-overlay" class="ls-overlay ls-start">
+          <div class="ls-panel">
+            <div class="ls-start-badge">LINGUASTRIKE</div>
+            <h2 class="ls-panel-title">Bullet Heaven · Lær Spansk</h2>
+            <p class="ls-panel-sub">Overlev bølger af fjender. Hver gang du stiger i niveau, vælger du en opgradering — men du skal svare rigtigt på et spansk spørgsmål for at få bonus-versionen.</p>
+            <div class="ls-controls">
+              <div class="ls-ctrl"><kbd>W A S D</kbd><span>Bevæg dig</span></div>
+              <div class="ls-ctrl"><kbd>↑ ← ↓ →</kbd><span>Eller piletaster</span></div>
+              <div class="ls-ctrl"><span class="ls-ctrl-ico">🎯</span><span>Auto-skud mod nærmeste</span></div>
+            </div>
+            <button id="start-btn" class="ls-btn ls-btn-primary">▶ START</button>
+          </div>
+        </div>
+
+        <!-- LEVEL UP OVERLAY (draft + quiz) -->
+        <div id="level-overlay" class="ls-overlay">
+          <div class="ls-panel ls-panel-wide">
+
+            <!-- DRAFT VIEW -->
+            <div id="draft-view" class="ls-draft">
+              <div class="ls-lvl-badge" id="lv-badge">NIVEAU 2</div>
+              <h2 class="ls-panel-title">Vælg din opgradering</h2>
+              <p class="ls-panel-sub">Klik på et kort for at få basis-effekten. Svar rigtigt for at få bonus-effekten i stedet.</p>
+              <div id="draft-cards" class="ls-draft-cards"></div>
+            </div>
+
+            <!-- QUIZ VIEW -->
+            <div id="quiz-view" class="ls-quiz" style="display:none">
+              <div class="ls-quiz-head">
+                <div class="ls-chosen">
+                  <span class="ls-chosen-ico" id="chosen-icon">🔫</span>
+                  <div>
+                    <div class="ls-chosen-name" id="chosen-name">Opgradering</div>
+                    <div class="ls-chosen-bonus" id="chosen-bonus-txt">…</div>
+                  </div>
+                </div>
+                <div class="ls-pstats">
+                  <span>NIVEAU <b id="ps-level">2</b></span>
+                  <span>RIGTIGE <b id="ps-correct">0</b></span>
+                  <span>COMBO <b id="ps-combo">×0</b></span>
+                </div>
+              </div>
+
+              <div class="ls-question">
+                <div class="ls-q-pill" id="q-pill">Kategori</div>
+                <div class="ls-q-text" id="question-text">…</div>
+                <div class="ls-q-hint" id="q-hint" style="display:none"></div>
+              </div>
+
+              <div id="answers-grid" class="ls-answers"></div>
+
+              <div id="result-banner" class="ls-result-banner"></div>
+              <div id="reward-preview" class="ls-reward-preview"></div>
+
+              <button id="continue-btn" class="ls-btn ls-btn-primary">Fortsæt →</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CHEST OVERLAY -->
+        <div id="chest-overlay" class="ls-overlay">
+          <div class="ls-panel">
+            <div class="ls-chest-icon">📦</div>
+            <h2 class="ls-panel-title">KISTE ÅBNET</h2>
+            <p class="ls-panel-sub">Tilfældig bonus opgradering!</p>
+            <div class="ls-chest-reward">
+              <div class="ls-chest-r-icon" id="cr-icon">✨</div>
+              <div class="ls-chest-r-name" id="cr-name">Opgradering</div>
+              <div class="ls-chest-r-desc" id="cr-desc">Beskrivelse</div>
+              <div class="ls-chest-r-bonus" id="cr-bonus">+bonus</div>
+            </div>
+            <button id="chest-close-btn" class="ls-btn ls-btn-primary">Fortsæt →</button>
+          </div>
+        </div>
+
+        <!-- BUFF OVERLAY (elite drops) -->
+        <div id="buff-overlay" class="ls-overlay">
+          <div class="ls-panel">
+            <div class="ls-buff-tier" id="buff-tier-badge">VAGT</div>
+            <h2 class="ls-panel-title" id="buff-title">VAGT BESEJRET</h2>
+            <p class="ls-panel-sub" id="buff-sub">Bonus aktiveret!</p>
+            <div id="buff-cards-container" class="ls-buff-cards"></div>
+            <button id="buff-close-btn" class="ls-btn ls-btn-primary">Fortsæt →</button>
+          </div>
+        </div>
+
+        <!-- GAME OVER OVERLAY -->
+        <div id="go-overlay" class="ls-overlay">
+          <div class="ls-panel">
+            <div class="ls-go-icon">☠</div>
+            <h2 class="ls-panel-title ls-go-title">GAME OVER</h2>
+            <p class="ls-panel-sub">Din rejse er forbi … denne gang.</p>
+            <div class="ls-go-stats">
+              <div><span>Kills</span><b id="go-kills">0</b></div>
+              <div><span>Elite</span><b id="go-elites">0</b></div>
+              <div><span>Niveau</span><b id="go-level">1</b></div>
+              <div><span>Rigtige</span><b id="go-correct">0</b></div>
+              <div><span>Projektiler</span><b id="go-proj">1</b></div>
+              <div><span>Krystaller</span><b id="go-orb">0</b></div>
+            </div>
+            <button id="restart-btn" class="ls-btn ls-btn-primary">↺ Start igen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back button -->
+    <button id="back-btn" class="back-btn" aria-label="Gå tilbage til menu" hidden>
+      <span class="back-arrow">←</span>
+      <span>Menu</span>
+    </button>
+
+    <!-- Admin badge (visible when logged in) -->
+    <div id="admin-badge" class="admin-badge" hidden>
+      <span class="admin-icon">🔑</span>
+      <span>Admin</span>
+      <button id="admin-logout-btn" aria-label="Log ud">Log ud</button>
+    </div>
+
+  </div>
+
+  <!-- QUICK DICT FAB -->
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+
+  <!-- QUICK DICT MODAL -->
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" style="margin-top:1.5rem;min-height:60px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid var(--glass-border);padding:1rem">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="admin-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Admin login">
+    <div class="modal-glass">
+      <button id="modal-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">🔐</div>
+      <h2 class="modal-title">Admin-adgang</h2>
+      <p class="modal-subtitle">Indtast adgangskoden for at fortsætte</p>
+      <div class="input-wrap">
+        <input type="password" id="admin-password-input" class="admin-input"
+               placeholder="Adgangskode…" autocomplete="current-password"
+               aria-label="Adgangskode" />
+        <div class="input-glow"></div>
+      </div>
+      <p id="admin-error" class="admin-error" aria-live="polite"></p>
+      <button id="admin-submit-btn" class="btn-primary">Log ind</button>
+    </div>
+  </div>
+
+  <!-- TRANSITION OVERLAY -->
+  <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
+
+  <!-- Scripts -->
+  <script src="game.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
