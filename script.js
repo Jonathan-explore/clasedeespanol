@@ -46,6 +46,29 @@ function prevOrCurrentWednesday(d){
   const diff=(day>=3)?(day-3):(day+4);
   const w=new Date(d);w.setDate(d.getDate()-diff);return w;
 }
+/* ── TEMARIO ───────────────────────────────────────────────── */
+function updateTemarioCard(url){
+  const card  = document.getElementById('card-temario');
+  const badge = document.getElementById('temario-badge');
+  if(!card) return;
+  if(url){
+    card.classList.remove('temario-no-url');
+    if(badge){ badge.textContent='TILGÆNGELIG'; badge.classList.add('badge-ok'); }
+  } else {
+    card.classList.add('temario-no-url');
+    if(badge){ badge.textContent='SNART KLAR'; badge.classList.remove('badge-ok'); }
+  }
+}
+function initTemario(){
+  updateTemarioCard(localStorage.getItem('temario_url'));
+  const card = document.getElementById('card-temario');
+  if(!card) return;
+  card.addEventListener('click',()=>{
+    const url = localStorage.getItem('temario_url');
+    if(url) window.open(url,'_blank','noopener,noreferrer');
+  });
+}
+
 async function syncFromCloud(){
   const today=new Date();
   const todayKey=formatDateKey(today);
@@ -74,6 +97,14 @@ async function syncFromCloud(){
       try{const s=JSON.parse(wedRaw);if(s.vocab)localStorage.setItem('vocab',JSON.stringify(s.vocab));}catch{}
     }
   }
+
+  // URL del temario (clave global, no por sesión).
+  // Si Supabase devuelve '' (admin borró la URL), limpiamos también localStorage
+  // para evitar mostrar un enlace stale en el siguiente renderizado.
+  const temarioUrl=await dbGet('temario_url');
+  if(temarioUrl) localStorage.setItem('temario_url',temarioUrl);
+  else localStorage.removeItem('temario_url');
+  updateTemarioCard(temarioUrl||null);
 }
 
 /* ── UTILIDADES ────────────────────────────────────────── */
@@ -1026,6 +1057,14 @@ function initAdminPanel(){
   </div>
 
   <button id="ap-save" class="btn-primary">💾 Guardar Sesión</button>
+
+  <hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.5rem 0"/>
+  <label class="ap-label">📚 Temario — URL de Google Docs <span style="font-size:.7rem;opacity:.5;font-weight:400;text-transform:none">(global, todas las sesiones)</span></label>
+  <div style="display:flex;gap:.5rem;margin-bottom:.25rem">
+    <input id="ap-temario-url" class="slides-input" placeholder="https://docs.google.com/document/d/…" style="flex:1"/>
+    <button id="ap-temario-save" class="save-btn" style="margin:0;white-space:nowrap">💾 Guardar</button>
+  </div>
+
   <p id="ap-status" style="font-size:.8rem;color:var(--text-dim);margin-top:.6rem;min-height:1.2rem;text-align:center"></p>
 </div>`;
   document.body.appendChild(modal);
@@ -1076,10 +1115,13 @@ function initAdminPanel(){
     renderPresList();
   }
 
-  window._openAdminPanel=function(){
+  window._openAdminPanel=async function(){
     const dateInput=document.getElementById('ap-date');
     if(!dateInput.value)dateInput.value=todayInputStr();
     document.getElementById('ap-status').textContent='';
+    // Precarga URL del temario (desde Supabase, con fallback a localStorage)
+    const currentUrl=await dbGet('temario_url');
+    document.getElementById('ap-temario-url').value=currentUrl||'';
     modal.hidden=false;
     loadForDate(dateInput.value);
   };
@@ -1096,6 +1138,18 @@ function initAdminPanel(){
     document.getElementById('ap-pres-name').value='';
     document.getElementById('ap-pres-url').value='';
     renderPresList();
+  });
+
+  document.getElementById('ap-temario-save').addEventListener('click',async()=>{
+    const url=document.getElementById('ap-temario-url').value.trim();
+    const statusEl=document.getElementById('ap-status');
+    statusEl.style.color='var(--text-dim)';statusEl.textContent='Guardando temario…';
+    await dbSet('temario_url',url);
+    if(url) localStorage.setItem('temario_url',url);
+    else localStorage.removeItem('temario_url');
+    updateTemarioCard(url||null);
+    statusEl.style.color='#4ade80';statusEl.textContent='✅ URL del Temario guardada.';
+    setTimeout(()=>{statusEl.textContent='';},3000);
   });
 
   document.getElementById('ap-save').addEventListener('click',async()=>{
@@ -1124,6 +1178,7 @@ function init(){
   initAuth();
   initQuickDict();
   initAdminPanel();
+  initTemario();
   syncFromCloud();
   document.querySelectorAll('.menu-card').forEach(card=>{
     card.addEventListener('click',()=>{

@@ -121,13 +121,15 @@ body{overflow:hidden}
   text-align:left;
   animation:fadeInUp .7s ease-out both;
 }
-.menu-card:nth-child(1){animation-delay:.15s}
-.menu-card:nth-child(2){animation-delay:.25s}
-.menu-card:nth-child(3){animation-delay:.35s}
-.menu-card:nth-child(4){animation-delay:.45s}
-.menu-card:nth-child(5){animation-delay:.55s}
-/* If 5 cards: make the 5th span both columns */
-.cards-grid > .menu-card:nth-child(5):last-child{grid-column:1 / -1}
+.menu-card:nth-child(1){animation-delay:.08s}
+.menu-card:nth-child(2){animation-delay:.18s}
+.menu-card:nth-child(3){animation-delay:.28s}
+.menu-card:nth-child(4){animation-delay:.38s}
+.menu-card:nth-child(5){animation-delay:.48s}
+.menu-card:nth-child(6){animation-delay:.58s}
+/* Temario (1er hijo) ocupa todo el ancho; LinguaStrike (6º, último) también */
+.menu-card-temario{grid-column:1 / -1}
+.cards-grid > .menu-card:not(.menu-card-temario):nth-child(6):last-child{grid-column:1 / -1}
 .card-inner{
   position:relative;
   border-radius:var(--r-lg);
@@ -176,6 +178,57 @@ body{overflow:hidden}
 .card-bg-glow-3{background:radial-gradient(ellipse at 0% 0%,rgba(244,114,182,.18),transparent 60%)}
 .card-bg-glow-4{background:radial-gradient(ellipse at 100% 100%,rgba(251,146,60,.18),transparent 60%)}
 .card-bg-glow-5{background:radial-gradient(ellipse at 50% 50%,rgba(0,255,204,.22),transparent 60%)}
+.card-bg-glow-temario{background:radial-gradient(ellipse at 0% 100%,rgba(251,146,60,.2),transparent 55%)}
+
+/* ── TEMARIO CARD ─────────────────────────────────────────── */
+/* Tarjeta ancha (grid-column:1/-1), layout horizontal, acento ámbar */
+.menu-card-temario .card-inner{
+  flex-direction:row;
+  align-items:center;
+  height:auto;
+  min-height:116px;
+  gap:1.4rem;
+  padding:1.35rem 1.75rem;
+  background:rgba(16,11,7,0.72);
+  border-color:rgba(251,146,60,.18);
+}
+.menu-card-temario .card-bottom{ margin-top:0; flex:1; }
+.menu-card-temario .card-icon-wrap{
+  flex-shrink:0;
+  width:54px; height:54px;
+  background:rgba(251,146,60,.1);
+  border-color:rgba(251,146,60,.25);
+}
+.menu-card-temario:hover .card-inner{
+  border-color:rgba(251,146,60,.45);
+  box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 44px rgba(251,146,60,.1);
+}
+.menu-card-temario:hover .card-icon-wrap{
+  background:rgba(251,146,60,.2);
+  box-shadow:0 4px 20px rgba(251,146,60,.25);
+}
+.menu-card-temario .card-arrow{ color:rgba(251,146,60,.5); }
+.menu-card-temario:hover .card-arrow{ color:var(--glow4); transform:translate(4px,-4px); }
+
+/* Fila derecha: badge + flecha */
+.temario-right{
+  display:flex; flex-direction:column; align-items:flex-end; gap:.55rem;
+  flex-shrink:0;
+}
+/* Badge de disponibilidad */
+.temario-badge{
+  font-size:.62rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  padding:.22rem .65rem; border-radius:50px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  color:var(--text-muted);
+  transition:background .3s,border-color .3s,color .3s;
+}
+.temario-badge.badge-ok{
+  background:rgba(74,222,128,.12); border-color:rgba(74,222,128,.35); color:#4ade80;
+}
+/* Estado sin URL: tarjeta ligeramente opaca, cursor normal */
+.menu-card-temario.temario-no-url{ cursor:default; }
+.menu-card-temario.temario-no-url .card-inner{ opacity:.65; }
 
 /* Shine */
 .card-shine{

@@ -11,6 +11,10 @@
   background:#05080f;
   /* Hidden unless .active is set by router */
   display:none;
+  /* Evita scroll/bounce del navegador al arrastrar el joystick */
+  overflow:hidden;
+  overscroll-behavior:none;
+  touch-action:none;
 }
 #view-spil.active{ display:block; }
 
