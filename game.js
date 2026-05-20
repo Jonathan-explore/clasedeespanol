@@ -2486,7 +2486,18 @@ class Game {
       },60);
     });
 
-    // Controles táctiles D-pad (solo se activan en pantallas táctiles)
+    // Detectar dispositivo táctil y mostrar D-pad de forma explícita.
+    // La media query CSS no es suficiente: muchos Android/Chrome reportan
+    // hover:hover y no activan @media(hover:none)(pointer:coarse).
+    const dpadRoot = document.getElementById('ls-dpad');
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      document.body.classList.add('has-touch');
+      if (dpadRoot) { dpadRoot.style.display = 'flex'; dpadRoot.removeAttribute('aria-hidden'); }
+    }
+
+    // D-pad — Pointer Events (cubre touch + stylus + mouse; evita doble disparo
+    // de touchstart+pointerdown). touch-action:none ya está en el CSS del botón.
     [['dpad-up','KeyW'],['dpad-down','KeyS'],['dpad-left','KeyA'],['dpad-right','KeyD']]
     .forEach(([id,code])=>{
       const el=document.getElementById(id);
@@ -2496,14 +2507,14 @@ class Game {
         el.classList.add('pressed');
         if(self.player)self.player.handleKey(code,true);
       };
-      const release=e=>{
-        e.preventDefault();
+      const release=()=>{
         el.classList.remove('pressed');
         if(self.player)self.player.handleKey(code,false);
       };
-      el.addEventListener('touchstart',press,{passive:false});
-      el.addEventListener('touchend',release,{passive:false});
-      el.addEventListener('touchcancel',release);
+      el.addEventListener('pointerdown',press);
+      el.addEventListener('pointerup',release);
+      el.addEventListener('pointercancel',release);
+      el.addEventListener('pointerleave',release);
     });
   };
 

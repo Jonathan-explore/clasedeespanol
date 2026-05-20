@@ -755,12 +755,16 @@ body.spil-active .back-btn{
   background:rgba(94,234,212,.35);
   border-color:#5eead4;
 }
-/* Solo visible en pantallas táctiles mientras el juego está activo */
-@media(hover:none) and (pointer:coarse){
+/* Solo visible en pantallas táctiles mientras el juego está activo.
+   Dos reglas de activación independientes para máxima compatibilidad:
+   1) Media query (pointer:coarse) — sin hover:none que falla en muchos Android/Chrome
+   2) Clase has-touch añadida por JS como fallback definitivo */
+@media(pointer:coarse){
   body.spil-active .ls-dpad{display:flex}
 }
+body.has-touch.spil-active .ls-dpad{display:flex}
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
+/* ── RESPONSIVE — portrait móvil ───────────────────────────── */
 @media(max-width:720px){
   .ls-hud-row{ gap:6px; }
   .ls-hud-block{ padding:4px 8px; }
@@ -772,4 +776,92 @@ body.spil-active .back-btn{
   .ls-panel-title{ font-size:18px; }
   .ls-elitewarn{ font-size:22px; letter-spacing:3px; }
   .ls-go-stats{ grid-template-columns:repeat(2,1fr); }
+}
+
+/* ── RESPONSIVE — landscape móvil (altura ≤ 500 px) ────────── */
+/* En landscape el alto es ~350-430px; hay que compactar todo    */
+@media(max-height:500px) and (orientation:landscape){
+
+  /* HUD: fila única compacta pegada arriba, respetando notch */
+  .ls-hud{
+    top:6px;
+    left:max(6px, env(safe-area-inset-left));
+    right:max(6px, env(safe-area-inset-right));
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:4px;
+  }
+  .ls-hud-row{ gap:4px; flex-wrap:nowrap; }
+  .ls-hud-block{ padding:3px 7px; }
+  .ls-hud-label{ display:none; }       /* solo valores, sin etiquetas */
+  .ls-hud-val{ font-size:12px; }
+
+  /* Barras XP/HP en fila horizontal */
+  .ls-bars{
+    flex-direction:row;
+    max-width:none;
+    gap:4px;
+    align-items:center;
+  }
+  .ls-bar{ padding:3px 7px; }
+  .ls-bar-track{ width:70px; height:8px; }
+  .ls-bar-txt{ display:none; }
+
+  /* Armas más compactas */
+  .ls-weapons{ margin-top:0; gap:4px; }
+  .ls-weapon{ font-size:11px; padding:2px 6px; }
+  .ls-weapon-icon{ font-size:12px; }
+
+  /* D-pad: botones más pequeños, respetando notch izquierdo */
+  .ls-dpad{ bottom:max(10px, env(safe-area-inset-bottom)); left:max(10px, env(safe-area-inset-left)); gap:3px; }
+  .dpad-btn{ width:42px; height:42px; font-size:1rem; border-radius:9px; }
+  .dpad-center{ width:42px; height:42px; }
+
+  /* Capbar: se mueve a la derecha para no chocar con el D-pad, respetando notch */
+  .ls-capbar{
+    bottom:max(10px, env(safe-area-inset-bottom));
+    left:auto;
+    right:max(10px, env(safe-area-inset-right));
+    transform:none;
+    font-size:10px;
+    padding:5px 10px;
+  }
+  .ls-capbar-track{ width:100px; }
+
+  /* Zone timer compacto */
+  .ls-zonetimer{ right:10px; padding:4px 10px; }
+  .ls-zonetimer-val{ font-size:16px; }
+  .ls-zonetimer-lbl{ font-size:8px; }
+
+  /* Elite warn */
+  .ls-elitewarn{ font-size:18px; letter-spacing:2px; }
+
+  /* Overlays y paneles: scroll vertical, altura limitada */
+  .ls-overlay{ padding:6px; align-items:flex-start; overflow-y:auto; }
+  .ls-panel{
+    padding:12px 14px;
+    max-height:calc(100dvh - 12px);
+    overflow-y:auto;
+  }
+  .ls-panel-title{ font-size:16px; margin-bottom:4px; }
+  .ls-panel-sub{ font-size:11px; margin-bottom:10px; }
+
+  /* Draft cards en fila (ya hay pocas) */
+  .ls-draft-cards{ grid-template-columns:repeat(3,1fr); gap:8px; }
+  .dcard{ padding:10px 8px; }
+  .dcard-icon{ font-size:26px; margin:2px 0 6px; }
+  .dcard-name{ font-size:12px; }
+  .dcard-desc{ font-size:10px; min-height:32px; }
+
+  /* Quiz: respuestas en 2 columnas */
+  .ls-answers{ grid-template-columns:repeat(2,1fr); gap:6px; }
+  .abtn{ padding:8px 10px; font-size:12px; }
+
+  /* Stats de game over */
+  .ls-go-stats{ grid-template-columns:repeat(3,1fr); gap:6px; }
+
+  /* Controles de inicio */
+  .ls-controls{ padding:8px 12px; gap:5px; }
+  .ls-ctrl{ font-size:11px; }
+  .ls-btn{ padding:10px 14px; font-size:12px; margin-top:6px; }
 }
