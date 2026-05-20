@@ -725,44 +725,37 @@ body.spil-active .back-btn{
   text-shadow:0 0 8px rgba(0,212,255,.6);
 }
 
-/* ── VIRTUAL D-PAD ───────────────────────────────────────── */
-.ls-dpad{
+/* ── VIRTUAL JOYSTICK ────────────────────────────────────── */
+/* El joystick aparece dinámicamente en el punto de toque; JS controla
+   position, display y transform del knob en cada frame. */
+.ls-joystick{
   position:absolute;
-  bottom:24px; left:24px;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
+  width:120px; height:120px;
+  display:none;          /* oculto hasta primer toque */
+  pointer-events:none;   /* los eventos se capturan en #ls-root, no aquí */
   z-index:50;
   touch-action:none;
-  -webkit-tap-highlight-color:transparent;
 }
-.dpad-middle{display:flex;align-items:center;gap:6px}
-.dpad-center{width:54px;height:54px}
-.dpad-btn{
-  width:54px;height:54px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.3);
-  border-radius:12px;
-  color:#fff;font-size:1.3rem;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  user-select:none;-webkit-user-select:none;
-  touch-action:none;
-  transition:background .1s,border-color .1s;
+.joystick-base{
+  position:absolute; inset:0;
+  border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  border:2px solid rgba(255,255,255,0.22);
+  box-shadow:0 0 22px rgba(0,255,204,0.14);
 }
-.dpad-btn.pressed{
-  background:rgba(94,234,212,.35);
-  border-color:#5eead4;
+.joystick-knob{
+  position:absolute;
+  width:48px; height:48px;
+  border-radius:50%;
+  background:rgba(94,234,212,0.45);
+  border:2px solid #5eead4;
+  box-shadow:0 0 14px rgba(94,234,212,0.55);
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  will-change:transform;
 }
-/* Solo visible en pantallas táctiles mientras el juego está activo.
-   Dos reglas de activación independientes para máxima compatibilidad:
-   1) Media query (pointer:coarse) — sin hover:none que falla en muchos Android/Chrome
-   2) Clase has-touch añadida por JS como fallback definitivo */
-@media(pointer:coarse){
-  body.spil-active .ls-dpad{display:flex}
-}
-body.has-touch.spil-active .ls-dpad{display:flex}
+/* Bloquea el scroll del navegador mientras el joystick está en uso */
+body.has-touch.spil-active #ls-root{ touch-action:none; }
 
 /* ── RESPONSIVE — portrait móvil ───────────────────────────── */
 @media(max-width:720px){
@@ -812,12 +805,11 @@ body.has-touch.spil-active .ls-dpad{display:flex}
   .ls-weapon{ font-size:11px; padding:2px 6px; }
   .ls-weapon-icon{ font-size:12px; }
 
-  /* D-pad: botones más pequeños, respetando notch izquierdo */
-  .ls-dpad{ bottom:max(10px, env(safe-area-inset-bottom)); left:max(10px, env(safe-area-inset-left)); gap:3px; }
-  .dpad-btn{ width:42px; height:42px; font-size:1rem; border-radius:9px; }
-  .dpad-center{ width:42px; height:42px; }
+  /* Joystick ligeramente más compacto en landscape */
+  .ls-joystick{ width:96px; height:96px; }
+  .joystick-knob{ width:38px; height:38px; }
 
-  /* Capbar: se mueve a la derecha para no chocar con el D-pad, respetando notch */
+  /* Capbar: a la derecha para liberar la zona central/izquierda del joystick */
   .ls-capbar{
     bottom:max(10px, env(safe-area-inset-bottom));
     left:auto;

@@ -2486,36 +2486,80 @@ class Game {
       },60);
     });
 
-    // Detectar dispositivo táctil y mostrar D-pad de forma explícita.
-    // La media query CSS no es suficiente: muchos Android/Chrome reportan
-    // hover:hover y no activan @media(hover:none)(pointer:coarse).
-    const dpadRoot = document.getElementById('ls-dpad');
+    // ── JOYSTICK DINÁMICO ─────────────────────────────────────
+    // Aparece en el punto de primer toque; el knob sigue al dedo;
+    // desaparece al soltar. Mapea dx/dy → W/A/S/D con zona muerta.
     const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-    if (isTouch) {
-      document.body.classList.add('has-touch');
-      if (dpadRoot) { dpadRoot.style.display = 'flex'; dpadRoot.removeAttribute('aria-hidden'); }
-    }
+    if (isTouch) document.body.classList.add('has-touch');
 
-    // D-pad — Pointer Events (cubre touch + stylus + mouse; evita doble disparo
-    // de touchstart+pointerdown). touch-action:none ya está en el CSS del botón.
-    [['dpad-up','KeyW'],['dpad-down','KeyS'],['dpad-left','KeyA'],['dpad-right','KeyD']]
-    .forEach(([id,code])=>{
-      const el=document.getElementById(id);
-      if(!el)return;
-      const press=e=>{
-        e.preventDefault();
-        el.classList.add('pressed');
-        if(self.player)self.player.handleKey(code,true);
-      };
-      const release=()=>{
-        el.classList.remove('pressed');
-        if(self.player)self.player.handleKey(code,false);
-      };
-      el.addEventListener('pointerdown',press);
-      el.addEventListener('pointerup',release);
-      el.addEventListener('pointercancel',release);
-      el.addEventListener('pointerleave',release);
-    });
+    if (isTouch) {
+      const OUTER_R  = 60;               // mitad del contenedor (120 px)
+      const MAX_DISP = 46;               // desplazamiento máximo del knob
+      const DEAD     = MAX_DISP * 0.18;  // zona muerta (~8 px)
+
+      const gameRoot = document.getElementById('ls-root');
+      const joyEl    = document.getElementById('ls-joystick');
+      const joyKnob  = joyEl && joyEl.querySelector('.joystick-knob');
+
+      let activeId = null;   // pointerId que controla el joystick
+      let cX = 0, cY = 0;   // centro del joystick en coordenadas de #ls-root
+
+      function joyRelease() {
+        activeId = null;
+        if (joyEl)   joyEl.style.display = 'none';
+        if (joyKnob) joyKnob.style.transform = 'translate(-50%,-50%)';
+        ['KeyW','KeyA','KeyS','KeyD'].forEach(k => {
+          if (self.player) self.player.handleKey(k, false);
+        });
+      }
+
+      if (gameRoot && joyEl && joyKnob) {
+        // Activar joystick al tocar el área de juego (excluir UI)
+        gameRoot.addEventListener('pointerdown', e => {
+          if (!isActive() || activeId !== null) return;
+          if (e.target.closest('button,.ls-overlay,.ls-hud,.ls-capbar,.ls-zonetimer')) return;
+
+          activeId = e.pointerId;
+          const rect = gameRoot.getBoundingClientRect();
+          // Centrar el joystick en el toque; clamp para que no salga de pantalla
+          cX = Math.max(OUTER_R, Math.min(rect.width  - OUTER_R, e.clientX - rect.left));
+          cY = Math.max(OUTER_R, Math.min(rect.height - OUTER_R, e.clientY - rect.top));
+
+          joyEl.style.left    = (cX - OUTER_R) + 'px';
+          joyEl.style.top     = (cY - OUTER_R) + 'px';
+          joyEl.style.display = 'block';
+          joyKnob.style.transform = 'translate(-50%,-50%)';
+
+          // Capturar el pointer para recibir pointermove aunque salga del elemento
+          try { gameRoot.setPointerCapture(e.pointerId); } catch(_) {}
+          e.preventDefault();
+        }, { passive: false });
+
+        // Mover knob y actualizar teclas virtuales
+        gameRoot.addEventListener('pointermove', e => {
+          if (!isActive() || e.pointerId !== activeId) return;
+
+          const rect = gameRoot.getBoundingClientRect();
+          let dx = (e.clientX - rect.left) - cX;
+          let dy = (e.clientY - rect.top)  - cY;
+          const dist = Math.hypot(dx, dy);
+          if (dist > MAX_DISP) { dx = dx / dist * MAX_DISP; dy = dy / dist * MAX_DISP; }
+
+          joyKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+          if (self.player) {
+            self.player.handleKey('KeyW', dy < -DEAD);
+            self.player.handleKey('KeyS', dy >  DEAD);
+            self.player.handleKey('KeyA', dx < -DEAD);
+            self.player.handleKey('KeyD', dx >  DEAD);
+          }
+          e.preventDefault();
+        }, { passive: false });
+
+        gameRoot.addEventListener('pointerup',     e => { if (e.pointerId === activeId) joyRelease(); });
+        gameRoot.addEventListener('pointercancel', e => { if (e.pointerId === activeId) joyRelease(); });
+      }
+    }
   };
 
   // Inyecta preguntas dinámicas a partir del vocabulario del Tablón.
