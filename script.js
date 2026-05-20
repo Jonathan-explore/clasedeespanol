@@ -730,14 +730,14 @@ function buildDragDrop(vocab){
         const t=e.touches[0],r=word.getBoundingClientRect();
         offsetX=t.clientX-r.left;offsetY=t.clientY-r.top;
         clone=word.cloneNode(true);
-        Object.assign(clone.style,{position:'fixed',width:r.width+'px',left:(t.clientX-offsetX)+'px',top:(t.clientY-offsetY)+'px',pointerEvents:'none',opacity:'0.85',zIndex:'9999',margin:'0'});
+        Object.assign(clone.style,{position:'fixed',width:r.width+'px',left:'0',top:'0',transform:`translate(${t.clientX-offsetX}px,${t.clientY-offsetY}px)`,willChange:'transform',pointerEvents:'none',opacity:'0.85',zIndex:'9999',margin:'0'});
         document.body.appendChild(clone);
       },{passive:false});
       word.addEventListener('touchmove',e=>{
         e.preventDefault();
         if(!clone)return;
         const t=e.touches[0];
-        clone.style.left=(t.clientX-offsetX)+'px';clone.style.top=(t.clientY-offsetY)+'px';
+        clone.style.transform=`translate(${t.clientX-offsetX}px,${t.clientY-offsetY}px)`;
         bucketEls().forEach(b=>{const r=b.getBoundingClientRect();b.classList.toggle('drag-over',t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom);});
       },{passive:false});
       word.addEventListener('touchend',e=>{
