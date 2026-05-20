@@ -613,6 +613,20 @@ body{overflow:hidden}
 .match-item.wrong-shake{animation:shake .35s ease}
 .match-score{margin-top:1rem;font-size:.88rem;color:var(--text-dim)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ── ORD-PUSLESPIL ────────────────────────────────────────── */
+.blandet{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.25rem}
+.blandet-letter{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:2rem;height:2rem;padding:0 .45rem;
+  background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.4);
+  border-radius:8px;font-size:1rem;font-weight:600;color:#a78bfa;
+  transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+}
+.blandet-letter.used{opacity:0;transform:scale(.5);pointer-events:none;visibility:hidden}
+@keyframes scr-pop{0%{transform:scale(1)}40%{transform:scale(1.04)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+.scr-correct{animation:scr-pop .5s ease}
+
 .empty-state{
   text-align:center;padding:4rem 1.5rem;color:var(--text-dim);
   background:rgba(255,255,255,.02);border:1px solid var(--glass-border);
@@ -712,7 +726,9 @@ body{overflow:hidden}
   .top-bar{padding:.75rem 1.25rem}
   .back-btn{left:1.25rem}
   .admin-badge{right:1.25rem}
-  .dd-buckets,.match-grid{grid-template-columns:1fr}
+  .dd-buckets{grid-template-columns:1fr}
+  .match-grid{gap:.5rem}
+  .match-item{padding:.55rem .7rem;font-size:.82rem}
   .content-view{padding:4.5rem 1rem 1.5rem}
   .slides-frame-wrap iframe{height:280px}
   .features-strip{flex-wrap:wrap;gap:.75rem;justify-content:center;border-radius:20px;padding:.8rem 1rem}

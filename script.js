@@ -693,28 +693,60 @@ function buildDragDrop(vocab){
 <div id="dd-result"></div>
 <button class="save-btn" id="dd-reset" style="margin-top:1.25rem">🔄 Genstart øvelse</button>`;
   function setupDrag(){
+    const bucketEls=()=>['bucket-fem','bucket-masc'].map(id=>document.getElementById(id));
+    function handleDrop(bucket){
+      if(!dragging)return;
+      bucket.classList.remove('drag-over');
+      const wordText=dragging.dataset.word;
+      const correctGender=detectGender(wordText);
+      const droppedGender=bucket.dataset.gender;
+      const res=document.getElementById('dd-result');
+      dragging.style.cursor='default';dragging.setAttribute('draggable','false');
+      bucket.appendChild(dragging);
+      const isCorrect=(droppedGender===correctGender)||(correctGender==='neu'&&droppedGender==='masc');
+      if(isCorrect){score++;dragging.style.background='rgba(34,197,94,.2)';dragging.style.borderColor='#22c55e';}
+      else{dragging.style.background='rgba(239,68,68,.2)';dragging.style.borderColor='#ef4444';}
+      const placed=panel.querySelectorAll('#bucket-fem .dd-word,#bucket-masc .dd-word').length;
+      if(placed>=total)res.innerHTML=`<div class="dd-result ${score===total?'correct':'wrong'}">${score===total?'🎉 Perfekt! Alle ord er korrekt placeret!':score+'/'+total+' ord korrekt. Prøv igen!'}</div>`;
+      dragging=null;
+    }
+    // Mouse / HTML5 drag-and-drop
     panel.querySelectorAll('.dd-word').forEach(word=>{
       word.addEventListener('dragstart',e=>{dragging=word;word.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
       word.addEventListener('dragend',()=>{dragging=null;word.classList.remove('dragging');});
     });
-    ['bucket-fem','bucket-masc'].forEach(id=>{
-      const bucket=document.getElementById(id);
+    bucketEls().forEach(bucket=>{
       bucket.addEventListener('dragover',e=>{e.preventDefault();bucket.classList.add('drag-over');});
       bucket.addEventListener('dragleave',()=>bucket.classList.remove('drag-over'));
-      bucket.addEventListener('drop',e=>{
-        e.preventDefault();bucket.classList.remove('drag-over');
-        if(!dragging)return;
-        const word=dragging.dataset.word;
-        const correctGender=detectGender(word);
-        const droppedGender=bucket.dataset.gender;
-        const res=document.getElementById('dd-result');
-        dragging.style.cursor='default';dragging.setAttribute('draggable','false');
-        bucket.appendChild(dragging);
-        const isCorrect=(droppedGender===correctGender)||(correctGender==='neu'&&droppedGender==='masc');
-        if(isCorrect){score++;dragging.style.background='rgba(34,197,94,.2)';dragging.style.borderColor='#22c55e';}
-        else{dragging.style.background='rgba(239,68,68,.2)';dragging.style.borderColor='#ef4444';}
-        const placed=panel.querySelectorAll('#bucket-fem .dd-word,#bucket-masc .dd-word').length;
-        if(placed>=total)res.innerHTML=`<div class="dd-result ${score===total?'correct':'wrong'}">${score===total?'🎉 Perfekt! Alle ord er korrekt placeret!':score+'/'+total+' ord korrekt. Prøv igen!'}</div>`;
+      bucket.addEventListener('drop',e=>{e.preventDefault();handleDrop(bucket);});
+    });
+    // Touch drag-and-drop
+    let clone=null,offsetX=0,offsetY=0;
+    function bucketAt(x,y){return bucketEls().find(b=>{const r=b.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null;}
+    panel.querySelectorAll('.dd-word').forEach(word=>{
+      word.addEventListener('touchstart',e=>{
+        e.preventDefault();
+        dragging=word;word.classList.add('dragging');
+        const t=e.touches[0],r=word.getBoundingClientRect();
+        offsetX=t.clientX-r.left;offsetY=t.clientY-r.top;
+        clone=word.cloneNode(true);
+        Object.assign(clone.style,{position:'fixed',width:r.width+'px',left:(t.clientX-offsetX)+'px',top:(t.clientY-offsetY)+'px',pointerEvents:'none',opacity:'0.85',zIndex:'9999',margin:'0'});
+        document.body.appendChild(clone);
+      },{passive:false});
+      word.addEventListener('touchmove',e=>{
+        e.preventDefault();
+        if(!clone)return;
+        const t=e.touches[0];
+        clone.style.left=(t.clientX-offsetX)+'px';clone.style.top=(t.clientY-offsetY)+'px';
+        bucketEls().forEach(b=>{const r=b.getBoundingClientRect();b.classList.toggle('drag-over',t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom);});
+      },{passive:false});
+      word.addEventListener('touchend',e=>{
+        if(clone){clone.remove();clone=null;}
+        word.classList.remove('dragging');
+        bucketEls().forEach(b=>b.classList.remove('drag-over'));
+        const t=e.changedTouches[0];
+        const target=bucketAt(t.clientX,t.clientY);
+        if(target)handleDrop(target);else dragging=null;
       });
     });
   }
@@ -885,95 +917,78 @@ function buildWordScramble(vocab){
   const panel=document.getElementById('panel-scramble');
   const MAX=Math.min(vocab.length,6);
   const chosen=[...vocab].sort(()=>Math.random()-.5).slice(0,MAX);
-  
   panel.innerHTML=`<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1.5rem">Henter oversættelser…</p><div class="loading-spin" style="margin:2rem auto"></div>`;
-  
   (async()=>{
     const questions=[];
     for(const w of chosen){
       const da=await myMemoryTranslate(w,'es|da');
       questions.push({es:w,da:da});
     }
-    
     function scramble(word){
       const arr=word.split('');
-      // Ensure scrambled !== original (try up to 10 times)
       for(let tries=0;tries<10;tries++){
-        for(let i=arr.length-1;i>0;i--){
-          const j=Math.floor(Math.random()*(i+1));
-          [arr[i],arr[j]]=[arr[j],arr[i]];
-        }
+        for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
         if(arr.join('')!==word)break;
       }
       return arr.join('');
     }
-    
+    const bravos=['Godt klaret!','Fantastisk!','Fremragende!','Perfekt!','Rigtigt!'];
     let score=0;
     const total=questions.length;
-    
     let html=`
     <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem;line-height:1.6">
-      🔤 <strong>Instruksjoner:</strong> Det blandede spanske ord passer til det danske ord i gult. Skriv det rigtige ord og tryk <em>Tjek</em>.
+      🔤 <strong>Instruksjoner:</strong> Det blandede spanske ord passer til det danske ord i gult. Skriv bogstaverne i den rigtige rækkefølge.
     </p>
     <div class="scr-score" id="scr-score" style="text-align:center;font-size:1rem;font-weight:600;color:var(--glow);margin-bottom:1rem">Score: 0 / ${total}</div>
     <div style="display:flex;flex-direction:column;gap:1.25rem">`;
-    
     questions.forEach((q,i)=>{
       const scr=scramble(q.es);
-      html+=`<div class="sent-q scr-q" data-ans="${q.es}" data-idx="${i}" style="background:rgba(255,255,255,.03);padding:1.5rem;border-radius:16px;border:1px solid var(--glass-border)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      const lettersHtml=scr.split('').map((ch,li)=>`<span class="blandet-letter" data-li="${li}">${ch}</span>`).join('');
+      html+=`<div class="sent-q scr-q" data-ans="${q.es}" data-scr="${scr}" data-idx="${i}" style="background:rgba(255,255,255,.03);padding:1.5rem;border-radius:16px;border:1px solid var(--glass-border)">
+        <div style="margin-bottom:.75rem">
           <span style="font-size:.85rem;color:var(--text-dim)">Dansk: <strong style="color:var(--glow);font-size:1rem">${q.da}</strong></span>
-          <span style="font-size:.85rem;color:var(--text-dim)">Blandet: <strong style="letter-spacing:3px;font-size:1.1rem;color:#a78bfa">${scr}</strong></span>
         </div>
-        <div style="display:flex;gap:.6rem;align-items:center">
-          <input class="scr-input admin-input" type="text" placeholder="Skriv det rigtige ord…"
-            style="flex:1;font-size:1rem;padding:.6rem 1rem;letter-spacing:1px"
-            autocomplete="off" spellcheck="false" />
-          <button class="save-btn scr-check" style="margin:0;padding:.6rem 1.1rem;font-size:.9rem;white-space:nowrap">Tjek ✓</button>
-        </div>
+        <div class="blandet">${lettersHtml}</div>
+        <input class="scr-input admin-input" type="text" placeholder="Skriv det rigtige ord…"
+          style="width:100%;box-sizing:border-box;font-size:1rem;padding:.6rem 1rem;letter-spacing:1px;margin-top:.75rem"
+          autocomplete="off" spellcheck="false" />
         <div class="scr-res" style="font-size:.9rem;font-weight:500;min-height:1.4rem;margin-top:.6rem"></div>
       </div>`;
     });
-    
     panel.innerHTML=html+`</div><button class="save-btn" id="scr-reset" style="margin-top:1.5rem">🔄 Nye ord</button>`;
-    
     const scoreEl=document.getElementById('scr-score');
-    function updateScore(){ scoreEl.textContent='Score: '+score+' / '+total; }
-    
+    function updateScore(){scoreEl.textContent='Score: '+score+' / '+total;}
     panel.querySelectorAll('.scr-q').forEach(card=>{
       const inp=card.querySelector('.scr-input');
-      const btn=card.querySelector('.scr-check');
       const res=card.querySelector('.scr-res');
       const ans=card.dataset.ans;
-      
-      function check(){
-        if(card.dataset.done)return;
-        const val=inp.value.trim().toLowerCase();
-        card.dataset.done='true';
-        inp.disabled=true;
-        btn.disabled=true;
-        btn.style.opacity='.5';
-        if(val===ans.toLowerCase()){
-          score++; updateScore();
-          res.textContent='✅ Korrekt! «'+ans+'»';
-          res.style.color='#4ade80';
-          inp.style.borderColor='#22c55e';
-        } else {
-          res.textContent='❌ Det rigtige ord er: '+ans;
-          res.style.color='#fca5a5';
-          inp.style.borderColor='#ef4444';
-        }
-        if(score===total){
-          scoreEl.textContent='🎉 Perfekt! Alle '+total+' ord korrekt!';
-          scoreEl.style.color='#4ade80';
-        }
+      const scr=card.dataset.scr;
+      const pool=scr.split('').map(ch=>({ch:ch.toLowerCase(),used:false}));
+      const letterSpans=Array.from(card.querySelectorAll('.blandet-letter'));
+      function syncPool(){
+        pool.forEach(p=>p.used=false);
+        inp.value.split('').forEach(ch=>{
+          const idx=pool.findIndex(p=>p.ch===ch.toLowerCase()&&!p.used);
+          if(idx>=0)pool[idx].used=true;
+        });
+        letterSpans.forEach((span,i)=>span.classList.toggle('used',pool[i].used));
       }
-      
-      btn.addEventListener('click',check);
-      
-inp.addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+      inp.addEventListener('input',()=>{
+        if(card.dataset.done)return;
+        syncPool();
+        if(inp.value.toLowerCase()===ans.toLowerCase()){
+          card.dataset.done='true';
+          inp.disabled=true;
+          score++; updateScore();
+          const bravo=bravos[Math.floor(Math.random()*bravos.length)];
+          res.innerHTML=`<span style="color:#4ade80">✅ ${bravo} «${ans}»</span>`;
+          inp.style.borderColor='#22c55e';
+          card.classList.add('scr-correct');
+          setTimeout(()=>card.classList.remove('scr-correct'),600);
+          if(score===total){scoreEl.textContent='🎉 Perfekt! Alle '+total+' ord korrekt!';scoreEl.style.color='#4ade80';}
+        }
+      });
     });
-
     document.getElementById('scr-reset').addEventListener('click',()=>buildWordScramble(vocab));
   })();
 }
