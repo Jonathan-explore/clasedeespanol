@@ -287,6 +287,7 @@ function renderView(name){
   if(name==='ordbog')renderOrdbog();
   if(name==='yderligere')renderYderligere();
   if(name==='spil')renderSpil();
+  if(name==='stile')renderStile();
 }
 function renderSpil(){
   document.body.classList.add('spil-active');
@@ -1044,6 +1045,53 @@ function buildFlashcards(vocab){
 }
 
 /* ── ADMIN PANEL ─────────────────────────────────────────── */
+/* ── STILE ─────────────────────────────────────────────────── */
+// Requires a Supabase table: stile (id bigint PK, titulo text, imagen_url text, created_at timestamptz default now())
+async function renderStile(){
+  const view=$('view-stile');
+  view.innerHTML=`<div class="content-view active" style="display:flex">
+<h2 class="section-title">✍️ Stile</h2>
+<div id="stile-loading" style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0 1.5rem">
+  <div class="loading-spin"></div>
+  <span style="font-size:.85rem;color:var(--text-dim)">Henter stile…</span>
+</div>
+<div id="stile-gallery" class="stile-gallery" hidden></div>
+<div id="stile-empty" class="stile-empty" hidden>Ingen stile er tilgængelige endnu.</div>
+</div>`;
+  const db=getDb();
+  if(!db){document.getElementById('stile-loading').hidden=true;document.getElementById('stile-empty').hidden=false;return;}
+  try{
+    const{data,error}=await db.from('stile').select('*').order('created_at',{ascending:false});
+    document.getElementById('stile-loading').hidden=true;
+    if(error||!data||!data.length){document.getElementById('stile-empty').hidden=false;return;}
+    const gallery=document.getElementById('stile-gallery');
+    gallery.hidden=false;
+    gallery.innerHTML=data.map(item=>`
+<div class="stile-card">
+  <div class="stile-img-wrap"><img class="stile-img" src="${item.imagen_url}" alt="${item.titulo}" loading="lazy"></div>
+  <div class="stile-info">
+    <p class="stile-titulo">${item.titulo}</p>
+    <button class="stile-dl-btn" data-url="${item.imagen_url}" data-titulo="${item.titulo}">⬇ Download</button>
+  </div>
+</div>`).join('');
+    gallery.querySelectorAll('.stile-dl-btn').forEach(btn=>{
+      btn.addEventListener('click',async()=>{
+        const url=btn.dataset.url;
+        const name=(btn.dataset.titulo||'stile').replace(/\s+/g,'_');
+        try{
+          const res=await fetch(url);
+          const blob=await res.blob();
+          const ext=blob.type.includes('png')?'.png':'.jpg';
+          const a=document.createElement('a');
+          a.href=URL.createObjectURL(blob);a.download=name+ext;
+          document.body.appendChild(a);a.click();document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        }catch{window.open(url,'_blank');}
+      });
+    });
+  }catch{document.getElementById('stile-loading').hidden=true;document.getElementById('stile-empty').hidden=false;}
+}
+
 function initAdminPanel(){
   const modal=document.createElement('div');
   modal.id='admin-panel-modal';
@@ -1081,6 +1129,15 @@ function initAdminPanel(){
   </div>
 
   <p id="ap-status" style="font-size:.8rem;color:var(--text-dim);margin-top:.6rem;min-height:1.2rem;text-align:center"></p>
+
+  <hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.5rem 0"/>
+  <label class="ap-label">✍️ Stile — Redacciones</label>
+  <div id="ap-stile-list" class="ap-pres-list"></div>
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem;margin-bottom:.25rem">
+    <input id="ap-stile-titulo" class="slides-input" placeholder="Título de la redacción…" style="flex:1;min-width:140px"/>
+    <input id="ap-stile-url"    class="slides-input" placeholder="URL de la imagen…"       style="flex:2;min-width:170px"/>
+    <button id="ap-stile-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
+  </div>
 </div>`;
   document.body.appendChild(modal);
 
@@ -1130,17 +1187,6 @@ function initAdminPanel(){
     renderPresList();
   }
 
-  window._openAdminPanel=async function(){
-    const dateInput=document.getElementById('ap-date');
-    if(!dateInput.value)dateInput.value=todayInputStr();
-    document.getElementById('ap-status').textContent='';
-    // Precarga URL del temario (desde Supabase, con fallback a localStorage)
-    const currentUrl=await dbGet('temario_url');
-    document.getElementById('ap-temario-url').value=currentUrl||'';
-    modal.hidden=false;
-    loadForDate(dateInput.value);
-  };
-
   modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true;});
   document.getElementById('ap-close').addEventListener('click',()=>{modal.hidden=true;});
   document.getElementById('ap-date').addEventListener('change',e=>loadForDate(e.target.value));
@@ -1185,6 +1231,55 @@ function initAdminPanel(){
     statusEl.style.color='#4ade80';
     statusEl.textContent='✅ Sesión guardada en la nube.';
     setTimeout(()=>{statusEl.textContent='';},3000);
+  });
+
+  // ── Stile admin ──────────────────────────────────────────
+  async function loadStileList(){
+    const c=document.getElementById('ap-stile-list');
+    c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Cargando…</p>';
+    const db=getDb();if(!db){c.innerHTML='';return;}
+    const{data}=await db.from('stile').select('id,titulo,imagen_url').order('created_at',{ascending:false});
+    if(!data||!data.length){c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin redacciones todavía.</p>';return;}
+    c.innerHTML=data.map(r=>`
+<div class="frem-admin-row">
+  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.titulo}</span>
+  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${r.imagen_url}</span>
+  <button class="frem-del" data-id="${r.id}">🗑️</button>
+</div>`).join('');
+    c.querySelectorAll('.frem-del').forEach(btn=>{
+      btn.addEventListener('click',async()=>{
+        const db=getDb();if(!db)return;
+        await db.from('stile').delete().eq('id',+btn.dataset.id);
+        loadStileList();
+      });
+    });
+  }
+
+  window._openAdminPanel=async function(){
+    const dateInput=document.getElementById('ap-date');
+    if(!dateInput.value)dateInput.value=todayInputStr();
+    document.getElementById('ap-status').textContent='';
+    const currentUrl=await dbGet('temario_url');
+    document.getElementById('ap-temario-url').value=currentUrl||'';
+    modal.hidden=false;
+    loadForDate(dateInput.value);
+    loadStileList();
+  };
+
+  document.getElementById('ap-stile-add').addEventListener('click',async()=>{
+    const titulo=document.getElementById('ap-stile-titulo').value.trim();
+    const imagen_url=document.getElementById('ap-stile-url').value.trim();
+    const statusEl=document.getElementById('ap-status');
+    if(!titulo||!imagen_url){statusEl.style.color='#fca5a5';statusEl.textContent='Rellena título e imagen URL.';setTimeout(()=>{statusEl.textContent='';},2500);return;}
+    const db=getDb();if(!db)return;
+    statusEl.style.color='var(--text-dim)';statusEl.textContent='Guardando…';
+    const{error}=await db.from('stile').insert({titulo,imagen_url});
+    if(error){statusEl.style.color='#fca5a5';statusEl.textContent='Error al guardar.';return;}
+    document.getElementById('ap-stile-titulo').value='';
+    document.getElementById('ap-stile-url').value='';
+    statusEl.style.color='#4ade80';statusEl.textContent='✅ Redacción añadida.';
+    setTimeout(()=>{statusEl.textContent='';},2500);
+    loadStileList();
   });
 }
 

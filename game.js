@@ -339,6 +339,16 @@ const shuffle = arr=>{for(let i=arr.length-1;i>0;i--){const j=randInt(0,i+1);[ar
 
 function glow(ctx,color,blur){ctx.shadowColor=color;ctx.shadowBlur=blur}
 function noGlow(ctx){ctx.shadowBlur=0;ctx.shadowColor='transparent'}
+function compact(arr){let j=0;for(let i=0;i<arr.length;i++){if(arr[i].alive)arr[j++]=arr[i];}arr.length=j;}
+
+// Supabase client reused from the SPA (same credentials)
+// Requires table: linguastrike_scores (id PK, alias text, score int, wave int, power int, created_at timestamptz)
+let _lsDb=null;
+function lsGetDb(){
+  if(!_lsDb&&window.supabase)
+    _lsDb=window.supabase.createClient('https://akontludfisgxwlnayvs.supabase.co','sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq');
+  return _lsDb||null;
+}
 
 
 // ══════════════════════════════════════════════════════════════
@@ -399,11 +409,12 @@ class XpOrb {
   }
   draw(ctx,now){
     const b=Math.sin(now*0.004+this.bob)*2.5;
-    glow(ctx,CFG.colors.xpGlow,14);
     ctx.beginPath();ctx.arc(this.x,this.y+b,this.r,0,Math.PI*2);
-    ctx.fillStyle=CFG.colors.xpOrb;ctx.fill();noGlow(ctx);
+    ctx.fillStyle=CFG.colors.xpOrb;ctx.fill();
+    ctx.shadowBlur=0;
     ctx.beginPath();ctx.arc(this.x-1.5,this.y+b-1.5,this.r*0.35,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.65)';ctx.fill();
+    ctx.shadowBlur=8;
   }
 }
 
@@ -425,7 +436,7 @@ class Projectile {
     this.y+=Math.sin(this.angle)*this.speed*dt;
     if(this.x<-30||this.x>W+30||this.y<-30||this.y>H+30)this.alive=false;
   }
-  draw(ctx){
+  drawTrail(ctx){
     for(let i=0;i<this.trail.length;i++){
       const t=this.trail[i];
       ctx.globalAlpha=(i/this.trail.length)*0.28;
@@ -433,10 +444,8 @@ class Projectile {
       ctx.fillStyle='#88ddff';ctx.fill();
     }
     ctx.globalAlpha=1;
-    glow(ctx,'#aaeeff',14);
-    ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    ctx.fillStyle='#fff';ctx.fill();noGlow(ctx);
   }
+  draw(ctx){this.drawTrail(ctx);glow(ctx,'#aaeeff',10);ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();noGlow(ctx);}
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -459,6 +468,7 @@ class Enemy {
     if(this.flashTimer>0)this.flashTimer-=dt*1000;
   }
   hit(damage){
+    if(!this.alive)return{died:false};  // ignore hits on already-dead enemies
     this.hp-=damage;this.flashTimer=90;
     if(this.hp<=0)this.alive=false;
     return{died:!this.alive};
@@ -466,7 +476,7 @@ class Enemy {
   draw(ctx){
     const flash=this.flashTimer>0,half=this.r;
     ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.angle);
-    glow(ctx,flash?'#fff':CFG.colors.enemyGlow,flash?24:10);
+    glow(ctx,flash?'#fff':CFG.colors.enemyGlow,flash?14:5);
     ctx.fillStyle=flash?'#fff':CFG.colors.enemy;
     ctx.fillRect(-half,-half,half*2,half*2);noGlow(ctx);
     if(this.hp<this.maxHp){
@@ -621,7 +631,7 @@ class EliteEnemy extends Enemy {
       },
       { // Tier 3: Herre (Lord)
         hpMult:25, radiusMult:2.8, damageMult:3, xpMult:8,
-        buffCount:3, laserCooldownMs:5000, laserDamage:50,
+        buffCount:4, laserCooldownMs:5000, laserDamage:50,
         label:'HERRE', color:'#ffd700', aura:'rgba(255,215,0,',
         glowColor:'rgba(255,200,0,0.7)',
       },
@@ -681,10 +691,13 @@ class EliteEnemy extends Enemy {
     return 0;
   }
 
-  // Pick random buffs to drop on death
+  // Pick random buffs to drop on death — hard cap enforced by difficulty
   getDeathBuffs(){
+    const isHighDiff=this.tier>=3;
+    const cap=isHighDiff?4:2;
+    const count=Math.min(this.buffCount,cap);
     const pool=shuffle([...ELITE_BUFFS]);
-    return pool.slice(0,this.buffCount);
+    return pool.slice(0,count);
   }
 
   draw(ctx,now){
@@ -1752,6 +1765,7 @@ class Game {
     this.zoneSpawnTimer=CFG.capture.spawnIntervalSec*1000;
     this.eliteSpawnTimer=28000; // first elite ~28s in
     this.kills=0;this.eliteKills=0;this.level=1;this.wave=1;
+    this.gameTime=0;
     this.currentXP=0;
     this.xpPerLevel=calcXpForLevel(1);           // = CFG.xp.basePerLevel = 120
     this.correctAnswers=0;this.comboCount=0;
@@ -1797,6 +1811,10 @@ class Game {
   _update(dt){
     const{W,H,player}=this;
     player.update(dt,W,H);
+
+    // ── Session time limit (5 min = 300 s)
+    this.gameTime+=dt;
+    if(this.gameTime>=300){this._triggerGameOver('time');return;}
 
     // ── Wave timer
     this.waveTimer+=dt*1000;
@@ -1914,7 +1932,10 @@ class Game {
         orb.alive=false;
         // Always add XP (even post-levelup trigger) — carry the remainder
         const mult=Math.min(this.xpMultiplier, CFG.xp.maxMultiplier);
-        const gained=Math.min(CFG.enemy.xpValue*mult, this.xpPerLevel*0.40);
+        // Diminishing returns: if player level exceeds wave+3, XP is reduced progressively
+        const excess=Math.max(0, this.level-this.wave-3);
+        const drMult=excess>0 ? 1/(1+excess*0.6) : 1;
+        const gained=Math.min(CFG.enemy.xpValue*mult*drMult, this.xpPerLevel*0.40);
         this.currentXP+=gained;
         if(this.currentXP>=this.xpPerLevel&&!pendingLevelUp){
           pendingLevelUp=true;
@@ -1992,12 +2013,9 @@ class Game {
     for(const d of this.dmgNums)d.update(dt);
     if(this.flashAlpha>0)this.flashAlpha=Math.max(0,this.flashAlpha-dt*2.5);
 
-    // ── Purge dead
-    this.enemies    =this.enemies.filter(e=>e.alive);
-    this.projectiles=this.projectiles.filter(p=>p.alive);
-    this.xpOrbs     =this.xpOrbs.filter(o=>o.alive);
-    this.particles  =this.particles.filter(p=>p.alive);
-    this.dmgNums    =this.dmgNums.filter(d=>d.alive);
+    // ── Purge dead (in-place, avoids new array allocation every frame)
+    compact(this.enemies);compact(this.projectiles);compact(this.xpOrbs);
+    compact(this.particles);compact(this.dmgNums);
 
     if(!player.alive)this._triggerGameOver();
     this._updateHUD();
@@ -2013,7 +2031,8 @@ class Game {
 
     if(this.expWeapon)this.expWeapon.drawRings(ctx);
     for(const p of this.particles)p.draw(ctx);
-    for(const o of this.xpOrbs)o.draw(ctx,now);
+    // XP orbs — glow set once for all, ~O(1) state changes instead of O(n)
+    if(this.xpOrbs.length){ctx.shadowColor=CFG.colors.xpGlow;ctx.shadowBlur=8;for(const o of this.xpOrbs)o.draw(ctx,now);noGlow(ctx);}
     for(const c of this.chests)c.draw(ctx);
     for(const e of this.enemies)e.isElite?e.draw(ctx,now):e.draw(ctx);
     if(this.orbWeapon)this.orbWeapon.draw(ctx,now);
@@ -2024,7 +2043,9 @@ class Game {
     if(this.vortexWeapon)this.vortexWeapon.draw(ctx);
     if(this.gatlingWeapon)this.gatlingWeapon.draw(ctx);
     if(this.tornadoWeapon)this.tornadoWeapon.draw(ctx);
-    for(const p of this.projectiles)p.draw(ctx);
+    // Projectiles — trails first (no glow), then bodies batched with one glow state
+    for(const p of this.projectiles)p.drawTrail(ctx);
+    if(this.projectiles.length){ctx.shadowColor='#aaeeff';ctx.shadowBlur=10;ctx.fillStyle='#fff';for(const p of this.projectiles){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();}noGlow(ctx);}
     this.player.draw(ctx,now);
     if(this.expWeapon)this.expWeapon.drawCooldownArc(ctx,this.player);
     for(const d of this.dmgNums)d.draw(ctx);
@@ -2042,10 +2063,18 @@ class Game {
   }
 
   _drawGrid(){
-    const{ctx,W,H}=this;
-    ctx.strokeStyle=CFG.colors.grid;ctx.lineWidth=1;const s=55;
-    for(let x=0;x<W;x+=s){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
-    for(let y=0;y<H;y+=s){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    if(!this._gridCanvas||this._gridW!==this.W||this._gridH!==this.H){
+      const off=document.createElement('canvas');
+      off.width=this.W;off.height=this.H;
+      const c=off.getContext('2d');
+      c.strokeStyle=CFG.colors.grid;c.lineWidth=1;const s=55;
+      c.beginPath();
+      for(let x=0;x<this.W;x+=s){c.moveTo(x,0);c.lineTo(x,this.H);}
+      for(let y=0;y<this.H;y+=s){c.moveTo(0,y);c.lineTo(this.W,y);}
+      c.stroke();
+      this._gridCanvas=off;this._gridW=this.W;this._gridH=this.H;
+    }
+    this.ctx.drawImage(this._gridCanvas,0,0);
   }
 
   // ── SPAWN ─────────────────────────────────────────────────
@@ -2095,6 +2124,8 @@ class Game {
 
   // ── ENEMY DEATH ───────────────────────────────────────────
   _onEnemyDeath(e){
+    if(e._deathHandled)return;   // guard: only process once per entity
+    e._deathHandled=true;
     this.kills++;
     if(e.isElite){
       this.eliteKills++;
@@ -2363,15 +2394,62 @@ class Game {
   }
 
   // ── GAME OVER ─────────────────────────────────────────────
-  _triggerGameOver(){
+  _triggerGameOver(reason='death'){
     this.gameOver=true;
+    const elapsed=Math.min(this.gameTime,300);
+    const tm=Math.floor(elapsed/60),ts=Math.floor(elapsed%60);
+    const timeStr=`${tm}:${String(ts).padStart(2,'0')}`;
+    const isTimeout=reason==='time';
+    document.querySelector('#go-overlay .ls-go-icon').textContent=isTimeout?'⏱':'☠';
+    document.querySelector('#go-overlay .ls-go-title').textContent=isTimeout?'TID UD!':'GAME OVER';
+    document.querySelector('#go-overlay .ls-panel-sub').textContent=isTimeout
+      ?'5 minutters grænse nået — godt spillet!'
+      :'Din rejse er forbi … denne gang.';
     document.getElementById('go-kills').textContent  =this.kills;
     document.getElementById('go-elites').textContent =this.eliteKills;
     document.getElementById('go-level').textContent  =this.level;
     document.getElementById('go-correct').textContent=this.correctAnswers;
     document.getElementById('go-proj').textContent   =this.player.numProjectiles;
     document.getElementById('go-orb').textContent    =this.orbWeapon?this.orbWeapon.count:0;
+    document.getElementById('go-time').textContent   =timeStr;
+    // ── Score & power
+    const numProj=this.player.numProjectiles;
+    const orbCount=this.orbWeapon?this.orbWeapon.count:0;
+    const power=this.level*100+numProj*15+orbCount*25;
+    const score=this.wave*1000+power+this.kills*8+this.eliteKills*150+this.correctAnswers*30;
+    this.finalScore=score;this.finalWave=this.wave;this.finalPower=power;
+    document.getElementById('go-score').textContent=score.toLocaleString('da-DK');
+    // Reset alias form
+    const aliasSection=document.getElementById('go-alias-section');
+    const aliasInput=document.getElementById('go-alias-input');
+    if(aliasSection){aliasSection.style.display='flex';}
+    if(aliasInput){aliasInput.value='';}
+    const statusEl=document.getElementById('go-alias-status');
+    if(statusEl)statusEl.textContent='';
+    this._loadLeaderboard();
     this.goOverlay.classList.add('active');
+  }
+
+  // ── LEADERBOARD ───────────────────────────────────────────
+  async _loadLeaderboard(){
+    const lb=document.getElementById('go-lb-list');
+    if(!lb)return;
+    lb.innerHTML='<span class="ls-go-lb-loading">Indlæser…</span>';
+    const db=lsGetDb();
+    if(!db){lb.innerHTML='<span class="ls-go-lb-empty">Ingen forbindelse</span>';return;}
+    try{
+      const{data,error}=await db.from('linguastrike_scores')
+        .select('alias,score,wave,power').order('score',{ascending:false}).limit(10);
+      if(error||!data||!data.length){lb.innerHTML='<span class="ls-go-lb-empty">Ingen scores endnu.</span>';return;}
+      const medals=['🥇','🥈','🥉'];
+      lb.innerHTML=data.map((r,i)=>`
+<div class="ls-lb-row${r.alias===this._lastSavedAlias?' ls-lb-row-self':''}">
+  <span class="ls-lb-rank">${medals[i]||String(i+1)}</span>
+  <span class="ls-lb-alias">${r.alias}</span>
+  <span class="ls-lb-score">${Number(r.score).toLocaleString('da-DK')}</span>
+  <span class="ls-lb-wave">B${r.wave}</span>
+</div>`).join('');
+    }catch{lb.innerHTML='<span class="ls-go-lb-empty">Fejl ved indlæsning.</span>';}
   }
 
   // ── HUD ───────────────────────────────────────────────────
@@ -2387,7 +2465,18 @@ class Game {
     const xpPct=(this.currentXP/this.xpPerLevel)*100;
     document.getElementById('xp-fill').style.width  =xpPct+'%';
     const multTxt=this.xpMultiplier>1?` ×${this.xpMultiplier.toFixed(1)}`:'';
-    document.getElementById('hud-xp-txt').textContent=`${Math.floor(this.currentXP)} / ${this.xpPerLevel}${multTxt}`;
+    const drExcess=Math.max(0,this.level-this.wave-3);
+    const drTxt=drExcess>0?` ↓${Math.round(100/(1+drExcess*0.6))}%`:'';
+    document.getElementById('hud-xp-txt').textContent=`${Math.floor(this.currentXP)} / ${this.xpPerLevel}${multTxt}${drTxt}`;
+    // Timer countdown
+    const remaining=Math.ceil(Math.max(0,300-this.gameTime));
+    const rm=Math.floor(remaining/60),rs=remaining%60;
+    const timerEl=document.getElementById('hud-timer');
+    if(timerEl){
+      timerEl.textContent=`${rm}:${String(rs).padStart(2,'0')}`;
+      timerEl.style.color=remaining<=30?'#ff4040':remaining<=60?'#ffaa00':'';
+      timerEl.closest('.ls-hud-block-timer').classList.toggle('timer-urgent',remaining<=30);
+    }
     const hpPct=(p.hp/p.maxHp)*100;
     document.getElementById('hp-fill').style.width  =hpPct+'%';
     document.getElementById('hud-hp-txt').textContent=Math.ceil(p.hp);
@@ -2486,6 +2575,39 @@ class Game {
       },60);
     });
 
+    // ── ALIAS SUBMIT ──────────────────────────────────────────
+    const aliasSubmitBtn=document.getElementById('go-alias-submit');
+    const aliasInputEl=document.getElementById('go-alias-input');
+    if(aliasSubmitBtn&&aliasInputEl){
+      const doSubmit=async()=>{
+        const alias=aliasInputEl.value.trim();
+        const statusEl=document.getElementById('go-alias-status');
+        if(!alias||alias.length<2){
+          statusEl.style.color='#fca5a5';statusEl.textContent='Alias skal have mindst 2 tegn.';return;
+        }
+        aliasSubmitBtn.disabled=true;
+        statusEl.style.color='rgba(255,255,255,.5)';statusEl.textContent='Gemmer…';
+        const db=lsGetDb();
+        if(!db){statusEl.style.color='#fca5a5';statusEl.textContent='Ingen databaseforbindelse.';aliasSubmitBtn.disabled=false;return;}
+        try{
+          const{error}=await db.from('linguastrike_scores').insert({
+            alias,score:self.finalScore||0,wave:self.finalWave||1,power:self.finalPower||0
+          });
+          if(error)throw error;
+          self._lastSavedAlias=alias;
+          statusEl.style.color='#4ade80';statusEl.textContent='✅ Score gemt!';
+          document.getElementById('go-alias-section').style.display='none';
+          self._loadLeaderboard();
+        }catch(err){
+          statusEl.style.color='#fca5a5';
+          statusEl.textContent='Fejl: '+((err&&err.message)||'prøv igen.');
+          aliasSubmitBtn.disabled=false;
+        }
+      };
+      aliasSubmitBtn.addEventListener('click',doSubmit);
+      aliasInputEl.addEventListener('keydown',e=>{if(e.key==='Enter')doSubmit();});
+    }
+
     // ── JOYSTICK DINÁMICO ─────────────────────────────────────
     // Aparece en el punto de primer toque; el knob sigue al dedo;
     // desaparece al soltar. Mapea dx/dy → W/A/S/D con zona muerta.
@@ -2493,9 +2615,9 @@ class Game {
     if (isTouch) document.body.classList.add('has-touch');
 
     if (isTouch) {
-      const OUTER_R  = 60;               // mitad del contenedor (120 px)
-      const MAX_DISP = 46;               // desplazamiento máximo del knob
-      const DEAD     = MAX_DISP * 0.18;  // zona muerta (~8 px)
+      const OUTER_R  = 45;               // mitad del contenedor (90 px)
+      const MAX_DISP = 28;               // desplazamiento máximo del knob — menos recorrido
+      const DEAD     = MAX_DISP * 0.15;  // zona muerta (~4 px)
 
       const gameRoot = document.getElementById('ls-root');
       const joyEl    = document.getElementById('ls-joystick');

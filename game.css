@@ -86,6 +86,17 @@ body.spil-active .back-btn{
   text-shadow:0 0 8px rgba(0,212,255,.7);
 }
 
+/* Timer block — stands out from other HUD blocks */
+.ls-hud-block-timer{
+  border-color:rgba(255,200,0,0.4);
+  box-shadow:inset 0 0 12px rgba(255,200,0,0.08);
+  min-width:54px;
+}
+.ls-hud-block-timer .ls-hud-label{color:#ffe066}
+.ls-hud-block-timer .ls-hud-val{text-shadow:0 0 8px rgba(255,200,0,.7)}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.timer-urgent{animation:timer-pulse .6s ease-in-out infinite;border-color:rgba(255,60,60,0.7)!important;box-shadow:0 0 10px rgba(255,60,60,.35)!important}
+
 .ls-bars{
   display:flex; flex-direction:column; gap:6px;
   max-width:480px;
@@ -729,31 +740,81 @@ body.spil-active .back-btn{
   text-shadow:0 0 8px rgba(0,212,255,.6);
 }
 
+/* ── SCORE & RANKING ─────────────────────────────────────── */
+.ls-go-score-wrap{text-align:center;margin:4px 0 16px}
+.ls-go-score-label{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;color:#5ad3ff;opacity:.8}
+.ls-go-score-val{
+  font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;
+  color:#fff;line-height:1.1;
+  text-shadow:0 0 24px rgba(0,212,255,.9),0 0 50px rgba(0,212,255,.4);
+}
+.ls-go-alias-section{
+  display:flex;flex-direction:column;gap:6px;
+  margin-bottom:14px;
+}
+.ls-go-alias-row{display:flex;gap:8px}
+.ls-go-alias-input{
+  flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(0,212,255,.35);
+  border-radius:8px;padding:9px 12px;color:#fff;font-size:14px;
+  font-family:'Share Tech Mono',monospace;outline:none;
+}
+.ls-go-alias-input::placeholder{color:rgba(255,255,255,.35)}
+.ls-go-alias-input:focus{border-color:rgba(0,212,255,.7);box-shadow:0 0 10px rgba(0,212,255,.2)}
+.ls-go-alias-btn{
+  padding:9px 16px;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.45);
+  border-radius:8px;color:#5ad3ff;font-size:13px;font-family:'Orbitron',sans-serif;
+  cursor:pointer;white-space:nowrap;transition:background .2s;
+}
+.ls-go-alias-btn:hover:not(:disabled){background:rgba(0,212,255,.28)}
+.ls-go-alias-btn:disabled{opacity:.4;cursor:default}
+.ls-go-alias-status{font-size:12px;font-family:'Share Tech Mono',monospace;min-height:1rem;margin:0}
+.ls-go-lb-wrap{margin:0 0 18px}
+.ls-go-lb-title{
+  font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:3px;
+  color:#ffd700;text-align:center;margin-bottom:10px;
+}
+.ls-go-lb-list{display:flex;flex-direction:column;gap:5px}
+.ls-lb-row{
+  display:grid;grid-template-columns:28px 1fr auto auto;align-items:center;gap:8px;
+  background:rgba(0,0,0,.25);border:1px solid rgba(0,212,255,.15);
+  border-radius:6px;padding:6px 10px;font-size:13px;
+  font-family:'Share Tech Mono',monospace;
+}
+.ls-lb-row-self{border-color:rgba(0,212,255,.6)!important;background:rgba(0,212,255,.08)!important}
+.ls-lb-rank{font-size:16px;text-align:center}
+.ls-lb-alias{color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ls-lb-score{color:#5ad3ff;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;text-align:right}
+.ls-lb-wave{color:rgba(255,255,255,.4);font-size:11px;text-align:right}
+.ls-go-lb-loading,.ls-go-lb-empty{
+  display:block;text-align:center;padding:12px;
+  color:rgba(255,255,255,.35);font-family:'Share Tech Mono',monospace;font-size:12px;
+}
+
 /* ── VIRTUAL JOYSTICK ────────────────────────────────────── */
 /* El joystick aparece dinámicamente en el punto de toque; JS controla
    position, display y transform del knob en cada frame. */
 .ls-joystick{
   position:absolute;
-  width:120px; height:120px;
-  display:none;          /* oculto hasta primer toque */
-  pointer-events:none;   /* los eventos se capturan en #ls-root, no aquí */
+  width:90px; height:90px;
+  display:none;
+  pointer-events:none;
   z-index:50;
   touch-action:none;
 }
 .joystick-base{
   position:absolute; inset:0;
   border-radius:50%;
-  background:rgba(255,255,255,0.06);
-  border:2px solid rgba(255,255,255,0.22);
-  box-shadow:0 0 22px rgba(0,255,204,0.14);
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid rgba(255,255,255,0.12);
+  box-shadow:0 0 14px rgba(0,255,204,0.07);
 }
 .joystick-knob{
   position:absolute;
-  width:48px; height:48px;
+  width:36px; height:36px;
   border-radius:50%;
-  background:rgba(94,234,212,0.45);
-  border:2px solid #5eead4;
-  box-shadow:0 0 14px rgba(94,234,212,0.55);
+  background:rgba(94,234,212,0.28);
+  border:1.5px solid rgba(94,234,212,0.45);
+  box-shadow:0 0 10px rgba(94,234,212,0.3);
   top:50%; left:50%;
   transform:translate(-50%,-50%);
   will-change:transform;
@@ -810,8 +871,8 @@ body.has-touch.spil-active #ls-root{ touch-action:none; }
   .ls-weapon-icon{ font-size:12px; }
 
   /* Joystick ligeramente más compacto en landscape */
-  .ls-joystick{ width:96px; height:96px; }
-  .joystick-knob{ width:38px; height:38px; }
+  .ls-joystick{ width:76px; height:76px; }
+  .joystick-knob{ width:30px; height:30px; }
 
   /* Capbar: a la derecha para liberar la zona central/izquierda del joystick */
   .ls-capbar{

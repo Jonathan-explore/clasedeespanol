@@ -158,6 +158,24 @@
             </div>
           </button>
 
+          <!-- Stile -->
+          <button class="menu-card" id="card-stile" data-view="stile" aria-label="Gå til Stile">
+            <div class="card-bg-glow card-bg-glow-stile"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">✍️</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Stile</h2>
+                <p class="card-desc">Redacciones en danés</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
         </nav>
 
         <!-- Feature badges -->
@@ -194,6 +212,7 @@
     <section id="view-fremlaeggelse" class="view" aria-label="Fremlæggelse"></section>
     <section id="view-ordbog"       class="view" aria-label="Ordbog"></section>
     <section id="view-yderligere"   class="view" aria-label="Yderligere materiale"></section>
+    <section id="view-stile"        class="view" aria-label="Stile"></section>
 
     <!-- LINGUASTRIKE GAME VIEW -->
     <section id="view-spil" class="view" aria-label="LinguaStrike">
@@ -230,6 +249,10 @@
             <div class="ls-hud-block">
               <span class="ls-hud-label">COMBO</span>
               <span class="ls-hud-val" id="hud-combo">×0</span>
+            </div>
+            <div class="ls-hud-block ls-hud-block-timer">
+              <span class="ls-hud-label">TID</span>
+              <span class="ls-hud-val" id="hud-timer">5:00</span>
             </div>
           </div>
 
@@ -377,7 +400,32 @@
               <div><span>Rigtige</span><b id="go-correct">0</b></div>
               <div><span>Projektiler</span><b id="go-proj">1</b></div>
               <div><span>Krystaller</span><b id="go-orb">0</b></div>
+              <div><span>Tid</span><b id="go-time">0:00</b></div>
             </div>
+
+            <!-- Score final -->
+            <div class="ls-go-score-wrap">
+              <div class="ls-go-score-label">SCORE</div>
+              <div id="go-score" class="ls-go-score-val">0</div>
+            </div>
+
+            <!-- Alias form -->
+            <div id="go-alias-section" class="ls-go-alias-section">
+              <div class="ls-go-alias-row">
+                <input id="go-alias-input" class="ls-go-alias-input" type="text"
+                  placeholder="Indtast alias for at gemme" maxlength="18"
+                  autocomplete="off" spellcheck="false"/>
+                <button id="go-alias-submit" class="ls-btn ls-go-alias-btn">Gem</button>
+              </div>
+              <p id="go-alias-status" class="ls-go-alias-status"></p>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="ls-go-lb-wrap">
+              <div class="ls-go-lb-title">🏆 Toprangliste</div>
+              <div id="go-lb-list" class="ls-go-lb-list"></div>
+            </div>
+
             <button id="restart-btn" class="ls-btn ls-btn-primary">↺ Start igen</button>
           </div>
         </div>
