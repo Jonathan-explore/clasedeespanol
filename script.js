@@ -1094,27 +1094,15 @@ async function renderStile(){
   const gallery=document.getElementById('stile-gallery');
   gallery.hidden=false;
   gallery.innerHTML=sorted.map(item=>`
-<div class="stile-card">
+<div class="stile-card" style="cursor:pointer" data-url="${escapeHTML(item.imagen_url)}">
   <div class="stile-img-wrap"><img class="stile-img" src="${escapeHTML(item.imagen_url)}" alt="${escapeHTML(item.titulo)}" loading="lazy"></div>
   <div class="stile-info">
     <p class="stile-titulo">${escapeHTML(item.titulo)}</p>
-    <button class="stile-dl-btn" data-url="${escapeHTML(item.imagen_url)}" data-titulo="${escapeHTML(item.titulo)}">⬇ Download</button>
+    <button class="stile-dl-btn">↗ Åbn</button>
   </div>
 </div>`).join('');
-  gallery.querySelectorAll('.stile-dl-btn').forEach(btn=>{
-    btn.addEventListener('click',async()=>{
-      const url=btn.dataset.url;
-      const name=(btn.dataset.titulo||'stile').replace(/\s+/g,'_');
-      try{
-        const res=await fetch(url);
-        const blob=await res.blob();
-        const ext=blob.type.includes('png')?'.png':'.jpg';
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);a.download=name+ext;
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
-      }catch{window.open(url,'_blank');}
-    });
+  gallery.querySelectorAll('.stile-card').forEach(card=>{
+    card.addEventListener('click',()=>window.open(card.dataset.url,'_blank','noopener,noreferrer'));
   });
 }
 
