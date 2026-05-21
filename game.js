@@ -340,6 +340,19 @@ const shuffle = arr=>{for(let i=arr.length-1;i>0;i--){const j=randInt(0,i+1);[ar
 function glow(ctx,color,blur){ctx.shadowColor=color;ctx.shadowBlur=blur}
 function noGlow(ctx){ctx.shadowBlur=0;ctx.shadowColor='transparent'}
 function compact(arr){let j=0;for(let i=0;i<arr.length;i++){if(arr[i].alive)arr[j++]=arr[i];}arr.length=j;}
+function escapeHTML(str){
+  if(!str)return'';
+  return str.replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#039;';
+      default: return m;
+    }
+  });
+}
 
 // Supabase client reused from the SPA (same credentials)
 // Requires table: linguastrike_scores (id PK, alias text, score int, wave int, power int, created_at timestamptz)
@@ -2445,7 +2458,7 @@ class Game {
       lb.innerHTML=data.map((r,i)=>`
 <div class="ls-lb-row${r.alias===this._lastSavedAlias?' ls-lb-row-self':''}">
   <span class="ls-lb-rank">${medals[i]||String(i+1)}</span>
-  <span class="ls-lb-alias">${r.alias}</span>
+  <span class="ls-lb-alias">${escapeHTML(r.alias)}</span>
   <span class="ls-lb-score">${Number(r.score).toLocaleString('da-DK')}</span>
   <span class="ls-lb-wave">B${r.wave}</span>
 </div>`).join('');
@@ -2718,12 +2731,12 @@ class Game {
     pairs.forEach(({es, da}) => {
       const distractors = shuffle(allDa.filter(x => x !== da)).slice(0, 3);
       if(distractors.length < 3) return;
-      const opts = shuffle([da, ...distractors]);
+      const opts = shuffle([da, ...distractors]).map(val => escapeHTML(val));
       QUESTIONS.push({
         type:'meaning', category:'Tablón',
-        q:'Hvad betyder <span class="qword">' + es + '</span>?',
+        q:'Hvad betyder <span class="qword">' + escapeHTML(es) + '</span>?',
         answers: opts,
-        correct: opts.indexOf(da),
+        correct: opts.indexOf(escapeHTML(da)),
       });
     });
   }

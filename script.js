@@ -34,9 +34,16 @@ async function dbSet(key,value){
   const db=getDb();
   if(!db)return;
   try{
-    await db.from('config_clase').delete().eq('key',key);
-    await db.from('config_clase').insert({key,value});
-  }catch{}
+    // Check-then-update-or-insert: never deletes before writing, preventing data loss
+    const{data}=await db.from('config_clase').select('id').eq('key',key).maybeSingle();
+    if(data){
+      const{error}=await db.from('config_clase').update({value}).eq('key',key);
+      if(error)console.warn('[dbSet] Error actualizando "'+key+'":', error.message);
+    }else{
+      const{error}=await db.from('config_clase').insert({key,value});
+      if(error)console.warn('[dbSet] Error insertando "'+key+'":', error.message);
+    }
+  }catch(e){console.warn('[dbSet] Error inesperado:', e);}
 }
 function formatDateKey(d){
   return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
@@ -138,6 +145,19 @@ async function sha256(msg) {
     return h.map(x=>("00000000"+(x>>>0).toString(16)).slice(-8)).join('');
   }
   return f(msg);
+}
+function escapeHTML(str){
+  if(!str)return'';
+  return str.replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#039;';
+      default: return m;
+    }
+  });
 }
 function $(id){return document.getElementById(id);}
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html)e.innerHTML=html;return e;}
@@ -415,7 +435,7 @@ function renderTablon(){
 <div class="content-view active" style="display:flex">
 <h2 class="section-title">📋 Tablón — Admin</h2>
 <div class="tablon-board">
-<textarea class="tablon-textarea" id="tablon-ta" placeholder="Skriv dagens lektion her...\nBrug bindestreg for ordforråd:\n-comida\n-pantalones">${stored}</textarea>
+<textarea class="tablon-textarea" id="tablon-ta" placeholder="Skriv dagens lektion her...\nBrug bindestreg for ordforråd:\n-comida\n-pantalones">${escapeHTML(stored)}</textarea>
 </div>
 <p class="tablon-hint">💡 Ord med - gemmes automatisk som ordforråd til øvelser</p>
 <button class="save-btn" id="tablon-save">💾 Gem lektion</button>
@@ -432,8 +452,8 @@ function renderTablon(){
     const html=stored?stored.split('\n').map(l=>{
       const t=l.trim();
       if(!t)return'<br>';
-      if(t.startsWith('-'))return`<span class="vocab-chip">${t.slice(1).trim()}</span>`;
-      return`<span>${t}</span><br>`;
+      if(t.startsWith('-'))return`<span class="vocab-chip">${escapeHTML(t.slice(1).trim())}</span>`;
+      return`<span>${escapeHTML(t)}</span><br>`;
     }).join(''):'<span style="color:var(--text-dim)">Ingen lektion er tilgængelig endnu.</span>';
     view.innerHTML=`<div class="content-view active" style="display:flex"><h2 class="section-title">📋 Tablón</h2><div class="tablon-board"><div class="tablon-content">${html}</div></div></div>`;
   }
@@ -478,15 +498,15 @@ ${embedUrl
       const adminList=STATE.admin&&list.length?`
 <div class="frem-admin-list">${list.map((p,i)=>`
 <div class="frem-admin-row">
-<span style="font-size:.88rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
-<span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .75rem">${p.url}</span>
+<span style="font-size:.88rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(p.name)}</span>
+<span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .75rem">${escapeHTML(p.url)}</span>
 <button class="frem-del" data-idx="${i}" title="Eliminar">🗑️</button>
 </div>`).join('')}</div>`:'';
       const grid=list.length?`
 <div class="frem-grid">${list.map((p,i)=>`
 <button class="frem-card" data-idx="${i}">
 <span class="frem-card-icon">🎞️</span>
-<span class="frem-card-name">${p.name}</span>
+<span class="frem-card-name">${escapeHTML(p.name)}</span>
 </button>`).join('')}</div>`
 :`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>🎞️</span><p>Ingen præsentation tilgængelig endnu.</p>${STATE.admin?'<p style="font-size:.78rem;color:var(--text-dim)">Tilføj præsentationer ovenfor.</p>':''}</div></div>`;
       inner=adminForm+adminList+grid;
@@ -1044,9 +1064,18 @@ function buildFlashcards(vocab){
   render();
 }
 
-/* ── ADMIN PANEL ─────────────────────────────────────────── */
+/* ── STILE HELPERS ──────────────────────────────────────────── */
+// Stile items stored in config_clase under key 'stile_items' as a JSON array.
+// Format: [{id, titulo, imagen_url, created_at}, ...]
+async function getStileItems(){
+  const raw=await dbGet('stile_items');
+  try{return JSON.parse(raw||'[]');}catch{return[];}
+}
+async function saveStileItems(items){
+  await dbSet('stile_items',JSON.stringify(items));
+}
+
 /* ── STILE ─────────────────────────────────────────────────── */
-// Requires a Supabase table: stile (id bigint PK, titulo text, imagen_url text, created_at timestamptz default now())
 async function renderStile(){
   const view=$('view-stile');
   view.innerHTML=`<div class="content-view active" style="display:flex">
@@ -1058,38 +1087,35 @@ async function renderStile(){
 <div id="stile-gallery" class="stile-gallery" hidden></div>
 <div id="stile-empty" class="stile-empty" hidden>Ingen stile er tilgængelige endnu.</div>
 </div>`;
-  const db=getDb();
-  if(!db){document.getElementById('stile-loading').hidden=true;document.getElementById('stile-empty').hidden=false;return;}
-  try{
-    const{data,error}=await db.from('stile').select('*').order('created_at',{ascending:false});
-    document.getElementById('stile-loading').hidden=true;
-    if(error||!data||!data.length){document.getElementById('stile-empty').hidden=false;return;}
-    const gallery=document.getElementById('stile-gallery');
-    gallery.hidden=false;
-    gallery.innerHTML=data.map(item=>`
+  const items=await getStileItems();
+  document.getElementById('stile-loading').hidden=true;
+  if(!items.length){document.getElementById('stile-empty').hidden=false;return;}
+  const sorted=[...items].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1));
+  const gallery=document.getElementById('stile-gallery');
+  gallery.hidden=false;
+  gallery.innerHTML=sorted.map(item=>`
 <div class="stile-card">
-  <div class="stile-img-wrap"><img class="stile-img" src="${item.imagen_url}" alt="${item.titulo}" loading="lazy"></div>
+  <div class="stile-img-wrap"><img class="stile-img" src="${escapeHTML(item.imagen_url)}" alt="${escapeHTML(item.titulo)}" loading="lazy"></div>
   <div class="stile-info">
-    <p class="stile-titulo">${item.titulo}</p>
-    <button class="stile-dl-btn" data-url="${item.imagen_url}" data-titulo="${item.titulo}">⬇ Download</button>
+    <p class="stile-titulo">${escapeHTML(item.titulo)}</p>
+    <button class="stile-dl-btn" data-url="${escapeHTML(item.imagen_url)}" data-titulo="${escapeHTML(item.titulo)}">⬇ Download</button>
   </div>
 </div>`).join('');
-    gallery.querySelectorAll('.stile-dl-btn').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        const url=btn.dataset.url;
-        const name=(btn.dataset.titulo||'stile').replace(/\s+/g,'_');
-        try{
-          const res=await fetch(url);
-          const blob=await res.blob();
-          const ext=blob.type.includes('png')?'.png':'.jpg';
-          const a=document.createElement('a');
-          a.href=URL.createObjectURL(blob);a.download=name+ext;
-          document.body.appendChild(a);a.click();document.body.removeChild(a);
-          URL.revokeObjectURL(a.href);
-        }catch{window.open(url,'_blank');}
-      });
+  gallery.querySelectorAll('.stile-dl-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const url=btn.dataset.url;
+      const name=(btn.dataset.titulo||'stile').replace(/\s+/g,'_');
+      try{
+        const res=await fetch(url);
+        const blob=await res.blob();
+        const ext=blob.type.includes('png')?'.png':'.jpg';
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);a.download=name+ext;
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }catch{window.open(url,'_blank');}
     });
-  }catch{document.getElementById('stile-loading').hidden=true;document.getElementById('stile-empty').hidden=false;}
+  });
 }
 
 function initAdminPanel(){
@@ -1237,25 +1263,36 @@ function initAdminPanel(){
   async function loadStileList(){
     const c=document.getElementById('ap-stile-list');
     c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Cargando…</p>';
-    const db=getDb();if(!db){c.innerHTML='';return;}
-    const{data}=await db.from('stile').select('id,titulo,imagen_url').order('created_at',{ascending:false});
-    if(!data||!data.length){c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin redacciones todavía.</p>';return;}
-    c.innerHTML=data.map(r=>`
+    const items=await getStileItems();
+    if(!items.length){c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin redacciones todavía.</p>';return;}
+    const sorted=[...items].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1));
+    c.innerHTML=sorted.map(r=>`
 <div class="frem-admin-row">
-  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.titulo}</span>
-  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${r.imagen_url}</span>
-  <button class="frem-del" data-id="${r.id}">🗑️</button>
+  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(r.titulo)}</span>
+  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${escapeHTML(r.imagen_url)}</span>
+  <button class="frem-del" data-id="${escapeHTML(r.id)}">🗑️</button>
 </div>`).join('');
     c.querySelectorAll('.frem-del').forEach(btn=>{
       btn.addEventListener('click',async()=>{
-        const db=getDb();if(!db)return;
-        await db.from('stile').delete().eq('id',+btn.dataset.id);
+        const all=await getStileItems();
+        await saveStileItems(all.filter(x=>x.id!==btn.dataset.id));
         loadStileList();
       });
     });
   }
 
   window._openAdminPanel=async function(){
+    if(!STATE.admin){
+      const modal=$('admin-modal');
+      const input=$('admin-password-input');
+      const errEl=$('admin-error');
+      if(modal){
+        modal.hidden=false;
+        if(input){ input.value=''; input.focus(); }
+        if(errEl) errEl.textContent='Du skal logge ind først.';
+      }
+      return;
+    }
     const dateInput=document.getElementById('ap-date');
     if(!dateInput.value)dateInput.value=todayInputStr();
     document.getElementById('ap-status').textContent='';
@@ -1271,15 +1308,20 @@ function initAdminPanel(){
     const imagen_url=document.getElementById('ap-stile-url').value.trim();
     const statusEl=document.getElementById('ap-status');
     if(!titulo||!imagen_url){statusEl.style.color='#fca5a5';statusEl.textContent='Rellena título e imagen URL.';setTimeout(()=>{statusEl.textContent='';},2500);return;}
-    const db=getDb();if(!db)return;
     statusEl.style.color='var(--text-dim)';statusEl.textContent='Guardando…';
-    const{error}=await db.from('stile').insert({titulo,imagen_url});
-    if(error){statusEl.style.color='#fca5a5';statusEl.textContent='Error al guardar.';return;}
-    document.getElementById('ap-stile-titulo').value='';
-    document.getElementById('ap-stile-url').value='';
-    statusEl.style.color='#4ade80';statusEl.textContent='✅ Redacción añadida.';
-    setTimeout(()=>{statusEl.textContent='';},2500);
-    loadStileList();
+    try{
+      const items=await getStileItems();
+      items.unshift({id:Date.now().toString(),titulo,imagen_url,created_at:new Date().toISOString()});
+      await saveStileItems(items);
+      document.getElementById('ap-stile-titulo').value='';
+      document.getElementById('ap-stile-url').value='';
+      statusEl.style.color='#4ade80';statusEl.textContent='✅ Redacción añadida.';
+      setTimeout(()=>{statusEl.textContent='';},2500);
+      loadStileList();
+    }catch(e){
+      console.error('[stile-add] Error:', e);
+      statusEl.style.color='#fca5a5';statusEl.textContent='Error al guardar: '+(e.message||'desconocido');
+    }
   });
 }
 
