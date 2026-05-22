@@ -81,20 +81,34 @@ async function syncFromCloud(){
   const todayKey=formatDateKey(today);
   const wedKey=formatDateKey(prevOrCurrentWednesday(today));
 
-  // Carga la sesión de hoy → tablón + presentaciones + vocab del día
+  // Carga el tablón activo (persiste entre días hasta que se publique uno nuevo)
+  const activoRaw=await dbGet('tablon_activo');
+  if(activoRaw){
+    localStorage.setItem('tablon_activo',activoRaw);
+    try{
+      const activo=JSON.parse(activoRaw);
+      const legacyText=(activo.cards||[]).map(c=>c.cuerpo||'').join('\n');
+      localStorage.setItem('tablon',legacyText);
+      if(activo.vocab)localStorage.setItem('vocab',JSON.stringify(activo.vocab));
+    }catch{}
+  }
+  // Carga la sesión de hoy → principalmente presentaciones del día
   const todayRaw=await dbGet('sesion_'+todayKey);
   let todaySession=null;
   if(todayRaw){try{todaySession=JSON.parse(todayRaw);}catch{}}
   if(todaySession){
-    if(todaySession.tablon!=null)localStorage.setItem('tablon',todaySession.tablon);
     if(todaySession.presentaciones)localStorage.setItem('slides-list',JSON.stringify(todaySession.presentaciones));
-    if(todaySession.vocab)localStorage.setItem('vocab',JSON.stringify(todaySession.vocab));
+    if(!activoRaw){
+      if(todaySession.tablon!=null)localStorage.setItem('tablon',todaySession.tablon);
+      if(todaySession.vocab)localStorage.setItem('vocab',JSON.stringify(todaySession.vocab));
+    }
   } else {
-    // Fallback: lee las claves globales que usa el guardado rápido del tablón
-    const tRaw=await dbGet('tablon');
-    if(tRaw)localStorage.setItem('tablon',tRaw);
     const sRaw=await dbGet('slides-list');
     if(sRaw)localStorage.setItem('slides-list',sRaw);
+    if(!activoRaw){
+      const tRaw=await dbGet('tablon');
+      if(tRaw)localStorage.setItem('tablon',tRaw);
+    }
   }
 
   // Vocab para flashcards: usa la sesión del miércoles anterior/actual (rotación)
@@ -427,36 +441,173 @@ function initQuickDict(){
 }
 
 /* ── TABLÓN ────────────────────────────────────────────── */
+function getActivoTablon(){
+  try{return JSON.parse(localStorage.getItem('tablon_activo')||'null');}catch{return null;}
+}
+function saveActivoLocal(data){
+  localStorage.setItem('tablon_activo',JSON.stringify(data));
+  const text=(data.cards||[]).map(c=>c.cuerpo||'').join('\n');
+  localStorage.setItem('tablon',text);
+  localStorage.setItem('vocab',JSON.stringify(data.vocab||[]));
+}
+function parseVocabFromCards(cards){
+  const words=[];
+  for(const c of(cards||[])){const p=parseVocab(c.cuerpo||'');words.push(...p);}
+  return[...new Set(words)];
+}
+function formatDisplayDate(dateStr){
+  try{
+    const[y,m,d]=dateStr.split('-').map(Number);
+    const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return`${d} de ${months[m-1]} de ${y}`;
+  }catch{return dateStr;}
+}
+function todayISOStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
 function renderTablon(){
   const view=$('view-tablon');
-  const stored=localStorage.getItem('tablon')||'';
-  if(STATE.admin){
-    view.innerHTML=`
-<div class="content-view active" style="display:flex">
-<h2 class="section-title">📋 Tablón — Admin</h2>
-<div class="tablon-board">
-<textarea class="tablon-textarea" id="tablon-ta" placeholder="Skriv dagens lektion her...\nBrug bindestreg for ordforråd:\n-comida\n-pantalones">${escapeHTML(stored)}</textarea>
-</div>
-<p class="tablon-hint">💡 Ord med - gemmes automatisk som ordforråd til øvelser</p>
-<button class="save-btn" id="tablon-save">💾 Gem lektion</button>
+  const activo=getActivoTablon();
+  if(STATE.admin){renderTablonAdmin(view,activo);}
+  else{renderTablonStudent(view,activo);}
+}
+
+function renderTablonStudent(view,activo){
+  if(!activo||!(activo.cards||[]).length){
+    view.innerHTML=`<div class="content-view active" style="display:flex">
+<h2 class="section-title">📋 Tablón</h2>
+<p style="color:var(--text-dim);text-align:center;padding:2rem 0">Ingen lektion er tilgængelig endnu.</p>
 </div>`;
-    document.getElementById('tablon-save').addEventListener('click',async()=>{
-      const txt=document.getElementById('tablon-ta').value;
-      await dbSet('tablon',txt);
-      const words=parseVocab(txt);
-      localStorage.setItem('vocab',JSON.stringify(words));
-      const btn=document.getElementById('tablon-save');
-      btn.textContent='✅ Gemt!';setTimeout(()=>{btn.textContent='💾 Gem lektion';},1800);
-    });
-  } else {
-    const html=stored?stored.split('\n').map(l=>{
-      const t=l.trim();
-      if(!t)return'<br>';
-      if(t.startsWith('-'))return`<span class="vocab-chip">${escapeHTML(t.slice(1).trim())}</span>`;
-      return`<span>${escapeHTML(t)}</span><br>`;
-    }).join(''):'<span style="color:var(--text-dim)">Ingen lektion er tilgængelig endnu.</span>';
-    view.innerHTML=`<div class="content-view active" style="display:flex"><h2 class="section-title">📋 Tablón</h2><div class="tablon-board"><div class="tablon-content">${html}</div></div></div>`;
+    return;
   }
+  const dateStr=activo.fecha?formatDisplayDate(activo.fecha):'';
+  const cardsHtml=(activo.cards||[]).map(card=>{
+    const lines=(card.cuerpo||'').split('\n').map(l=>l.trim()).filter(Boolean);
+    const allVocab=lines.length&&lines.every(l=>l.startsWith('-'));
+    let body;
+    if(allVocab){
+      body='<div class="vocab-chips-wrap">'+lines.map(l=>`<span class="vocab-chip">${escapeHTML(l.slice(1).trim())}</span>`).join('')+'</div>';
+    }else{
+      body='<div class="tablon-content">'+
+        (card.cuerpo||'').split('\n').map(l=>{
+          const t=l.trim();
+          if(!t)return'<br>';
+          if(t.startsWith('-'))return`<span class="vocab-chip">${escapeHTML(t.slice(1).trim())}</span>`;
+          return`<span>${escapeHTML(t)}</span><br>`;
+        }).join('')+'</div>';
+    }
+    return`<div class="tablon-card">${card.titulo?`<div class="tablon-card-title">${escapeHTML(card.titulo)}</div>`:''}${body}</div>`;
+  }).join('');
+  view.innerHTML=`<div class="content-view active" style="display:flex">
+<h2 class="section-title">📋 Tablón</h2>
+${dateStr?`<p class="tablon-date-badge">📅 ${dateStr}</p>`:''}
+${cardsHtml}
+</div>`;
+}
+
+function renderTablonAdmin(view,activo){
+  const cards=activo?(activo.cards||[]).slice():[];
+  const fecha=activo?(activo.fecha||todayISOStr()):todayISOStr();
+
+  function cardsListHtml(){
+    if(!cards.length)return'<p class="tablon-empty-hint">No hay tarjetas. Añade una arriba.</p>';
+    return cards.map((c,i)=>`
+<div class="tablon-admin-card">
+  <div class="tablon-admin-card-header">
+    <span class="tablon-admin-card-title">${escapeHTML(c.titulo||'(sin título)')}</span>
+    <button class="frem-del tablon-card-del" data-idx="${i}">🗑️</button>
+  </div>
+  <div class="tablon-admin-card-body">${escapeHTML(c.cuerpo||'').replace(/\n/g,'<br>')}</div>
+</div>`).join('');
+  }
+
+  const activeBadge=activo
+    ?`<div class="tablon-active-badge">📌 Tablón activo: <strong>${formatDisplayDate(fecha)}</strong></div>`
+    :`<div class="tablon-active-badge tablon-active-badge--none">⚠️ No hay tablón publicado aún</div>`;
+
+  view.innerHTML=`<div class="content-view active" style="display:flex">
+<h2 class="section-title">📋 Tablón — Administrador</h2>
+${activeBadge}
+
+<div class="tablon-add-form">
+  <h3 class="tablon-section-label">➕ Nueva tarjeta</h3>
+  <input class="admin-input" id="tablon-card-titulo" placeholder="Título (ej: Tema del día, Vocabulario…)" style="margin-bottom:.6rem"/>
+  <textarea class="tablon-textarea tablon-textarea--bordered" id="tablon-card-cuerpo" placeholder="Contenido de la tarjeta…\nUsa - para vocabulario:\n-comida\n-pantalones"></textarea>
+  <button class="save-btn" id="tablon-card-add">＋ Añadir tarjeta</button>
+</div>
+
+<div class="tablon-cards-section">
+  <h3 class="tablon-section-label">📌 Tarjetas del tablón actual</h3>
+  <div id="tablon-cards-list">${cardsListHtml()}</div>
+</div>
+
+<div class="tablon-publish-wrap">
+  <button class="btn-primary" id="tablon-publish">🚀 Publicar tablón</button>
+  <p class="tablon-hint">Publicar guarda el tablón con la fecha de hoy, archiva el anterior en el historial y actualiza los ejercicios con el nuevo vocabulario.</p>
+</div>
+</div>`;
+
+  function rebindDelete(){
+    view.querySelectorAll('.tablon-card-del').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        cards.splice(+btn.dataset.idx,1);
+        document.getElementById('tablon-cards-list').innerHTML=cardsListHtml();
+        rebindDelete();
+      });
+    });
+  }
+  rebindDelete();
+
+  document.getElementById('tablon-card-add').addEventListener('click',()=>{
+    const titulo=document.getElementById('tablon-card-titulo').value.trim();
+    const cuerpo=document.getElementById('tablon-card-cuerpo').value.trim();
+    if(!cuerpo)return;
+    cards.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),titulo:titulo||'Anuncio',cuerpo});
+    document.getElementById('tablon-card-titulo').value='';
+    document.getElementById('tablon-card-cuerpo').value='';
+    document.getElementById('tablon-cards-list').innerHTML=cardsListHtml();
+    rebindDelete();
+  });
+
+  document.getElementById('tablon-publish').addEventListener('click',async()=>{
+    if(!cards.length){
+      const btn=document.getElementById('tablon-publish');
+      btn.textContent='⚠️ Añade al menos una tarjeta';
+      setTimeout(()=>{btn.textContent='🚀 Publicar tablón';},2200);
+      return;
+    }
+    const btn=document.getElementById('tablon-publish');
+    btn.disabled=true;btn.textContent='⏳ Publicando…';
+
+    const vocab=parseVocabFromCards(cards);
+    const newTablon={fecha:todayISOStr(),cards:cards.slice(),vocab,publicadoEn:new Date().toISOString()};
+
+    // Archivar el tablón activo anterior en el historial
+    const prevActivo=getActivoTablon();
+    if(prevActivo){
+      let historial=[];
+      try{const h=await dbGet('tablon_historial');historial=JSON.parse(h||'[]');}catch{}
+      historial.unshift(prevActivo);
+      if(historial.length>30)historial=historial.slice(0,30);
+      await dbSet('tablon_historial',JSON.stringify(historial));
+    }
+
+    await dbSet('tablon_activo',JSON.stringify(newTablon));
+    saveActivoLocal(newTablon);
+
+    // Guardar también en la sesión de hoy para compatibilidad con el panel de admin
+    const todayKey=todayISOStr().replace(/-/g,'');
+    let todaySesion={};
+    try{const raw=await dbGet('sesion_'+todayKey);if(raw)todaySesion=JSON.parse(raw);}catch{}
+    todaySesion.tablon=(newTablon.cards||[]).map(c=>c.cuerpo||'').join('\n');
+    todaySesion.vocab=vocab;
+    await dbSet('sesion_'+todayKey,JSON.stringify(todaySesion));
+
+    btn.disabled=false;btn.textContent='✅ Publicado';
+    setTimeout(()=>{renderTablon();},1600);
+  });
 }
 
 /* ── FREMLÆGGELSE ──────────────────────────────────────── */
@@ -1095,7 +1246,9 @@ async function renderStile(){
   gallery.hidden=false;
   gallery.innerHTML=sorted.map(item=>`
 <div class="stile-card" style="cursor:pointer" data-url="${escapeHTML(item.imagen_url)}">
-  <div class="stile-img-wrap"><img class="stile-img" src="${escapeHTML(item.imagen_url)}" alt="${escapeHTML(item.titulo)}" loading="lazy"></div>
+  <div class="stile-card-deco" aria-hidden="true">
+    <span class="stile-card-deco-icon">✍️</span>
+  </div>
   <div class="stile-info">
     <p class="stile-titulo">${escapeHTML(item.titulo)}</p>
     <button class="stile-dl-btn">↗ Åbn</button>
@@ -1149,7 +1302,7 @@ function initAdminPanel(){
   <div id="ap-stile-list" class="ap-pres-list"></div>
   <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem;margin-bottom:.25rem">
     <input id="ap-stile-titulo" class="slides-input" placeholder="Título de la redacción…" style="flex:1;min-width:140px"/>
-    <input id="ap-stile-url"    class="slides-input" placeholder="URL de la imagen…"       style="flex:2;min-width:170px"/>
+    <input id="ap-stile-url"    class="slides-input" placeholder="URL del documento o redacción…" style="flex:2;min-width:170px"/>
     <button id="ap-stile-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
   </div>
 </div>`;
