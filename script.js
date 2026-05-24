@@ -23,8 +23,9 @@ async function dbGet(key){
   const db=getDb();
   if(!db)return localStorage.getItem(key);
   try{
-    const{data,error}=await db.from('config_clase').select('value').eq('key',key).single();
-    if(error||!data)return localStorage.getItem(key);
+    const{data,error}=await db.from('config_clase').select('value').eq('key',key).maybeSingle();
+    if(error){console.warn('[dbGet] Error leyendo "'+key+'":', error.message);return localStorage.getItem(key);}
+    if(!data)return localStorage.getItem(key);
     localStorage.setItem(key,data.value);
     return data.value;
   }catch{return localStorage.getItem(key);}
@@ -32,18 +33,18 @@ async function dbGet(key){
 async function dbSet(key,value){
   localStorage.setItem(key,value);
   const db=getDb();
-  if(!db)return;
+  if(!db)return true;
   try{
-    // Check-then-update-or-insert: never deletes before writing, preventing data loss
-    const{data}=await db.from('config_clase').select('id').eq('key',key).maybeSingle();
-    if(data){
-      const{error}=await db.from('config_clase').update({value}).eq('key',key);
-      if(error)console.warn('[dbSet] Error actualizando "'+key+'":', error.message);
-    }else{
-      const{error}=await db.from('config_clase').insert({key,value});
-      if(error)console.warn('[dbSet] Error insertando "'+key+'":', error.message);
-    }
-  }catch(e){console.warn('[dbSet] Error inesperado:', e);}
+    // upsert requires UNIQUE constraint on key (see scratch/supabase_setup.sql)
+    const{error:upsertErr}=await db.from('config_clase').upsert({key,value},{onConflict:'key'});
+    if(!upsertErr)return true;
+    // fallback: try UPDATE then INSERT (for tables without UNIQUE constraint)
+    const{data:updated,error:upErr}=await db.from('config_clase').update({value}).eq('key',key).select('id');
+    if(!upErr&&updated&&updated.length>0)return true;
+    const{error:insErr}=await db.from('config_clase').insert({key,value});
+    if(insErr){console.warn('[dbSet] Error guardando "'+key+'":', insErr.message);return false;}
+    return true;
+  }catch(e){console.warn('[dbSet] Error inesperado:', e);return false;}
 }
 function formatDateKey(d){
   return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
@@ -594,8 +595,21 @@ ${activeBadge}
       await dbSet('tablon_historial',JSON.stringify(historial));
     }
 
-    await dbSet('tablon_activo',JSON.stringify(newTablon));
+    const savedOk=await dbSet('tablon_activo',JSON.stringify(newTablon));
     saveActivoLocal(newTablon);
+
+    // Verificar que realmente quedó en Supabase (lectura de vuelta)
+    let verifiedInCloud=false;
+    if(savedOk){
+      try{
+        const db=getDb();
+        if(db){
+          const{data}=await db.from('config_clase').select('value').eq('key','tablon_activo').maybeSingle();
+          verifiedInCloud=!!(data&&data.value);
+        }
+      }catch{}
+    }
+    console.log('[Tablón] Guardado:', savedOk, '| Verificado en nube:', verifiedInCloud);
 
     // Guardar también en la sesión de hoy para compatibilidad con el panel de admin
     const todayKey=todayISOStr().replace(/-/g,'');
@@ -605,7 +619,18 @@ ${activeBadge}
     todaySesion.vocab=vocab;
     await dbSet('sesion_'+todayKey,JSON.stringify(todaySesion));
 
-    btn.disabled=false;btn.textContent='✅ Publicado';
+    btn.disabled=false;
+    if(verifiedInCloud){
+      btn.textContent='✅ Publicado en la nube';
+    }else if(savedOk){
+      btn.textContent='⚠️ Guardado (sin confirmar nube) — abre y comprueba en otro dispositivo';
+      btn.style.background='var(--warn,#e67e22)';
+      setTimeout(()=>{btn.style.background='';btn.textContent='🚀 Publicar tablón';},6000);
+    }else{
+      btn.textContent='❌ Error al guardar en la nube — intentar de nuevo';
+      btn.style.background='#c0392b';
+      setTimeout(()=>{btn.style.background='';btn.textContent='🚀 Publicar tablón';},6000);
+    }
     setTimeout(()=>{renderTablon();},1600);
   });
 }

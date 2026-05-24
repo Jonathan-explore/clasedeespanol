@@ -1,11 +1,21 @@
 -- ============================================================
--- Supabase setup script (opcional, mejora rendimiento)
--- Ejecutar en el SQL Editor del dashboard si se desea.
--- La app funciona sin ejecutar este script.
+-- Supabase setup script
+-- EJECUTAR ESTO EN EL SQL EDITOR DE SUPABASE DASHBOARD:
+--   https://supabase.com/dashboard → tu proyecto → SQL Editor
+--
+-- Es NECESARIO para que el tablón persista correctamente.
+-- Ejecutar una sola vez. Es seguro ejecutarlo varias veces.
 -- ============================================================
 
--- Añadir constraint UNIQUE en config_clase.key
--- (permite usar UPSERT nativo en el futuro)
+-- 1. Crear la tabla config_clase si no existe
+CREATE TABLE IF NOT EXISTS config_clase (
+  id    BIGSERIAL PRIMARY KEY,
+  key   TEXT NOT NULL,
+  value TEXT NOT NULL
+);
+
+-- 2. Añadir constraint UNIQUE en la columna key
+-- (necesario para upsert atómico — evita duplicados y pérdida de datos)
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -16,5 +26,26 @@ BEGIN
   END IF;
 END$$;
 
--- NOTA: La tabla 'stile' ya NO es necesaria.
--- Los ítems de Stile se almacenan como JSON en config_clase bajo la clave 'stile_items'.
+-- 3. Habilitar Row Level Security
+ALTER TABLE config_clase ENABLE ROW LEVEL SECURITY;
+
+-- 4. Policies: lectura pública, escritura pública (sin autenticación)
+-- Permite que el tablón sea visible a todos y editable desde el admin.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename='config_clase' AND policyname='allow_public_read'
+  ) THEN
+    CREATE POLICY allow_public_read ON config_clase FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename='config_clase' AND policyname='allow_public_insert'
+  ) THEN
+    CREATE POLICY allow_public_insert ON config_clase FOR INSERT WITH CHECK (true);
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename='config_clase' AND policyname='allow_public_update'
+  ) THEN
+    CREATE POLICY allow_public_update ON config_clase FOR UPDATE USING (true);
+  END IF;
+END$$;
