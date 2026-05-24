@@ -760,6 +760,41 @@ body{overflow:hidden}
 .match-score{margin-top:1rem;font-size:.88rem;color:var(--text-dim)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
+/* ── KØN-SORTERING — MOBILE ONE-UP MODE ──────────────────────── */
+.dd-oneup-wrap{display:flex;flex-direction:column;align-items:center;gap:1.25rem;padding:.5rem 0 1rem}
+.dd-oneup-progress{font-size:.78rem;color:var(--text-dim);letter-spacing:.04em}
+.dd-oneup-bar{width:100%;height:4px;background:var(--glass-border);border-radius:4px;overflow:hidden}
+.dd-oneup-bar-fill{height:100%;background:linear-gradient(90deg,var(--glow),var(--glow2));border-radius:4px;transition:width .3s ease}
+.dd-oneup-card{
+  width:100%;min-height:130px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-lg);
+  transition:background .25s,border-color .25s;
+}
+.dd-oneup-card--ok{background:rgba(34,197,94,.14) !important;border-color:rgba(34,197,94,.45) !important}
+.dd-oneup-card--err{background:rgba(239,68,68,.14) !important;border-color:rgba(239,68,68,.45) !important}
+.dd-oneup-word{font-size:1.65rem;font-weight:700;color:var(--text);letter-spacing:.01em}
+.dd-oneup-btns{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%}
+.dd-oneup-btn{
+  padding:.9rem .5rem;border:1px solid var(--glass-border);border-radius:var(--r);
+  background:rgba(255,255,255,.04);color:var(--text);
+  font-size:.95rem;font-weight:600;cursor:pointer;
+  transition:background .18s,transform .15s,border-color .18s;
+}
+.dd-oneup-btn:active{transform:scale(.95)}
+.dd-oneup-btn:disabled{opacity:.5;cursor:default}
+.dd-oneup-btn--fem:hover:not(:disabled){background:rgba(244,114,182,.15);border-color:rgba(244,114,182,.4)}
+.dd-oneup-btn--masc:hover:not(:disabled){background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4)}
+.dd-oneup-result{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:2rem 0;text-align:center}
+.dd-oneup-score-icon{font-size:3rem}
+.dd-oneup-score-text{font-size:1.6rem;font-weight:700;color:var(--text)}
+[data-theme="light"] .dd-oneup-card{background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.08)}
+[data-theme="light"] .dd-oneup-btn{background:rgba(255,255,255,.8);border-color:rgba(0,0,0,.09)}
+[data-theme="light"] .dd-oneup-btn--fem:hover:not(:disabled){background:rgba(181,100,92,.1);border-color:rgba(181,100,92,.35)}
+[data-theme="light"] .dd-oneup-btn--masc:hover:not(:disabled){background:rgba(90,109,181,.1);border-color:rgba(90,109,181,.35)}
+
 /* ── ORD-PUSLESPIL ────────────────────────────────────────── */
 .blandet{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.25rem}
 .blandet-letter{

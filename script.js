@@ -363,7 +363,7 @@ function applyTheme(t){
   if(btn){btn.textContent=t==='light'?'🌙':'☀️';}
 }
 function initTheme(){
-  const saved=localStorage.getItem('theme')||'dark';
+  const saved=localStorage.getItem('theme')||'light';
   applyTheme(saved);
   document.getElementById('theme-toggle').addEventListener('click',()=>{
     const next=document.documentElement.dataset.theme==='light'?'dark':'light';
@@ -1048,6 +1048,52 @@ function renderYderligere(){
 function buildDragDrop(vocab){
   const panel=document.getElementById('panel-dd');
   const words=vocab.map(w=>({w,g:detectGender(w)}));
+
+  // ── Mobile: one-word-at-a-time tap mode ──────────────────────
+  if(window.innerWidth<=640){
+    let idx=0,score=0;
+    const total=words.length;
+    function renderCard(){
+      if(idx>=total){
+        panel.innerHTML=`
+<div class="dd-oneup-result">
+  <span class="dd-oneup-score-icon">${score===total?'🎉':'💪'}</span>
+  <p class="dd-oneup-score-text">${score} / ${total} korrekt</p>
+  <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:1.5rem">${score===total?'Perfekt! Alle ord er rigtige!':'Godt forsøgt — prøv igen!'}</p>
+  <button class="save-btn" id="dd-reset">🔄 Genstart</button>
+</div>`;
+        document.getElementById('dd-reset').addEventListener('click',()=>buildDragDrop(vocab));
+        return;
+      }
+      const {w}=words[idx];
+      panel.innerHTML=`
+<div class="dd-oneup-wrap">
+  <p class="dd-oneup-progress">Ord <strong>${idx+1}</strong> af ${total}</p>
+  <div class="dd-oneup-bar"><div class="dd-oneup-bar-fill" style="width:${(idx/total)*100}%"></div></div>
+  <div class="dd-oneup-card" id="dd-oneup-card"><span class="dd-oneup-word">${escapeHTML(w)}</span></div>
+  <div class="dd-oneup-btns">
+    <button class="dd-oneup-btn dd-oneup-btn--fem" data-gender="fem">🌸 Femenino</button>
+    <button class="dd-oneup-btn dd-oneup-btn--masc" data-gender="masc">🔷 Masculino</button>
+  </div>
+</div>`;
+      panel.querySelectorAll('.dd-oneup-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const chosen=btn.dataset.gender;
+          const correct=words[idx].g;
+          const isOk=(chosen===correct)||(correct==='neu'&&chosen==='masc');
+          const card=document.getElementById('dd-oneup-card');
+          card.classList.add(isOk?'dd-oneup-card--ok':'dd-oneup-card--err');
+          panel.querySelectorAll('.dd-oneup-btn').forEach(b=>b.disabled=true);
+          if(isOk)score++;
+          setTimeout(()=>{idx++;renderCard();},420);
+        });
+      });
+    }
+    renderCard();
+    return;
+  }
+
+  // ── Desktop: drag-and-drop ───────────────────────────────────
   let dragging=null,score=0,total=words.length;
   const wordsHtml=words.map(({w})=>`<div class="dd-word" draggable="true" data-word="${w}">${w}</div>`).join('');
   panel.innerHTML=`
