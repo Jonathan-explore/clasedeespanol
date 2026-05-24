@@ -178,10 +178,17 @@ function escapeHTML(str){
 function $(id){return document.getElementById(id);}
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html)e.innerHTML=html;return e;}
 function getVocab(){try{return JSON.parse(localStorage.getItem('vocab')||'[]');}catch{return[];}}
+function parseVocabLine(line){
+  const raw=line.slice(1).trim();
+  const eqIdx=raw.indexOf('=');
+  const es=eqIdx>-1?raw.slice(0,eqIdx).trim():raw;
+  const dk=eqIdx>-1?raw.slice(eqIdx+1).trim():'';
+  return{es,dk};
+}
 function parseVocab(text){
   return text.split('\n').map(l=>l.trim())
     .filter(l=>l.startsWith('-')&&l.length>1)
-    .map(l=>l.slice(1).trim()).filter(Boolean);
+    .map(l=>parseVocabLine(l).es).filter(Boolean);
 }
 function detectGender(word){
   const w=word.toLowerCase().replace(/[^a-záéíóúñü]/g,'');
@@ -349,6 +356,22 @@ function transitionTo(viewName,cardEl){
 }
 
 /* ── AUTENTICACIÓN ADMIN ───────────────────────────────── */
+/* ── THEME ──────────────────────────────────────────────────── */
+function applyTheme(t){
+  document.documentElement.dataset.theme=t==='light'?'light':'';
+  const btn=document.getElementById('theme-toggle');
+  if(btn){btn.textContent=t==='light'?'🌙':'☀️';}
+}
+function initTheme(){
+  const saved=localStorage.getItem('theme')||'dark';
+  applyTheme(saved);
+  document.getElementById('theme-toggle').addEventListener('click',()=>{
+    const next=document.documentElement.dataset.theme==='light'?'dark':'light';
+    applyTheme(next);
+    localStorage.setItem('theme',next);
+  });
+}
+
 function initAuth(){
   const title=$('title-trigger');
   const modal=$('admin-modal');
@@ -486,7 +509,10 @@ function renderCardBody(card){
     html+=`<div class="tablon-text">${textLines.map(l=>`<p>${escapeHTML(l)}</p>`).join('')}</div>`;
   }
   if(vocabLines.length){
-    const chips=vocabLines.map(l=>`<span class="vocab-chip">${escapeHTML(l.slice(1).trim())}</span>`).join('');
+    const chips=vocabLines.map(l=>{
+      const{es,dk}=parseVocabLine(l);
+      return`<span class="vocab-chip" data-es="${escapeHTML(es)}" data-dk="${escapeHTML(dk)}" tabindex="0">${escapeHTML(es)}</span>`;
+    }).join('');
     html+=`<div class="vocab-chips-wrap${textLines.length?' vocab-chips-wrap--gap':''}">${chips}</div>`;
   }
   return html;
@@ -534,8 +560,7 @@ async function renderTablonAdmin(view,activo){
     return cards.map((c,i)=>`
 <div class="tablon-admin-card">
   <div class="tablon-admin-card-header">
-    <span class="tablon-admin-card-title">${escapeHTML(c.titulo||'(sin título)')}</span>
-    <button class="frem-del tablon-card-del" data-idx="${i}">🗑️</button>
+    <button class="frem-del tablon-card-del" data-idx="${i}" style="margin-left:auto">🗑️</button>
   </div>
   <div class="tablon-admin-card-body">${renderCardBody(c)}</div>
 </div>`).join('');
@@ -572,8 +597,7 @@ async function renderTablonAdmin(view,activo){
 <h3 class="tablon-section-label" style="font-size:1rem;margin-bottom:.5rem">📋 Tablón semanal</h3>
 ${activeBadge}
 <div class="tablon-add-form">
-  <input class="admin-input" id="tablon-card-titulo" placeholder="Título (ej: Tema del día, Vocabulario…)" style="margin-bottom:.6rem"/>
-  <textarea class="tablon-textarea tablon-textarea--bordered" id="tablon-card-cuerpo" placeholder="Contenido…  Usa - para vocabulario:\n-comida\n-pantalones"></textarea>
+  <textarea class="tablon-textarea tablon-textarea--bordered" id="tablon-card-cuerpo" placeholder="Escribe aquí el contenido de la tarjeta.&#10;Añade vocabulario con un guión:&#10;-rojo&#10;-la ropa&#10;-hablar"></textarea>
   <button class="save-btn" id="tablon-card-add">＋ Añadir tarjeta</button>
 </div>
 <div id="tablon-cards-list" style="margin-bottom:1rem">${cardsListHtml()}</div>
@@ -632,11 +656,11 @@ ${divider}
   rebindDelete();
 
   document.getElementById('tablon-card-add').addEventListener('click',()=>{
-    const titulo=document.getElementById('tablon-card-titulo').value.trim();
     const cuerpo=document.getElementById('tablon-card-cuerpo').value.trim();
     if(!cuerpo)return;
-    cards.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),titulo:titulo||'Anuncio',cuerpo});
-    document.getElementById('tablon-card-titulo').value='';
+    const firstTextLine=cuerpo.split('\n').map(l=>l.trim()).find(l=>l&&!l.startsWith('-'))||'';
+    const titulo=firstTextLine||'Tarjeta';
+    cards.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2),titulo,cuerpo});
     document.getElementById('tablon-card-cuerpo').value='';
     document.getElementById('tablon-cards-list').innerHTML=cardsListHtml();
     rebindDelete();
@@ -1436,11 +1460,13 @@ function initAdminPanel(){
 
 /* ── INIT ──────────────────────────────────────────────── */
 function init(){
+  initTheme();
   initAuth();
   initQuickDict();
   initAdminPanel();
   initTemario();
   initParallax();
+  initVocabPopup();
   syncFromCloud();
   document.querySelectorAll('.menu-card').forEach(card=>{
     card.addEventListener('click',()=>{
@@ -1450,6 +1476,55 @@ function init(){
   });
   $('back-btn').addEventListener('click',()=>transitionTo('home',null));
 }
+/* ── VOCAB CHIP POPUP ──────────────────────────────────────── */
+function initVocabPopup(){
+  const popup=document.createElement('div');
+  popup.id='vocab-popup';
+  popup.setAttribute('role','tooltip');
+  popup.setAttribute('aria-live','polite');
+  popup.innerHTML='<div class="vocab-popup-inner"><span class="vpc-es"></span><span class="vpc-arrow">↓</span><span class="vpc-dk"></span></div>';
+  document.body.appendChild(popup);
+
+  let active=null;
+
+  function show(chip){
+    if(active===chip)return hide();
+    active=chip;
+    const es=chip.dataset.es||'';
+    const dk=chip.dataset.dk||'';
+    popup.querySelector('.vpc-es').textContent=es;
+    popup.querySelector('.vpc-dk').textContent=dk;
+    popup.querySelector('.vpc-arrow').style.display=dk?'inline':'none';
+    popup.querySelector('.vpc-dk').style.display=dk?'inline':'none';
+    popup.classList.add('visible');
+
+    // position: below the chip, centred (fixed = viewport coords)
+    const r=chip.getBoundingClientRect();
+    const pw=popup.offsetWidth||180;
+    let left=r.left+r.width/2-pw/2;
+    let top=r.bottom+8;
+    // flip above if too close to bottom
+    if(top+120>window.innerHeight)top=r.top-120-8;
+    left=Math.max(8,Math.min(left,window.innerWidth-pw-8));
+    popup.style.left=left+'px';
+    popup.style.top=top+'px';
+    chip.classList.add('vocab-chip--active');
+  }
+
+  function hide(){
+    if(active)active.classList.remove('vocab-chip--active');
+    active=null;
+    popup.classList.remove('visible');
+  }
+
+  document.addEventListener('click',e=>{
+    const chip=e.target.closest('.vocab-chip');
+    if(chip){e.stopPropagation();show(chip);}
+    else hide();
+  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+}
+
 /* ── PARALLAX ──────────────────────────────────────────────── */
 function initParallax(){
   const orbs=[
