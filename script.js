@@ -477,6 +477,21 @@ function renderTablon(){
 }
 // renderTablonAdmin is async — call fires and forgets intentionally
 
+function renderCardBody(card){
+  const lines=(card.cuerpo||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  const textLines=lines.filter(l=>!l.startsWith('-'));
+  const vocabLines=lines.filter(l=>l.startsWith('-'));
+  let html='';
+  if(textLines.length){
+    html+=`<div class="tablon-text">${textLines.map(l=>`<p>${escapeHTML(l)}</p>`).join('')}</div>`;
+  }
+  if(vocabLines.length){
+    const chips=vocabLines.map(l=>`<span class="vocab-chip">${escapeHTML(l.slice(1).trim())}</span>`).join('');
+    html+=`<div class="vocab-chips-wrap${textLines.length?' vocab-chips-wrap--gap':''}">${chips}</div>`;
+  }
+  return html;
+}
+
 function renderTablonStudent(view,activo){
   if(!activo||!(activo.cards||[]).length){
     view.innerHTML=`<div class="content-view active" style="display:flex">
@@ -486,23 +501,11 @@ function renderTablonStudent(view,activo){
     return;
   }
   const dateStr=activo.fecha?formatDisplayDate(activo.fecha):'';
-  const cardsHtml=(activo.cards||[]).map(card=>{
-    const lines=(card.cuerpo||'').split('\n').map(l=>l.trim()).filter(Boolean);
-    const allVocab=lines.length&&lines.every(l=>l.startsWith('-'));
-    let body;
-    if(allVocab){
-      body='<div class="vocab-chips-wrap">'+lines.map(l=>`<span class="vocab-chip">${escapeHTML(l.slice(1).trim())}</span>`).join('')+'</div>';
-    }else{
-      body='<div class="tablon-content">'+
-        (card.cuerpo||'').split('\n').map(l=>{
-          const t=l.trim();
-          if(!t)return'<br>';
-          if(t.startsWith('-'))return`<span class="vocab-chip">${escapeHTML(t.slice(1).trim())}</span>`;
-          return`<span>${escapeHTML(t)}</span><br>`;
-        }).join('')+'</div>';
-    }
-    return`<div class="tablon-card">${card.titulo?`<div class="tablon-card-title">${escapeHTML(card.titulo)}</div>`:''}${body}</div>`;
-  }).join('');
+  const cardsHtml=(activo.cards||[]).map(card=>`
+<div class="tablon-card">
+  ${card.titulo?`<div class="tablon-card-title">${escapeHTML(card.titulo)}</div>`:''}
+  ${renderCardBody(card)}
+</div>`).join('');
   view.innerHTML=`<div class="content-view active" style="display:flex">
 <h2 class="section-title">📋 Tablón</h2>
 ${dateStr?`<p class="tablon-date-badge">📅 ${dateStr}</p>`:''}
@@ -534,7 +537,7 @@ async function renderTablonAdmin(view,activo){
     <span class="tablon-admin-card-title">${escapeHTML(c.titulo||'(sin título)')}</span>
     <button class="frem-del tablon-card-del" data-idx="${i}">🗑️</button>
   </div>
-  <div class="tablon-admin-card-body">${escapeHTML(c.cuerpo||'').replace(/\n/g,'<br>')}</div>
+  <div class="tablon-admin-card-body">${renderCardBody(c)}</div>
 </div>`).join('');
   }
   function presListHtml(){
