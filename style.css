@@ -45,7 +45,7 @@ body{overflow:hidden}
 }
 
 /* ── DECORATIVE ORBS ──────────────────────────────────────── */
-.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;will-change:translate}
 .orb-1{width:500px;height:500px;top:-150px;left:-150px;background:radial-gradient(circle,rgba(94,234,212,.22),transparent 70%);animation:float 8s ease-in-out infinite,pulse-glow 4s ease-in-out infinite}
 .orb-2{width:600px;height:600px;bottom:-200px;right:-200px;background:radial-gradient(circle,rgba(129,140,248,.20),transparent 70%);animation:float 10s ease-in-out infinite 1s,pulse-glow 5s ease-in-out infinite 2s}
 .orb-3{width:400px;height:400px;top:40%;left:60%;background:radial-gradient(circle,rgba(244,114,182,.14),transparent 70%);animation:float 7s ease-in-out infinite 2s,pulse-glow 6s ease-in-out infinite}

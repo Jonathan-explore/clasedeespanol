@@ -1440,6 +1440,7 @@ function init(){
   initQuickDict();
   initAdminPanel();
   initTemario();
+  initParallax();
   syncFromCloud();
   document.querySelectorAll('.menu-card').forEach(card=>{
     card.addEventListener('click',()=>{
@@ -1449,5 +1450,55 @@ function init(){
   });
   $('back-btn').addEventListener('click',()=>transitionTo('home',null));
 }
+/* ── PARALLAX ──────────────────────────────────────────────── */
+function initParallax(){
+  const orbs=[
+    document.querySelector('.orb-1'),
+    document.querySelector('.orb-2'),
+    document.querySelector('.orb-3')
+  ];
+  const noise=document.getElementById('noise-overlay');
+  // Max displacement in px per layer — keep it minimal
+  const MAX=[14,20,9];
+
+  let tx=[0,0,0],ty=[0,0,0]; // targets
+  let cx=[0,0,0],cy=[0,0,0]; // current (lerped)
+  const EASE=0.05;
+
+  function tick(){
+    const inGame=document.body.classList.contains('spil-active');
+    for(let i=0;i<3;i++){
+      // In game: smoothly drift back to 0
+      const dtx=(inGame?0:tx[i])-cx[i];
+      const dty=(inGame?0:ty[i])-cy[i];
+      cx[i]+=dtx*EASE;
+      cy[i]+=dty*EASE;
+      if(orbs[i])orbs[i].style.translate=`${cx[i].toFixed(1)}px ${cy[i].toFixed(1)}px`;
+    }
+    // Noise overlay moves at 25% of orb-2 — barely perceptible depth hint
+    if(noise)noise.style.translate=`${(cx[1]*.25).toFixed(1)}px ${(cy[1]*.25).toFixed(1)}px`;
+    requestAnimationFrame(tick);
+  }
+
+  function applyPointer(cx,cy){
+    if(document.body.classList.contains('spil-active'))return;
+    const nx=(cx/window.innerWidth)-.5;
+    const ny=(cy/window.innerHeight)-.5;
+    for(let i=0;i<3;i++){tx[i]=nx*MAX[i];ty[i]=ny*MAX[i];}
+  }
+  document.addEventListener('mousemove',e=>applyPointer(e.clientX,e.clientY));
+  document.addEventListener('touchmove',e=>{
+    if(e.touches.length!==1)return;
+    applyPointer(e.touches[0].clientX,e.touches[0].clientY);
+  },{passive:true});
+  // On touch end, drift back to center
+  document.addEventListener('touchend',()=>{
+    if(document.body.classList.contains('spil-active'))return;
+    for(let i=0;i<3;i++){tx[i]=0;ty[i]=0;}
+  });
+
+  requestAnimationFrame(tick);
+}
+
 document.addEventListener('DOMContentLoaded',init);
 })();
