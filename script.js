@@ -396,7 +396,7 @@ function initAuth(){
     if(STATE.currentView!=='home')renderView(STATE.currentView);
   });
   const panelBtn=$('admin-panel-btn');
-  if(panelBtn)panelBtn.addEventListener('click',()=>{if(window._openAdminPanel)window._openAdminPanel();});
+  if(panelBtn)panelBtn.addEventListener('click',()=>{transitionTo('tablon');});
 }
 
 /* ── HURTIG ORDBOG (QUICK DICT) ───────────────────────── */
@@ -475,6 +475,7 @@ function renderTablon(){
   if(STATE.admin){renderTablonAdmin(view,activo);}
   else{renderTablonStudent(view,activo);}
 }
+// renderTablonAdmin is async — call fires and forgets intentionally
 
 function renderTablonStudent(view,activo){
   if(!activo||!(activo.cards||[]).length){
@@ -509,10 +510,22 @@ ${cardsHtml}
 </div>`;
 }
 
-function renderTablonAdmin(view,activo){
+async function renderTablonAdmin(view,activo){
   const cards=activo?(activo.cards||[]).slice():[];
   const fecha=activo?(activo.fecha||todayISOStr()):todayISOStr();
 
+  // Cargar datos necesarios en paralelo
+  const todayKey=todayISOStr().replace(/-/g,'');
+  const [sesionRaw, temarioUrl, stileItems] = await Promise.all([
+    dbGet('sesion_'+todayKey),
+    dbGet('temario_url'),
+    getStileItems()
+  ]);
+  let presList=[];
+  try{const s=JSON.parse(sesionRaw||'{}');presList=(s.presentaciones||[]).slice();}catch{}
+  const stile=[...stileItems].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1));
+
+  /* ── helpers HTML ── */
   function cardsListHtml(){
     if(!cards.length)return'<p class="tablon-empty-hint">No hay tarjetas. Añade una arriba.</p>';
     return cards.map((c,i)=>`
@@ -524,33 +537,86 @@ function renderTablonAdmin(view,activo){
   <div class="tablon-admin-card-body">${escapeHTML(c.cuerpo||'').replace(/\n/g,'<br>')}</div>
 </div>`).join('');
   }
+  function presListHtml(){
+    if(!presList.length)return'<p class="tablon-empty-hint">Sin presentaciones para hoy.</p>';
+    return presList.map((p,i)=>`
+<div class="frem-admin-row">
+  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(p.name)}</span>
+  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${escapeHTML(p.url)}</span>
+  <button class="frem-del pres-del" data-i="${i}">🗑️</button>
+</div>`).join('');
+  }
+  function stileListHtml(){
+    if(!stile.length)return'<p class="tablon-empty-hint">Sin redacciones todavía.</p>';
+    return stile.map(r=>`
+<div class="frem-admin-row">
+  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(r.titulo)}</span>
+  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${escapeHTML(r.imagen_url)}</span>
+  <button class="frem-del stile-del" data-id="${escapeHTML(r.id)}">🗑️</button>
+</div>`).join('');
+  }
 
   const activeBadge=activo
     ?`<div class="tablon-active-badge">📌 Tablón activo: <strong>${formatDisplayDate(fecha)}</strong></div>`
     :`<div class="tablon-active-badge tablon-active-badge--none">⚠️ No hay tablón publicado aún</div>`;
 
-  view.innerHTML=`<div class="content-view active" style="display:flex">
-<h2 class="section-title">📋 Tablón — Administrador</h2>
-${activeBadge}
+  const divider=`<hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:2rem 0"/>`;
 
+  view.innerHTML=`<div class="content-view active" style="display:flex">
+<h2 class="section-title">🗂️ Administrador</h2>
+
+<!-- ── TABLÓN ── -->
+<h3 class="tablon-section-label" style="font-size:1rem;margin-bottom:.5rem">📋 Tablón semanal</h3>
+${activeBadge}
 <div class="tablon-add-form">
-  <h3 class="tablon-section-label">➕ Nueva tarjeta</h3>
   <input class="admin-input" id="tablon-card-titulo" placeholder="Título (ej: Tema del día, Vocabulario…)" style="margin-bottom:.6rem"/>
-  <textarea class="tablon-textarea tablon-textarea--bordered" id="tablon-card-cuerpo" placeholder="Contenido de la tarjeta…\nUsa - para vocabulario:\n-comida\n-pantalones"></textarea>
+  <textarea class="tablon-textarea tablon-textarea--bordered" id="tablon-card-cuerpo" placeholder="Contenido…  Usa - para vocabulario:\n-comida\n-pantalones"></textarea>
   <button class="save-btn" id="tablon-card-add">＋ Añadir tarjeta</button>
 </div>
-
-<div class="tablon-cards-section">
-  <h3 class="tablon-section-label">📌 Tarjetas del tablón actual</h3>
-  <div id="tablon-cards-list">${cardsListHtml()}</div>
-</div>
-
+<div id="tablon-cards-list" style="margin-bottom:1rem">${cardsListHtml()}</div>
 <div class="tablon-publish-wrap">
   <button class="btn-primary" id="tablon-publish">🚀 Publicar tablón</button>
-  <p class="tablon-hint">Publicar guarda el tablón con la fecha de hoy, archiva el anterior en el historial y actualiza los ejercicios con el nuevo vocabulario.</p>
+  <p class="tablon-hint">Al publicar: se guarda en la nube, archiva el anterior y actualiza todos los ejercicios con el nuevo vocabulario.</p>
 </div>
+
+${divider}
+
+<!-- ── PRESENTACIONES ── -->
+<h3 class="tablon-section-label" style="font-size:1rem;margin-bottom:.75rem">🎞️ Presentaciones de hoy</h3>
+<div id="pres-list" style="margin-bottom:.75rem">${presListHtml()}</div>
+<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem">
+  <input id="pres-name" class="slides-input" placeholder="Nombre del alumno…" style="flex:1;min-width:130px"/>
+  <input id="pres-url"  class="slides-input" placeholder="URL de Google Slides…" style="flex:2;min-width:170px"/>
+  <button id="pres-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
+</div>
+<button class="btn-primary" id="pres-save" style="margin-bottom:.25rem">💾 Guardar presentaciones</button>
+<p id="pres-status" style="font-size:.8rem;color:var(--text-dim);min-height:1.2rem;margin-bottom:.5rem"></p>
+
+${divider}
+
+<!-- ── TEMARIO ── -->
+<h3 class="tablon-section-label" style="font-size:1rem;margin-bottom:.75rem">📚 Temario (URL global)</h3>
+<div style="display:flex;gap:.5rem;margin-bottom:.25rem">
+  <input id="temario-url-input" class="slides-input" placeholder="https://docs.google.com/document/d/…" style="flex:1" value="${escapeHTML(temarioUrl||'')}"/>
+  <button id="temario-save" class="save-btn" style="margin:0;white-space:nowrap">💾 Guardar</button>
+</div>
+<p id="temario-status" style="font-size:.8rem;color:var(--text-dim);min-height:1.2rem;margin-bottom:.5rem"></p>
+
+${divider}
+
+<!-- ── STILE ── -->
+<h3 class="tablon-section-label" style="font-size:1rem;margin-bottom:.75rem">✍️ Stile — Redacciones</h3>
+<div id="stile-admin-list" style="margin-bottom:.75rem">${stileListHtml()}</div>
+<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.25rem">
+  <input id="stile-titulo" class="slides-input" placeholder="Título de la redacción…" style="flex:1;min-width:140px"/>
+  <input id="stile-url"    class="slides-input" placeholder="URL del documento…" style="flex:2;min-width:170px"/>
+  <button id="stile-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
+</div>
+<p id="stile-status" style="font-size:.8rem;color:var(--text-dim);min-height:1.2rem"></p>
+
 </div>`;
 
+  /* ── TABLÓN events ── */
   function rebindDelete(){
     view.querySelectorAll('.tablon-card-del').forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -586,7 +652,6 @@ ${activeBadge}
     const vocab=parseVocabFromCards(cards);
     const newTablon={fecha:todayISOStr(),cards:cards.slice(),vocab,publicadoEn:new Date().toISOString()};
 
-    // Archivar el tablón activo anterior en el historial
     const prevActivo=getActivoTablon();
     if(prevActivo){
       let historial=[];
@@ -599,7 +664,6 @@ ${activeBadge}
     const savedOk=await dbSet('tablon_activo',JSON.stringify(newTablon));
     saveActivoLocal(newTablon);
 
-    // Verificar que realmente quedó en Supabase (lectura de vuelta)
     let verifiedInCloud=false;
     if(savedOk){
       try{
@@ -610,29 +674,107 @@ ${activeBadge}
         }
       }catch{}
     }
-    console.log('[Tablón] Guardado:', savedOk, '| Verificado en nube:', verifiedInCloud);
-
-    // Guardar también en la sesión de hoy para compatibilidad con el panel de admin
-    const todayKey=todayISOStr().replace(/-/g,'');
-    let todaySesion={};
-    try{const raw=await dbGet('sesion_'+todayKey);if(raw)todaySesion=JSON.parse(raw);}catch{}
-    todaySesion.tablon=(newTablon.cards||[]).map(c=>c.cuerpo||'').join('\n');
-    todaySesion.vocab=vocab;
-    await dbSet('sesion_'+todayKey,JSON.stringify(todaySesion));
 
     btn.disabled=false;
     if(verifiedInCloud){
       btn.textContent='✅ Publicado en la nube';
     }else if(savedOk){
-      btn.textContent='⚠️ Guardado (sin confirmar nube) — abre y comprueba en otro dispositivo';
+      btn.textContent='⚠️ Sin confirmar nube — comprueba en otro dispositivo';
       btn.style.background='var(--warn,#e67e22)';
       setTimeout(()=>{btn.style.background='';btn.textContent='🚀 Publicar tablón';},6000);
     }else{
-      btn.textContent='❌ Error al guardar en la nube — intentar de nuevo';
+      btn.textContent='❌ Error — intentar de nuevo';
       btn.style.background='#c0392b';
       setTimeout(()=>{btn.style.background='';btn.textContent='🚀 Publicar tablón';},6000);
     }
-    setTimeout(()=>{renderTablon();},1600);
+    if(verifiedInCloud)setTimeout(()=>{renderTablon();},1600);
+  });
+
+  /* ── PRESENTACIONES events ── */
+  function rebindPresDel(){
+    view.querySelectorAll('.pres-del').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        presList.splice(+btn.dataset.i,1);
+        document.getElementById('pres-list').innerHTML=presListHtml();
+        rebindPresDel();
+      });
+    });
+  }
+  rebindPresDel();
+
+  document.getElementById('pres-add').addEventListener('click',()=>{
+    const name=document.getElementById('pres-name').value.trim();
+    const url=document.getElementById('pres-url').value.trim();
+    if(!name||!url)return;
+    presList.push({name,url});
+    document.getElementById('pres-name').value='';
+    document.getElementById('pres-url').value='';
+    document.getElementById('pres-list').innerHTML=presListHtml();
+    rebindPresDel();
+  });
+
+  document.getElementById('pres-save').addEventListener('click',async()=>{
+    const st=document.getElementById('pres-status');
+    st.style.color='var(--text-dim)';st.textContent='Guardando…';
+    let sesion={};
+    try{const r=await dbGet('sesion_'+todayKey);if(r)sesion=JSON.parse(r);}catch{}
+    sesion.presentaciones=presList;
+    const ok=await dbSet('sesion_'+todayKey,JSON.stringify(sesion));
+    localStorage.setItem('slides-list',JSON.stringify(presList));
+    st.style.color=ok?'#4ade80':'#fca5a5';
+    st.textContent=ok?'✅ Guardadas en la nube':'❌ Error al guardar';
+    setTimeout(()=>{st.textContent='';},3000);
+  });
+
+  /* ── TEMARIO events ── */
+  document.getElementById('temario-save').addEventListener('click',async()=>{
+    const url=document.getElementById('temario-url-input').value.trim();
+    const st=document.getElementById('temario-status');
+    st.style.color='var(--text-dim)';st.textContent='Guardando…';
+    const ok=await dbSet('temario_url',url);
+    if(url)localStorage.setItem('temario_url',url);
+    else localStorage.removeItem('temario_url');
+    updateTemarioCard(url||null);
+    st.style.color=ok?'#4ade80':'#fca5a5';
+    st.textContent=ok?'✅ Guardado':'❌ Error al guardar';
+    setTimeout(()=>{st.textContent='';},3000);
+  });
+
+  /* ── STILE events ── */
+  function rebindStileDel(){
+    view.querySelectorAll('.stile-del').forEach(btn=>{
+      btn.addEventListener('click',async()=>{
+        const st=document.getElementById('stile-status');
+        st.style.color='var(--text-dim)';st.textContent='Eliminando…';
+        const all=await getStileItems();
+        await saveStileItems(all.filter(x=>x.id!==btn.dataset.id));
+        const updated=await getStileItems();
+        stile.length=0;updated.sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).forEach(x=>stile.push(x));
+        document.getElementById('stile-admin-list').innerHTML=stileListHtml();
+        rebindStileDel();
+        st.textContent='';
+      });
+    });
+  }
+  rebindStileDel();
+
+  document.getElementById('stile-add').addEventListener('click',async()=>{
+    const titulo=document.getElementById('stile-titulo').value.trim();
+    const imagen_url=document.getElementById('stile-url').value.trim();
+    const st=document.getElementById('stile-status');
+    if(!titulo||!imagen_url){st.style.color='#fca5a5';st.textContent='Rellena título y URL.';setTimeout(()=>{st.textContent='';},2500);return;}
+    st.style.color='var(--text-dim)';st.textContent='Guardando…';
+    const all=await getStileItems();
+    all.unshift({id:Date.now().toString(),titulo,imagen_url,created_at:new Date().toISOString()});
+    await saveStileItems(all);
+    document.getElementById('stile-titulo').value='';
+    document.getElementById('stile-url').value='';
+    const updated=await getStileItems();
+    stile.length=0;updated.sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).forEach(x=>stile.push(x));
+    document.getElementById('stile-admin-list').innerHTML=stileListHtml();
+    rebindStileDel();
+    st.style.color='#4ade80';st.textContent='✅ Añadida.';
+    setTimeout(()=>{st.textContent='';},2500);
   });
 }
 
@@ -1286,210 +1428,7 @@ async function renderStile(){
 }
 
 function initAdminPanel(){
-  const modal=document.createElement('div');
-  modal.id='admin-panel-modal';
-  modal.className='modal-overlay';
-  modal.hidden=true;
-  modal.innerHTML=`
-<div class="modal-glass ap-glass">
-  <button id="ap-close" class="modal-close" aria-label="Cerrar panel">✕</button>
-  <h2 class="modal-title" style="text-align:left;font-size:1.3rem;margin-bottom:1.5rem">🗂️ Panel de Administración</h2>
-
-  <label class="ap-label">📅 Sesión del día</label>
-  <input type="date" id="ap-date" class="admin-input" style="margin-bottom:1.25rem"/>
-
-  <label class="ap-label">📋 Tablón de anuncios</label>
-  <textarea id="ap-tablon" class="ap-textarea" placeholder="Escribe el contenido del tablón de hoy…"></textarea>
-
-  <label class="ap-label">📚 Vocabulario <span style="font-size:.72rem;opacity:.55;font-weight:400;text-transform:none">(una palabra por línea)</span></label>
-  <textarea id="ap-vocab" class="ap-textarea" placeholder="rojo&#10;azul&#10;verde" style="min-height:90px"></textarea>
-
-  <label class="ap-label">🎞️ Presentaciones de este día</label>
-  <div id="ap-pres-list" class="ap-pres-list"></div>
-  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem;margin-bottom:1.5rem">
-    <input id="ap-pres-name" class="slides-input" placeholder="Nombre del alumno…" style="flex:1;min-width:130px"/>
-    <input id="ap-pres-url"  class="slides-input" placeholder="URL de Google Slides…" style="flex:2;min-width:170px"/>
-    <button id="ap-pres-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
-  </div>
-
-  <button id="ap-save" class="btn-primary">💾 Guardar Sesión</button>
-
-  <hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.5rem 0"/>
-  <label class="ap-label">📚 Temario — URL de Google Docs <span style="font-size:.7rem;opacity:.5;font-weight:400;text-transform:none">(global, todas las sesiones)</span></label>
-  <div style="display:flex;gap:.5rem;margin-bottom:.25rem">
-    <input id="ap-temario-url" class="slides-input" placeholder="https://docs.google.com/document/d/…" style="flex:1"/>
-    <button id="ap-temario-save" class="save-btn" style="margin:0;white-space:nowrap">💾 Guardar</button>
-  </div>
-
-  <p id="ap-status" style="font-size:.8rem;color:var(--text-dim);margin-top:.6rem;min-height:1.2rem;text-align:center"></p>
-
-  <hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.5rem 0"/>
-  <label class="ap-label">✍️ Stile — Redacciones</label>
-  <div id="ap-stile-list" class="ap-pres-list"></div>
-  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem;margin-bottom:.25rem">
-    <input id="ap-stile-titulo" class="slides-input" placeholder="Título de la redacción…" style="flex:1;min-width:140px"/>
-    <input id="ap-stile-url"    class="slides-input" placeholder="URL del documento o redacción…" style="flex:2;min-width:170px"/>
-    <button id="ap-stile-add" class="save-btn" style="margin:0;white-space:nowrap">＋ Añadir</button>
-  </div>
-</div>`;
-  document.body.appendChild(modal);
-
-  let presList=[];
-
-  function todayInputStr(){
-    const d=new Date();
-    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  }
-
-  function renderPresList(){
-    const c=document.getElementById('ap-pres-list');
-    if(!presList.length){
-      c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin presentaciones para este día.</p>';
-      return;
-    }
-    c.innerHTML=presList.map((p,i)=>`
-<div class="frem-admin-row">
-  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
-  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${p.url}</span>
-  <button class="frem-del" data-i="${i}">🗑️</button>
-</div>`).join('');
-    c.querySelectorAll('.frem-del').forEach(btn=>{
-      btn.addEventListener('click',()=>{presList.splice(+btn.dataset.i,1);renderPresList();});
-    });
-  }
-
-  async function loadForDate(dateStr){
-    const key='sesion_'+dateStr.replace(/-/g,'');
-    const raw=await dbGet(key);
-    if(raw){
-      try{
-        const s=JSON.parse(raw);
-        document.getElementById('ap-tablon').value=s.tablon||'';
-        document.getElementById('ap-vocab').value=(s.vocab||[]).join('\n');
-        presList=(s.presentaciones||[]).slice();
-      }catch{
-        document.getElementById('ap-tablon').value='';
-        document.getElementById('ap-vocab').value='';
-        presList=[];
-      }
-    } else {
-      document.getElementById('ap-tablon').value='';
-      document.getElementById('ap-vocab').value='';
-      presList=[];
-    }
-    renderPresList();
-  }
-
-  modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true;});
-  document.getElementById('ap-close').addEventListener('click',()=>{modal.hidden=true;});
-  document.getElementById('ap-date').addEventListener('change',e=>loadForDate(e.target.value));
-
-  document.getElementById('ap-pres-add').addEventListener('click',()=>{
-    const name=document.getElementById('ap-pres-name').value.trim();
-    const url=document.getElementById('ap-pres-url').value.trim();
-    if(!name||!url)return;
-    presList.push({name,url});
-    document.getElementById('ap-pres-name').value='';
-    document.getElementById('ap-pres-url').value='';
-    renderPresList();
-  });
-
-  document.getElementById('ap-temario-save').addEventListener('click',async()=>{
-    const url=document.getElementById('ap-temario-url').value.trim();
-    const statusEl=document.getElementById('ap-status');
-    statusEl.style.color='var(--text-dim)';statusEl.textContent='Guardando temario…';
-    await dbSet('temario_url',url);
-    if(url) localStorage.setItem('temario_url',url);
-    else localStorage.removeItem('temario_url');
-    updateTemarioCard(url||null);
-    statusEl.style.color='#4ade80';statusEl.textContent='✅ URL del Temario guardada.';
-    setTimeout(()=>{statusEl.textContent='';},3000);
-  });
-
-  document.getElementById('ap-save').addEventListener('click',async()=>{
-    const dateStr=document.getElementById('ap-date').value;
-    if(!dateStr)return;
-    const tablon=document.getElementById('ap-tablon').value;
-    const vocab=document.getElementById('ap-vocab').value.split('\n').map(l=>l.trim()).filter(Boolean);
-    const statusEl=document.getElementById('ap-status');
-    statusEl.style.color='var(--text-dim)';
-    statusEl.textContent='Guardando…';
-    const key='sesion_'+dateStr.replace(/-/g,'');
-    const session=JSON.stringify({tablon,vocab,presentaciones:presList});
-    await dbSet(key,session);
-    // Refrescar caché local para que el resto de la SPA lo vea de inmediato
-    localStorage.setItem('tablon',tablon);
-    localStorage.setItem('vocab',JSON.stringify(vocab));
-    localStorage.setItem('slides-list',JSON.stringify(presList));
-    statusEl.style.color='#4ade80';
-    statusEl.textContent='✅ Sesión guardada en la nube.';
-    setTimeout(()=>{statusEl.textContent='';},3000);
-  });
-
-  // ── Stile admin ──────────────────────────────────────────
-  async function loadStileList(){
-    const c=document.getElementById('ap-stile-list');
-    c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Cargando…</p>';
-    const items=await getStileItems();
-    if(!items.length){c.innerHTML='<p style="font-size:.8rem;color:var(--text-dim);padding:.25rem 0">Sin redacciones todavía.</p>';return;}
-    const sorted=[...items].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1));
-    c.innerHTML=sorted.map(r=>`
-<div class="frem-admin-row">
-  <span style="font-size:.85rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(r.titulo)}</span>
-  <span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .5rem">${escapeHTML(r.imagen_url)}</span>
-  <button class="frem-del" data-id="${escapeHTML(r.id)}">🗑️</button>
-</div>`).join('');
-    c.querySelectorAll('.frem-del').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        const all=await getStileItems();
-        await saveStileItems(all.filter(x=>x.id!==btn.dataset.id));
-        loadStileList();
-      });
-    });
-  }
-
-  window._openAdminPanel=async function(){
-    if(!STATE.admin){
-      const modal=$('admin-modal');
-      const input=$('admin-password-input');
-      const errEl=$('admin-error');
-      if(modal){
-        modal.hidden=false;
-        if(input){ input.value=''; input.focus(); }
-        if(errEl) errEl.textContent='Du skal logge ind først.';
-      }
-      return;
-    }
-    const dateInput=document.getElementById('ap-date');
-    if(!dateInput.value)dateInput.value=todayInputStr();
-    document.getElementById('ap-status').textContent='';
-    const currentUrl=await dbGet('temario_url');
-    document.getElementById('ap-temario-url').value=currentUrl||'';
-    modal.hidden=false;
-    loadForDate(dateInput.value);
-    loadStileList();
-  };
-
-  document.getElementById('ap-stile-add').addEventListener('click',async()=>{
-    const titulo=document.getElementById('ap-stile-titulo').value.trim();
-    const imagen_url=document.getElementById('ap-stile-url').value.trim();
-    const statusEl=document.getElementById('ap-status');
-    if(!titulo||!imagen_url){statusEl.style.color='#fca5a5';statusEl.textContent='Rellena título e imagen URL.';setTimeout(()=>{statusEl.textContent='';},2500);return;}
-    statusEl.style.color='var(--text-dim)';statusEl.textContent='Guardando…';
-    try{
-      const items=await getStileItems();
-      items.unshift({id:Date.now().toString(),titulo,imagen_url,created_at:new Date().toISOString()});
-      await saveStileItems(items);
-      document.getElementById('ap-stile-titulo').value='';
-      document.getElementById('ap-stile-url').value='';
-      statusEl.style.color='#4ade80';statusEl.textContent='✅ Redacción añadida.';
-      setTimeout(()=>{statusEl.textContent='';},2500);
-      loadStileList();
-    }catch(e){
-      console.error('[stile-add] Error:', e);
-      statusEl.style.color='#fca5a5';statusEl.textContent='Error al guardar: '+(e.message||'desconocido');
-    }
-  });
+  // Panel eliminado — todo está integrado en la vista del Tablón (admin)
 }
 
 /* ── INIT ──────────────────────────────────────────────── */
