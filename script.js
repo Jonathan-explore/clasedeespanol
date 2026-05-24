@@ -237,6 +237,7 @@ function detectLang(text){
   function stretchToward(tx,ty,dur){stretchTarget={tx,ty};stretchT=0;stretchDur=dur;}
   window._fluidStretch=stretchToward;
   function loop(t){
+    if(document.documentElement.dataset.theme==='light'){requestAnimationFrame(loop);return;}
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle='#0a0f1e';ctx.fillRect(0,0,W,H);
     if(stretchTarget){
@@ -920,6 +921,29 @@ async function myMemoryTranslate(text,langpair){
 }
 // Expose globally so game.js can reuse the same translator (and cache).
 window.myMemoryTranslate = myMemoryTranslate;
+function speakSpanish(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='es-ES';u.rate=0.88;
+  function go(){
+    const voices=speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang==='es-ES')||voices.find(v=>v.lang.startsWith('es'));
+    if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }
+  if(speechSynthesis.getVoices().length)go();
+  else speechSynthesis.addEventListener('voiceschanged',go,{once:true});
+}
+window.speakSpanish=speakSpanish;
+window.playAudio=function(text,lang){
+  if(lang&&lang.startsWith('es'))return speakSpanish(text);
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=lang||'da-DK';
+  window.speechSynthesis.speak(u);
+};
 function renderOrdbog(){
   const view=$('view-ordbog');
   const vocab=getVocab();
@@ -933,16 +957,10 @@ function renderOrdbog(){
 </div>`;
   const grid=document.getElementById('ordbog-grid');
   const input=document.getElementById('ordbog-input');
-  
+
   function getSearchHistory(){try{return JSON.parse(localStorage.getItem('ordbog_history')||'[]');}catch{return[];}}
   function saveSearchHistory(h){localStorage.setItem('ordbog_history',JSON.stringify(h.slice(0,50)));}
-  
-  window.playAudio = function(text, lang) {
-    if (!window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang;
-    window.speechSynthesis.speak(u);
-  };
+
   function makeCard(word,translation,gender,plural,sourceLang){
     const gc=gender==='fem'?'fem':gender==='masc'?'masc':'neu';
     const gLabel=gender==='fem'?'Femenino':gender==='masc'?'Masculino':'Neutro';
@@ -951,7 +969,7 @@ function renderOrdbog(){
     const c=el('div',`word-card ${gc}`);
     c.innerHTML=`<div class="wc-header" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem">
   <div class="wc-word" style="margin-bottom:0">${esWord}</div>
-  <button class="wc-audio" onclick="window.playAudio('${esWord.replace(/'/g,"\\'")}','es-ES')" title="Lyt til udtalen" style="background:none;border:none;font-size:1.1rem;cursor:pointer;opacity:.7;transition:all .2s">🔊</button>
+  <button class="wc-audio" onclick="window.speakSpanish('${esWord.replace(/'/g,"\\'")}')\" title="Lyt til udtalen" style="background:none;border:none;font-size:1.1rem;cursor:pointer;opacity:.7;transition:all .2s">🔊</button>
 </div>
 <div class="wc-translation">${daWord}</div>
 <div class="wc-meta">
@@ -1191,11 +1209,7 @@ function buildMatchPairs(vocab){
   const chosen=vocab.slice(0,MAX);
   panel.innerHTML=`<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1rem">Indlæser oversættelser…</p>`;
   (async()=>{
-    const pairs=[];
-    for(const w of chosen){
-      const t=await myMemoryTranslate(w,'es|da');
-      pairs.push({es:w,da:t||w});
-    }
+    const pairs=await Promise.all(chosen.map(async w=>{const t=await myMemoryTranslate(w,'es|da');return{es:w,da:t||w};}));
     const shuffledEs=[...pairs].sort(()=>Math.random()-.5);
     const shuffledDa=[...pairs].sort(()=>Math.random()-.5);
     let selected=null,matched=0;
@@ -1263,13 +1277,9 @@ function buildListening(vocab){
   const chosen=[...vocab].sort(()=>Math.random()-.5).slice(0,MAX);
   
   panel.innerHTML=`<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1.5rem">Henter oversættelser…</p><div class="loading-spin" style="margin:2rem auto"></div>`;
-  
+
   (async()=>{
-    const questions=[];
-    for(const w of chosen){
-      const da=await myMemoryTranslate(w,'es|da');
-      questions.push({es:w,da:da});
-    }
+    const questions=await Promise.all(chosen.map(async w=>{const da=await myMemoryTranslate(w,'es|da');return{es:w,da};}));
 
     let html=`
     <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem;line-height:1.6">
@@ -1305,12 +1315,7 @@ function buildListening(vocab){
     
     panel.querySelectorAll('.list-play').forEach(btn=>{
       btn.addEventListener('click',function(){
-        const w=this.dataset.w;
-        if(window.speechSynthesis) {
-          const u = new SpeechSynthesisUtterance(w);
-          u.lang = 'es-ES';
-          window.speechSynthesis.speak(u);
-        }
+        speakSpanish(this.dataset.w);
         this.style.transform='scale(0.9)';
         setTimeout(()=>this.style.transform='none', 150);
       });
@@ -1364,11 +1369,7 @@ function buildWordScramble(vocab){
   const chosen=[...vocab].sort(()=>Math.random()-.5).slice(0,MAX);
   panel.innerHTML=`<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1.5rem">Henter oversættelser…</p><div class="loading-spin" style="margin:2rem auto"></div>`;
   (async()=>{
-    const questions=[];
-    for(const w of chosen){
-      const da=await myMemoryTranslate(w,'es|da');
-      questions.push({es:w,da:da});
-    }
+    const questions=await Promise.all(chosen.map(async w=>{const da=await myMemoryTranslate(w,'es|da');return{es:w,da};}));
     function scramble(word){
       const arr=word.split('');
       for(let tries=0;tries<10;tries++){
