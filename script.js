@@ -112,8 +112,9 @@ async function syncFromCloud(){
     }
   }
 
-  // Vocab para flashcards: usa la sesión del miércoles anterior/actual (rotación)
-  if(todayKey!==wedKey){
+  // Vocab para flashcards desde sesión del miércoles — solo si no hay tablón activo
+  // (el tablón activo tiene prioridad absoluta sobre el vocab para todos los ejercicios)
+  if(todayKey!==wedKey && !activoRaw){
     const wedRaw=await dbGet('sesion_'+wedKey);
     if(wedRaw){
       try{const s=JSON.parse(wedRaw);if(s.vocab)localStorage.setItem('vocab',JSON.stringify(s.vocab));}catch{}
