@@ -1,6 +1,9 @@
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important;}
+/* mobile: remove tap flash, prevent double-tap-zoom on all interactive elements */
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button,a,[role="button"]{touch-action:manipulation}
 :root{
   --deep:#07090f;
   --deep2:#0d1120;
@@ -25,7 +28,7 @@ html,body{
   font-family:'Inter','DM Sans',sans-serif;
   -webkit-font-smoothing:antialiased;
 }
-body{overflow:hidden}
+body{overflow:hidden;overscroll-behavior:none}
 
 /* ── ENTRANCE ANIMATIONS ──────────────────────────────────── */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
@@ -54,7 +57,7 @@ body{overflow:hidden}
 /* ── APP SHELL ────────────────────────────────────────────── */
 #app-shell{position:relative;z-index:2;height:100%;display:flex;flex-direction:column}
 .view{display:none;width:100%;height:100%}
-.view.active{display:flex;flex-direction:column;overflow-y:auto}
+.view.active{display:flex;flex-direction:column;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
 /* ── TOP BAR ──────────────────────────────────────────────── */
 .top-bar{
@@ -75,7 +78,7 @@ body{overflow:hidden}
 .logo-text{font-size:.9rem;font-weight:600;letter-spacing:.05em;color:var(--text);opacity:.8}
 
 /* ── HOME VIEW ────────────────────────────────────────────── */
-#view-home{align-items:center;justify-content:center;overflow:auto}
+#view-home{align-items:center;justify-content:center;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .home-inner{
   display:flex;flex-direction:column;align-items:center;
   gap:2.8rem;padding:5rem 1.5rem 3rem;
@@ -376,7 +379,7 @@ body{overflow:hidden}
 
 /* ── CONTENT VIEW (shared) ────────────────────────────────── */
 .content-view{
-  flex-direction:column;overflow-y:auto;
+  flex-direction:column;
   padding:5.5rem 2.5rem 3rem;
   max-width:960px;margin:0 auto;width:100%;
   position:relative;
@@ -421,6 +424,7 @@ body{overflow:hidden}
 .tablon-text p{
   font-size:.95rem;line-height:1.65;color:var(--text);
   margin:0 0 .35rem;
+  overflow-wrap:break-word;word-break:break-word;
 }
 .tablon-text p:last-child{margin-bottom:0}
 .vocab-chip{
@@ -961,7 +965,7 @@ body{overflow:hidden}
 /* ── ADMIN PANEL ──────────────────────────────────────────── */
 .ap-glass{
   width:min(680px,94vw);text-align:left;
-  max-height:90vh;overflow-y:auto;padding:2.5rem 2rem;
+  max-height:90vh;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:2.5rem 2rem;
 }
 .ap-label{
   display:block;font-size:.75rem;font-weight:600;
@@ -1005,25 +1009,52 @@ body{overflow:hidden}
 
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media(max-width:640px){
-  /* justify-content:center + overflow rompe el scroll (el inicio queda
-     por encima del viewport y no es alcanzable). Con flex-start +
-     margin-block:auto el contenido se centra cuando cabe y queda en
-     el tope cuando desborda, permitiendo scroll natural. */
+  /* justify-content:center + overflow rompe el scroll; flex-start +
+     margin-block:auto centra cuando cabe y permite scroll cuando desborda */
   #view-home{justify-content:flex-start}
-  .home-inner{gap:1.5rem;padding:4.5rem 1rem 2rem;margin-block:auto}
+  .home-inner{gap:1.5rem;padding:4.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom,0px));margin-block:auto}
   .cards-grid{grid-template-columns:1fr;gap:1rem}
   .card-inner{height:150px;padding:1.35rem}
-  .top-bar{padding:.75rem 1.25rem}
-  .back-btn{left:1.25rem}
-  .admin-badge{right:1.25rem}
-  .dd-buckets{grid-template-columns:1fr}
-  .match-grid{gap:.5rem}
-  .match-item{padding:.55rem .7rem;font-size:.82rem}
-  .content-view{padding:4.5rem 1rem 1.5rem}
+
+  /* safe-area-inset: account for notch / Dynamic Island / home bar
+     (viewport-fit=cover is set in the meta tag) */
+  .top-bar{padding:max(.75rem,env(safe-area-inset-top)) 1.25rem .75rem}
+  .back-btn{
+    left:1.25rem;
+    top:max(.9rem,env(safe-area-inset-top));
+    min-height:44px;
+  }
+  .admin-badge{
+    right:1.25rem;
+    top:max(.9rem,env(safe-area-inset-top));
+  }
+  .quick-dict-fab{
+    bottom:max(2rem,calc(env(safe-area-inset-bottom,0px) + 1.75rem));
+    right:max(2rem,calc(env(safe-area-inset-right,0px) + 2rem));
+  }
+
+  /* content padding: top avoids back-btn; bottom avoids FAB + home bar */
+  .content-view{padding:max(4.5rem,calc(env(safe-area-inset-top,0px) + 3.5rem)) 1rem calc(5.5rem + env(safe-area-inset-bottom,0px))}
+
   .slides-frame-wrap iframe{height:280px}
   .features-strip{flex-wrap:wrap;gap:.75rem;justify-content:center;border-radius:20px;padding:.8rem 1rem}
   .exercise-tabs{flex-wrap:wrap;border-radius:16px;gap:.4rem}
-  .tab-btn{font-size:.75rem;padding:.5rem .9rem}
+
+  /* min touch-target 44px (iOS HIG / WCAG 2.5.5) */
+  .tab-btn{font-size:.75rem;padding:.5rem .9rem;min-height:44px;display:flex;align-items:center;justify-content:center}
+  .match-item{padding:.65rem .8rem;font-size:.88rem;min-height:44px;display:flex;align-items:center}
+  .vocab-chip{min-height:40px}
+  .save-btn,.btn-primary{min-height:44px}
+  .dd-oneup-btn{min-height:52px}
+  /* theme & admin tiny buttons: expand hit area */
+  #theme-toggle,#direct-admin-btn{min-width:44px !important;min-height:44px !important;padding:.5rem !important}
+
+  /* prevent iOS auto-zoom on inputs (triggers when font-size < 16px) */
+  .admin-input,.ordbog-search,.slides-input,.ap-textarea,.tablon-textarea{font-size:1rem}
+
+  /* match layout */
+  .match-grid{gap:.5rem}
+  .dd-buckets{grid-template-columns:1fr}
 }
 
 /* ══════════════════════════════════════════════════════════════
