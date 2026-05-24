@@ -1194,49 +1194,62 @@ function buildMatchPairs(vocab){
     const pairs=[];
     for(const w of chosen){
       const t=await myMemoryTranslate(w,'es|da');
-      pairs.push({es:w,da:t});
+      pairs.push({es:w,da:t||w});
     }
     const shuffledEs=[...pairs].sort(()=>Math.random()-.5);
     const shuffledDa=[...pairs].sort(()=>Math.random()-.5);
-    let selected=null,matched=0,score=0;
+    let selected=null,matched=0;
     function makeItems(arr,lang){
-      return arr.map(p=>{
-        const d=el('div','match-item');
+      return arr.map((p,i)=>{
+        const d=el('div','match-item match-entering');
         d.dataset.es=p.es;d.dataset.lang=lang;
         d.textContent=lang==='es'?p.es:p.da;
+        d.style.animationDelay=(i*0.07)+'s';
         return d;
       });
     }
     const esItems=makeItems(shuffledEs,'es');
     const daItems=makeItems(shuffledDa,'da');
-    const scoreEl=el('p','match-score','0 / '+pairs.length+' match');
+    const scoreEl=el('div','match-score');
+    scoreEl.innerHTML=`<span class="match-score-num">0</span>&thinsp;/&thinsp;${pairs.length} par`;
     panel.innerHTML='';
+    panel.appendChild(el('p','',`<span style="font-size:.85rem;color:var(--text-dim)">Forbind det spanske ord med den danske oversættelse 🃏</span>`));
+    panel.appendChild(scoreEl);
     const grid=el('div','match-grid');
     const col1=el('div','match-col');const col2=el('div','match-col');
     esItems.forEach(i=>col1.appendChild(i));
     daItems.forEach(i=>col2.appendChild(i));
     grid.appendChild(col1);grid.appendChild(col2);
-    panel.appendChild(el('p','',`<span style="font-size:.85rem;color:var(--text-dim)">Vælg et spansk ord og derefter dets danske oversættelse 🃏</span>`));
-    panel.appendChild(grid);panel.appendChild(scoreEl);
+    panel.appendChild(grid);
     function handleClick(item){
-      if(item.classList.contains('matched'))return;
-      if(!selected){selected=item;item.classList.add('selected');}
-      else if(selected===item){selected.classList.remove('selected');selected=null;}
-      else{
-        const a=selected,b=item;
-        a.classList.remove('selected');
-        const aEs=a.dataset.lang==='es'?a.dataset.es:b.dataset.es;
-        const bEs=b.dataset.lang==='es'?b.dataset.es:a.dataset.es;
-        if(aEs===bEs){
-          a.classList.add('matched');b.classList.add('matched');
-          matched++;score++;
-          scoreEl.textContent=score+' / '+pairs.length+' match';
-          if(matched===pairs.length)scoreEl.textContent='🎉 Perfekt! Alle par fundet!';
-        } else {
-          a.classList.add('wrong-shake');b.classList.add('wrong-shake');
-          setTimeout(()=>{a.classList.remove('wrong-shake');b.classList.remove('wrong-shake');},400);
+      if(item.classList.contains('matched')||item.classList.contains('match-correct')||item.classList.contains('match-wrong'))return;
+      if(!selected){selected=item;item.classList.add('selected');return;}
+      if(selected===item){selected.classList.remove('selected');selected=null;return;}
+      if(selected.dataset.lang===item.dataset.lang){
+        selected.classList.remove('selected');selected=item;item.classList.add('selected');return;
+      }
+      const a=selected,b=item;selected=null;a.classList.remove('selected');
+      if(a.dataset.es===b.dataset.es){
+        a.classList.add('match-correct');b.classList.add('match-correct');
+        setTimeout(()=>{
+          a.classList.replace('match-correct','matched');
+          b.classList.replace('match-correct','matched');
+        },600);
+        matched++;
+        const n=scoreEl.querySelector('.match-score-num');
+        if(n)n.textContent=matched;
+        if(matched===pairs.length){
+          setTimeout(()=>{
+            scoreEl.innerHTML='';
+            const win=el('div','match-win','🎉 Perfekt! Alle '+pairs.length+' par fundet!');
+            const btn=el('button','match-reset-btn','Prøv igen ↺');
+            btn.addEventListener('click',()=>buildMatchPairs(vocab));
+            scoreEl.appendChild(win);scoreEl.appendChild(btn);
+          },900);
         }
-        selected=null;
+      } else {
+        a.classList.add('match-wrong');b.classList.add('match-wrong');
+        setTimeout(()=>{a.classList.remove('match-wrong');b.classList.remove('match-wrong');},520);
       }
     }
     [...esItems,...daItems].forEach(i=>i.addEventListener('click',()=>handleClick(i)));
