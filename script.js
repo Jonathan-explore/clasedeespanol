@@ -526,15 +526,34 @@ function renderTablonStudent(view,activo){
 </div>`;
     return;
   }
-  const dateStr=activo.fecha?formatDisplayDate(activo.fecha):'';
-  const cardsHtml=(activo.cards||[]).map(card=>`
+  // Newest card first — cards with ts sort by ts desc; legacy cards (no ts) fall to bottom
+  const sorted=[...(activo.cards||[])].sort((a,b)=>(b.ts||0)-(a.ts||0));
+
+  // Beautiful date header
+  let dateHtml='';
+  if(activo.fecha){
+    try{
+      const[y,m,d]=activo.fecha.split('-').map(Number);
+      const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      dateHtml=`<div class="tablon-date-header">
+  <div class="tdh-day">${d}</div>
+  <div class="tdh-right">
+    <span class="tdh-month">${months[m-1]} ${y}</span>
+    <span class="tdh-label">Publicado</span>
+  </div>
+</div>`;
+    }catch{}
+  }
+
+  const cardsHtml=sorted.map(card=>`
 <div class="tablon-card">
   ${card.titulo?`<div class="tablon-card-title">${escapeHTML(card.titulo)}</div>`:''}
   ${renderCardBody(card)}
 </div>`).join('');
+
   view.innerHTML=`<div class="content-view active" style="display:flex">
 <h2 class="section-title">📋 Tablón</h2>
-${dateStr?`<p class="tablon-date-badge">📅 ${dateStr}</p>`:''}
+${dateHtml}
 ${cardsHtml}
 </div>`;
 }
@@ -660,7 +679,7 @@ ${divider}
     if(!cuerpo)return;
     const firstTextLine=cuerpo.split('\n').map(l=>l.trim()).find(l=>l&&!l.startsWith('-'))||'';
     const titulo=firstTextLine||'Tarjeta';
-    cards.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2),titulo,cuerpo});
+    cards.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2),titulo,cuerpo,ts:Date.now()});
     document.getElementById('tablon-card-cuerpo').value='';
     document.getElementById('tablon-cards-list').innerHTML=cardsListHtml();
     rebindDelete();

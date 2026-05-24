@@ -504,6 +504,38 @@ body{overflow:hidden}
   margin-bottom:1rem;
   display:flex;align-items:center;gap:.35rem;
 }
+
+/* ── TABLÓN DATE HEADER ──────────────────────────────────── */
+.tablon-date-header{
+  display:inline-flex;align-items:center;gap:.85rem;
+  margin-bottom:1.5rem;align-self:flex-start;
+  padding:.6rem 1.25rem .6rem .9rem;
+  background:rgba(94,234,212,.07);
+  border:1px solid rgba(94,234,212,.18);
+  border-radius:60px;
+}
+.tdh-day{
+  font-size:1.9rem;font-weight:800;
+  color:var(--glow);line-height:1;
+  min-width:1.6rem;text-align:center;
+}
+.tdh-right{display:flex;flex-direction:column;gap:.05rem}
+.tdh-month{
+  font-size:.88rem;font-weight:600;
+  color:var(--text);line-height:1.25;
+  text-transform:capitalize;
+}
+.tdh-label{
+  font-size:.62rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-dim);
+}
+
+[data-theme="light"] .tablon-date-header{
+  background:rgba(42,117,96,.08);
+  border-color:rgba(42,117,96,.2);
+}
+
 .tablon-card{
   background:rgba(13,17,32,.65);
   border:1px solid var(--glass-border);
