@@ -825,89 +825,395 @@ ${divider}
   });
 }
 
-/* ── FREMLÆGGELSE ──────────────────────────────────────── */
+/* ── LIGNENDE ORD — DATA ───────────────────────────────── */
+const SPROGBRO_LANGS=[
+  {id:'ar',flag:'🇸🇦',colLabel:'🇸🇦 Arabisk',title:'Arabisk → Dansk',
+   grad:'linear-gradient(135deg,#064E3B,#065F46,#047857)',
+   accent:'#16A34A',accdark:'#15803D',
+   cardColor:'rgba(4,120,87,.28)',cardGlow:'rgba(5,150,105,.35)',
+   pills:['قهوة → kaffe','سكر → sukker','الجبر → algebra','زرافة → giraf'],
+   cardDesc:'Arabisk har givet dansk over 1.000 ord — fra <em>kaffe og sukker</em> til <em>algebra og alkohol</em>.',
+   funFact:'Arabisk er et af de vigtigste sprog i verdenshistorien. Araberne var mestre inden for <strong>matematik, astronomi, medicin og handel</strong>. De gav Europa ord som <em>algebra, algoritme, kaffe og sukker</em>. ☕🧮',
+   motto:'"Arabisk er ikke et fremmed sprog — det er en del af det dansk, du allerede taler!" 🌟',
+   searchPH:'Søg på dansk eller translitteration...',
+   hasBadge:true,isRTL:true,
+   sections:[
+    {ic:'🍽️',ti:'Arabisk i dit køkken',su:'Disse ord gav araberne til resten af verden!',ra:'1–10',
+     ws:[{o:'قهوة',t:'qahwa',d:'kaffe',s:'vs'},{o:'سكر',t:'sukkar',d:'sukker',s:'vs'},{o:'شراب',t:'sharāb',d:'sirup',s:'si'},{o:'إسفناخ',t:'isfanākh',d:'spinat',s:'si'},{o:'زعفران',t:"za'farān",d:'safran',s:'si'},{o:'نارنج',t:'nāranj',d:'appelsin',s:'si'},{o:'ليمون',t:'laymūn',d:'citron',s:'si'},{o:'الخرشوف',t:'al-kharshūf',d:'artiskok',s:'si'},{o:'تمر هندي',t:'tamar hindī',d:'tamarind',s:'vs'},{o:'بادنجان',t:'bādhinjān',d:'aubergine',s:'si'}]},
+    {ic:'🔬',ti:'Arabisk videnskab ændrede verden',su:'Arabiske lærde opfandt algebra, algoritmer og kemi!',ra:'11–20',
+     ws:[{o:'الجبر',t:'al-jabr',d:'algebra',s:'si'},{o:'خوارزم',t:'al-Khwārazmī',d:'algoritme',s:'si'},{o:'الكيمياء',t:"al-kīmiyā'",d:'kemi',s:'si'},{o:'صفر',t:'sifr',d:'ciffer',s:'si'},{o:'صفر',t:'sifr',d:'nul',s:'si'},{o:'ناظر',t:'nādhir',d:'nadir',s:'vs'},{o:'السمت',t:'al-samt',d:'azimut',s:'si'},{o:'الإكسير',t:'al-iksīr',d:'elixir',s:'si'},{o:'القلي',t:'al-qaly',d:'alkali',s:'si'},{o:'المناخ',t:'al-manākh',d:'almanak',s:'si'}]},
+    {ic:'🏪',ti:'Handel & Hverdagsliv',su:'Arabiske købmænd rejste hele verden rundt!',ra:'21–30',
+     ws:[{o:'تعريفة',t:"ta'rīfah",d:'tarif',s:'si'},{o:'مخازن',t:'makhāzin',d:'magasin',s:'si'},{o:'قيراط',t:'qīrāt',d:'karat',s:'vs'},{o:'مطرح',t:'matrah',d:'madras',s:'si'},{o:'الكحل',t:'al-kuhl',d:'alkohol',s:'si'},{o:'أمير البحر',t:'amīr al-baḥr',d:'admiral',s:'si'},{o:'صفّة',t:'suffah',d:'sofa',s:'si'},{o:'ديوان',t:'dīwān',d:'divan',s:'vs'},{o:'طلسم',t:'tilasm',d:'talisman',s:'si'},{o:'الزهر',t:'az-zahr',d:'hazard',s:'si'}]},
+    {ic:'🦒',ti:'Natur, Dyr & Planter',su:'Arabisk er fyldt med smukke ord til naturen!',ra:'31–40',
+     ws:[{o:'زرافة',t:'zarāfah',d:'giraf',s:'si'},{o:'غزال',t:'ghazāl',d:'gazelle',s:'si'},{o:'ياسمين',t:'yāsamīn',d:'jasmin',s:'vs'},{o:'عنبر',t:'ʿanbar',d:'amber',s:'si'},{o:'قطن',t:'qutn',d:'bomuld',s:'si'},{o:'موميا',t:'mūmiyā',d:'mumie',s:'vs'},{o:'مسخرة',t:'maskhara',d:'maske',s:'si'},{o:'سفاري',t:'safārī',d:'safari',s:'id'},{o:'لك',t:'lakk',d:'lak',s:'vs'},{o:'طلق',t:'talq',d:'talk',s:'vs'}]},
+    {ic:'📱',ti:'Teknologi',su:'Moderne arabisk bruger de samme globale ord som dansk!',ra:'41–50',
+     ws:[{o:'إنترنت',t:'internet',d:'internet',s:'id'},{o:'راديو',t:'rādyō',d:'radio',s:'id'},{o:'تليفون',t:'tilifūn',d:'telefon',s:'id'},{o:'فيلم',t:'fīlm',d:'film',s:'id'},{o:'فيديو',t:'vīdyō',d:'video',s:'id'},{o:'كمبيوتر',t:'kombiyūtar',d:'computer',s:'vs'},{o:'تلفزيون',t:'tilifiziyōn',d:'tv/television',s:'si'},{o:'بودكاست',t:'bōdkāst',d:'podcast',s:'vs'},{o:'بلوج',t:'blōj',d:'blog',s:'vs'},{o:'ديجيتال',t:'dījitāl',d:'digital',s:'vs'}]},
+    {ic:'🎵',ti:'Musik & Kultur',su:'Musik har ingen grænser — heller ikke i sproget!',ra:'51–60',
+     ws:[{o:'موسيقى',t:'mūsīqā',d:'musik',s:'si'},{o:'بيانو',t:'byānō',d:'piano',s:'id'},{o:'روك',t:'rūk',d:'rock',s:'id'},{o:'بوب',t:'bōb',d:'pop',s:'id'},{o:'فستيفال',t:'fastīfāl',d:'festival',s:'vs'},{o:'ألبوم',t:'ālbūm',d:'album',s:'id'},{o:'أرتيست',t:'ārtīst',d:'artist',s:'id'},{o:'ريتم',t:'rītm',d:'rytme',s:'si'},{o:'ديسكو',t:'diskō',d:'disko',s:'id'},{o:'كونشيرتو',t:'kūnshirtō',d:'koncert',s:'si'}]},
+    {ic:'⚽',ti:'Sport & Fritid',su:'Sport taler alle sprog — næsten ens overalt!',ra:'61–70',
+     ws:[{o:'سبورت',t:'sbōrt',d:'sport',s:'id'},{o:'غولف',t:'ghōlf',d:'golf',s:'id'},{o:'تنس',t:'tans',d:'tenis',s:'id'},{o:'كلوب',t:'klūb',d:'klub',s:'id'},{o:'ريكورد',t:'rīkōrd',d:'rekord',s:'id'},{o:'أرينا',t:'arīnā',d:'arena',s:'id'},{o:'ماراثون',t:'mārāthōn',d:'maraton',s:'vs'},{o:'ستاديوم',t:'stādyūm',d:'stadion',s:'si'},{o:'فاينال',t:'fāynāl',d:'finale',s:'si'},{o:'ميدالية',t:'mīdālya',d:'medalje',s:'si'}]},
+    {ic:'🍕',ti:'Mad & Drikke (moderne)',su:'Mad er international — og sproget er det også!',ra:'71–80',
+     ws:[{o:'بيتزا',t:'bītzā',d:'pizza',s:'id'},{o:'باستا',t:'bāstā',d:'pasta',s:'id'},{o:'شوكولاتة',t:'shōkōlāta',d:'chokolade',s:'si'},{o:'يوغرت',t:'yōghurt',d:'yoghurt',s:'id'},{o:'تاكو',t:'tākō',d:'taco',s:'id'},{o:'بنانا',t:'banānā',d:'banan',s:'vs'},{o:'كاكاو',t:'kākāw',d:'kakao',s:'id'},{o:'ريستوران',t:'ristōrān',d:'restaurant',s:'vs'},{o:'كافيتيريا',t:'kāfitīryā',d:'cafeteria',s:'vs'},{o:'مينيو',t:'mīnyū',d:'menu',s:'id'}]},
+    {ic:'📚',ti:'Skole & Uddannelse',su:'Alle disse skolefag har arabiske eller internationale rødder!',ra:'81–90',
+     ws:[{o:'بيولوجيا',t:'biyōlōjyā',d:'biologi',s:'vs'},{o:'فيزياء',t:"fīzyā'",d:'fysik',s:'si'},{o:'جيوغرافيا',t:'jīōghrāfyā',d:'geografi',s:'si'},{o:'هيستوريا',t:'hīstōryā',d:'historie',s:'si'},{o:'فيلوسوفيا',t:'fīlōsōfyā',d:'filosofi',s:'si'},{o:'دبلوم',t:'diblōm',d:'diplom',s:'vs'},{o:'إكسامن',t:'iksāman',d:'eksamen',s:'si'},{o:'أطلس',t:'atlas',d:'atlas',s:'id'},{o:'دكتور',t:'duktūr',d:'doktor',s:'id'},{o:'برفسور',t:'burfasōr',d:'professor',s:'vs'}]},
+    {ic:'🌍',ti:'Steder & Transport',su:'Arabiske rejsende opdagede verden — og sproget fulgte med!',ra:'91–100',
+     ws:[{o:'هوتيل',t:'hūtayl',d:'hotel',s:'id'},{o:'بنك',t:'bank',d:'bank',s:'id'},{o:'ميترو',t:'mitrō',d:'metro',s:'id'},{o:'موتور',t:'mōtōr',d:'motor',s:'id'},{o:'سيستيم',t:'sistīm',d:'system',s:'vs'},{o:'بارك',t:'bārk',d:'park',s:'id'},{o:'أوشن',t:'ōshan',d:'ocean',s:'si'},{o:'بلانيت',t:'blānit',d:'planet',s:'si'},{o:'كليما',t:'klīmā',d:'klima',s:'vs'},{o:'تمبراتير',t:'tambarātīr',d:'temperatur',s:'si'}]},
+   ]},
+  {id:'pl',flag:'🇵🇱',colLabel:'🇵🇱 Polsk',title:'Polsk → Dansk',
+   grad:'linear-gradient(135deg,#7F1D1D,#B91C1C,#DC2626)',
+   accent:'#DC2626',accdark:'#B91C1C',
+   cardColor:'rgba(185,28,28,.28)',cardGlow:'rgba(220,38,38,.35)',
+   pills:['muzyka → musik','sport → sport','hotel → hotel','historia → historie'],
+   cardDesc:'Polsk og dansk deler hundredvis af ord fra <em>latin, græsk og engelsk</em>. Tættere end du tror!',
+   funFact:'Polsk og dansk deler masser af ord fra <strong>latin, græsk og engelsk</strong>. Det skyldes, at begge sprog har lånt internationalt ordforråd gennem århundreder. Polsk er faktisk meget tættere på dansk end de fleste tror! 🏰',
+   motto:'"Polsk og dansk er ikke så forskellige som du tror — prøv selv!"',
+   searchPH:'Søg på polsk eller dansk...',
+   hasBadge:false,isRTL:false,
+   sections:[
+    {ic:'📱',ti:'Teknologi',su:'Disse ord er ens på polsk og dansk — fra engelsk!',ra:'1–10',
+     ws:[{o:'internet',d:'internet'},{o:'radio',d:'radio'},{o:'telefon',d:'telefon'},{o:'film',d:'film'},{o:'foto',d:'foto'},{o:'wideo',d:'video'},{o:'blog',d:'blog'},{o:'podcast',d:'podcast'},{o:'komputer',d:'computer'},{o:'digital',d:'digital'}]},
+    {ic:'🎵',ti:'Musik & Kultur',su:'Musik og kultur deles på tværs af alle grænser!',ra:'11–20',
+     ws:[{o:'muzyka',d:'musik'},{o:'piano',d:'piano'},{o:'gitara',d:'guitar'},{o:'rock',d:'rock'},{o:'pop',d:'pop'},{o:'festiwal',d:'festival'},{o:'koncert',d:'koncert'},{o:'album',d:'album'},{o:'dyskoteka',d:'diskotek'},{o:'rytm',d:'rytme'}]},
+    {ic:'⚽',ti:'Sport',su:'Sport-ord rejser fra sprog til sprog uden pas!',ra:'21–30',
+     ws:[{o:'sport',d:'sport'},{o:'golf',d:'golf'},{o:'tenis',d:'tenis'},{o:'klub',d:'klub'},{o:'rekord',d:'rekord'},{o:'stadion',d:'stadion'},{o:'maraton',d:'maraton'},{o:'medal',d:'medalje'},{o:'finał',d:'finale'},{o:'arena',d:'arena'}]},
+    {ic:'🍕',ti:'Mad & Drikke',su:'Lækker mad har altid de samme navne!',ra:'31–40',
+     ws:[{o:'pizza',d:'pizza'},{o:'pasta',d:'pasta'},{o:'banan',d:'banan'},{o:'kakao',d:'kakao'},{o:'jogurt',d:'yoghurt'},{o:'restauracja',d:'restaurant'},{o:'menu',d:'menu'},{o:'czekolada',d:'chokolade'},{o:'taco',d:'taco'},{o:'cukier',d:'sukker'}]},
+    {ic:'📚',ti:'Skole & Videnskab',su:'Alle skolefag stammer fra latin og græsk!',ra:'41–50',
+     ws:[{o:'biologia',d:'biologi'},{o:'fizyka',d:'fysik'},{o:'matematyka',d:'matematik'},{o:'geografia',d:'geografi'},{o:'historia',d:'historie'},{o:'literatura',d:'litteratur'},{o:'filozofia',d:'filosofi'},{o:'dyplom',d:'diplom'},{o:'egzamin',d:'eksamen'},{o:'atlas',d:'atlas'}]},
+    {ic:'🌍',ti:'Steder & Bygninger',su:'Steder hedder næsten det samme overalt i Europa!',ra:'51–60',
+     ws:[{o:'hotel',d:'hotel'},{o:'bank',d:'bank'},{o:'teatr',d:'teater'},{o:'muzeum',d:'museum'},{o:'galeria',d:'galleri'},{o:'park',d:'park'},{o:'szpital',d:'hospital'},{o:'metro',d:'metro'},{o:'ocean',d:'ocean'},{o:'centrum',d:'centrum'}]},
+    {ic:'👥',ti:'Mennesker & Jobs',su:'Jobnavne er internationale — ligesom jobmarkedet!',ra:'61–70',
+     ws:[{o:'doktor',d:'doktor'},{o:'profesor',d:'professor'},{o:'pilot',d:'pilot'},{o:'detektyw',d:'detektiv'},{o:'turysta',d:'turist'},{o:'student',d:'student'},{o:'artysta',d:'artist'},{o:'atleta',d:'atlet'},{o:'policja',d:'politi'},{o:'prezydent',d:'præsident'}]},
+    {ic:'✨',ti:'Adjektiver',su:'Beskriv verden på to sprog på én gang!',ra:'71–80',
+     ws:[{o:'normalny',d:'normal'},{o:'fantastyczny',d:'fantastisk'},{o:'popularny',d:'populær'},{o:'specjalny',d:'speciel'},{o:'oryginalny',d:'original'},{o:'kulturalny',d:'kulturel'},{o:'centralny',d:'central'},{o:'naturalny',d:'naturlig'},{o:'tropikalny',d:'tropisk'},{o:'arktyczny',d:'arktisk'}]},
+    {ic:'🌱',ti:'Natur',su:'Naturen taler et sprog alle forstår!',ra:'81–90',
+     ws:[{o:'planeta',d:'planet'},{o:'klimat',d:'klima'},{o:'temperatura',d:'temperatur'},{o:'wulkan',d:'vulkan'},{o:'energia',d:'energi'},{o:'minerał',d:'mineral'},{o:'fossyl',d:'fossil'},{o:'atom',d:'atom'},{o:'elektryczny',d:'elektrisk'},{o:'solarny',d:'solær'}]},
+    {ic:'🚗',ti:'Transport & Hverdagsliv',su:'Hverdagsord er de nemmeste at genkende!',ra:'91–100',
+     ws:[{o:'motor',d:'motor'},{o:'system',d:'system'},{o:'kontakt',d:'kontakt'},{o:'plan',d:'plan'},{o:'test',d:'test'},{o:'projekt',d:'projekt'},{o:'program',d:'program'},{o:'kamera',d:'kamera'},{o:'parking',d:'parkering'},{o:'skuter',d:'scooter'}]},
+   ]},
+  {id:'ro',flag:'🇷🇴',colLabel:'🇷🇴 Rumænsk',title:'Rumænsk → Dansk',
+   grad:'linear-gradient(135deg,#1E3A8A,#1D4ED8,#2563EB)',
+   accent:'#2563EB',accdark:'#1D4ED8',
+   cardColor:'rgba(29,78,216,.28)',cardGlow:'rgba(37,99,235,.35)',
+   pills:['familie → familie','muzică → musik','doctor → doktor','vulcan → vulkan'],
+   cardDesc:'Rumænsk er et <em>romansk sprog</em> — ligesom spansk! Det giver et kæmpe forspring i sprogtimerne. 🌟',
+   funFact:'Rumænsk stammer direkte fra <strong>latin</strong> — ligesom spansk, italiensk og fransk. Rumænsktalende elever har et <strong>kæmpe forspring</strong> i spanskundervisningen! Ord som <em>familie, muzică, doctor</em> er næsten identiske på spansk og rumænsk. 🌟',
+   motto:'"Rumænsk og spansk er søstersprog — begge fra latin. Det giver dig superkræfter i sprogtimerne!"',
+   searchPH:'Søg på rumænsk eller dansk...',
+   hasBadge:false,isRTL:false,
+   sections:[
+    {ic:'📱',ti:'Teknologi',su:'Rumænsk og dansk bruger de samme globale ord!',ra:'1–10',
+     ws:[{o:'internet',d:'internet'},{o:'radio',d:'radio'},{o:'telefon',d:'telefon'},{o:'film',d:'film'},{o:'foto',d:'foto'},{o:'video',d:'video'},{o:'blog',d:'blog'},{o:'podcast',d:'podcast'},{o:'computer',d:'computer'},{o:'digital',d:'digital'}]},
+    {ic:'🎵',ti:'Muzică & Cultură',su:'Rumænsk og spansk er søstersprog — begge fra latin!',ra:'11–20',
+     ws:[{o:'muzică',d:'musik'},{o:'pian',d:'piano'},{o:'rock',d:'rock'},{o:'pop',d:'pop'},{o:'festival',d:'festival'},{o:'concert',d:'koncert'},{o:'album',d:'album'},{o:'discotecă',d:'diskotek'},{o:'ritm',d:'rytme'},{o:'artist',d:'artist'}]},
+    {ic:'⚽',ti:'Sport',su:'Sport-ord er identiske i næsten alle sprog!',ra:'21–30',
+     ws:[{o:'sport',d:'sport'},{o:'golf',d:'golf'},{o:'tenis',d:'tenis'},{o:'club',d:'klub'},{o:'record',d:'rekord'},{o:'stadion',d:'stadion'},{o:'maraton',d:'maraton'},{o:'medalie',d:'medalje'},{o:'finală',d:'finale'},{o:'arenă',d:'arena'}]},
+    {ic:'🍕',ti:'Mâncare & Băutură',su:'Mad er international — og sproget er det samme!',ra:'31–40',
+     ws:[{o:'pizza',d:'pizza'},{o:'pastă',d:'pasta'},{o:'banană',d:'banan'},{o:'cacao',d:'kakao'},{o:'iaurt',d:'yoghurt'},{o:'restaurant',d:'restaurant'},{o:'meniu',d:'menu'},{o:'ciocolată',d:'chokolade'},{o:'taco',d:'taco'},{o:'cafea',d:'kaffe'}]},
+    {ic:'📚',ti:'Școală & Știință',su:'Latin-rødder giver rumænsk og dansk masser af fælles skolefag!',ra:'41–50',
+     ws:[{o:'biologie',d:'biologi'},{o:'fizică',d:'fysik'},{o:'matematică',d:'matematik'},{o:'geografie',d:'geografi'},{o:'istorie',d:'historie'},{o:'literatură',d:'litteratur'},{o:'filozofie',d:'filosofi'},{o:'diplomă',d:'diplom'},{o:'examen',d:'eksamen'},{o:'atlas',d:'atlas'}]},
+    {ic:'🌍',ti:'Locuri & Clădiri',su:'Steder hedder næsten det samme i alle latinske sprog!',ra:'51–60',
+     ws:[{o:'hotel',d:'hotel'},{o:'bancă',d:'bank'},{o:'teatru',d:'teater'},{o:'muzeu',d:'museum'},{o:'galerie',d:'galleri'},{o:'parc',d:'park'},{o:'spital',d:'hospital'},{o:'metrou',d:'metro'},{o:'ocean',d:'ocean'},{o:'capitală',d:'kapital'}]},
+    {ic:'👥',ti:'Oameni & Meserii',su:'Jobnavne er internationale overalt i Europa!',ra:'61–70',
+     ws:[{o:'doctor',d:'doktor'},{o:'profesor',d:'professor'},{o:'pilot',d:'pilot'},{o:'detectiv',d:'detektiv'},{o:'turist',d:'turist'},{o:'student',d:'student'},{o:'artist',d:'artist'},{o:'atlet',d:'atlet'},{o:'poliție',d:'politi'},{o:'președinte',d:'præsident'}]},
+    {ic:'✨',ti:'Adjective',su:'Rumænsk og dansk adjektiver ligner hinanden vildt meget!',ra:'71–80',
+     ws:[{o:'normal',d:'normal'},{o:'fantastic',d:'fantastisk'},{o:'popular',d:'populær'},{o:'special',d:'speciel'},{o:'original',d:'original'},{o:'cultural',d:'kulturel'},{o:'central',d:'central'},{o:'natural',d:'naturlig'},{o:'tropical',d:'tropisk'},{o:'arctic',d:'arktisk'}]},
+    {ic:'🌱',ti:'Natură',su:'Naturord stammer fra latin — fælles for rumænsk og dansk!',ra:'81–90',
+     ws:[{o:'planetă',d:'planet'},{o:'climă',d:'klima'},{o:'temperatură',d:'temperatur'},{o:'vulcan',d:'vulkan'},{o:'energie',d:'energi'},{o:'mineral',d:'mineral'},{o:'fosil',d:'fossil'},{o:'atom',d:'atom'},{o:'electric',d:'elektrisk'},{o:'solar',d:'solær'}]},
+    {ic:'🚗',ti:'Transport & Viața Cotidiană',su:'Hverdagsord er de nemmeste at genkende!',ra:'91–100',
+     ws:[{o:'motor',d:'motor'},{o:'sistem',d:'system'},{o:'contact',d:'kontakt'},{o:'plan',d:'plan'},{o:'test',d:'test'},{o:'proiect',d:'projekt'},{o:'program',d:'program'},{o:'cameră',d:'kamera'},{o:'parcare',d:'parkering'},{o:'scooter',d:'scooter'}]},
+   ]},
+  {id:'es',flag:'🇪🇸',colLabel:'🇪🇸 Spansk',title:'Spansk → Dansk',
+   grad:'linear-gradient(135deg,#0F172A,#1E293B,#0F3460)',
+   accent:'#7C3AED',accdark:'#6D28D9',
+   cardColor:'rgba(109,40,217,.28)',cardGlow:'rgba(124,58,237,.35)',
+   pills:['internet → internet','hospital → hospital','música → musik','planet → planet'],
+   cardDesc:'Spansk og dansk er ikke så forskellige som du tror — <em>100 ord</em> de deler. Det vil overraske dig! 🤩',
+   funFact:'Spansk og dansk deler <strong>hundredvis af lignende ord</strong> takket være <strong>latin, græsk og engelsk</strong>. Disse ord kaldes <em>kognater</em>. At kende dem er din <strong>hemmelige superkraft</strong> til at lære spansk hurtigere! 🦸',
+   motto:'"Sproget er en bro til nye verdener — og du har allerede bygget det halve!" 🌉',
+   searchPH:'Søg et ord på spansk eller dansk...',
+   hasBadge:true,isRTL:false,
+   secColors:['#3B82F6','#8B5CF6','#10B981','#F59E0B','#EF4444','#14B8A6','#6366F1','#EC4899','#84CC16','#065F46'],
+   sections:[
+    {ic:'📱',ti:'Teknologi',su:'Ord vi bruger hver eneste dag 📲',ra:'1–10',
+     ws:[{o:'internet',d:'internet',s:'id'},{o:'video',d:'video',s:'id'},{o:'radio',d:'radio',s:'id'},{o:'foto',d:'foto',s:'id'},{o:'blog',d:'blog',s:'id'},{o:'podcast',d:'podcast',s:'id'},{o:'digital',d:'digital',s:'id'},{o:'social',d:'social',s:'id'},{o:'cable',d:'kabel',s:'vs'},{o:'móvil',d:'mobil',s:'vs'}]},
+    {ic:'🎵',ti:'Musik',su:'Spansk musik er overalt på Spotify! 🎧',ra:'11–20',
+     ws:[{o:'guitarra',d:'guitar',s:'vs'},{o:'piano',d:'piano',s:'id'},{o:'rock',d:'rock',s:'id'},{o:'pop',d:'pop',s:'id'},{o:'disco',d:'disko',s:'vs'},{o:'festival',d:'festival',s:'id'},{o:'concierto',d:'koncert',s:'si'},{o:'álbum',d:'album',s:'vs'},{o:'artista',d:'artist',s:'vs'},{o:'ritmo',d:'rytme',s:'si'}]},
+    {ic:'⚽',ti:'Sport',su:'Real Madrid eller FC København? 😄',ra:'21–30',
+     ws:[{o:'golf',d:'golf',s:'id'},{o:'tenis',d:'tennis',s:'vs'},{o:'sport',d:'sport',s:'id'},{o:'club',d:'klub',s:'vs'},{o:'récord',d:'rekord',s:'vs'},{o:'final',d:'finale',s:'vs'},{o:'arena',d:'arena',s:'id'},{o:'maratón',d:'maraton',s:'vs'},{o:'campeón',d:'champion',s:'si'},{o:'olimpiada',d:'olympiade',s:'vs'}]},
+    {ic:'🐾',ti:'Dyr',su:'Samme navne overalt i verden! 🌍',ra:'31–40',
+     ws:[{o:'tigre',d:'tiger',s:'vs'},{o:'elefante',d:'elefant',s:'vs'},{o:'pingüino',d:'pingvin',s:'si'},{o:'cocodrilo',d:'krokodille',s:'si'},{o:'jaguar',d:'jaguar',s:'id'},{o:'panda',d:'panda',s:'id'},{o:'gorila',d:'gorilla',s:'vs'},{o:'camaleón',d:'kamæleon',s:'si'},{o:'canguro',d:'kænguru',s:'vs'},{o:'delfín',d:'delfin',s:'vs'}]},
+    {ic:'🍕',ti:'Mad & Drikke',su:'Spansk mad er fantastisk — ¡muy rico! 😋',ra:'41–50',
+     ws:[{o:'pizza',d:'pizza',s:'id'},{o:'pasta',d:'pasta',s:'id'},{o:'banana',d:'banan',s:'vs'},{o:'chocolate',d:'chokolade',s:'si'},{o:'café',d:'kaffe',s:'si'},{o:'yogur',d:'yoghurt',s:'vs'},{o:'taco',d:'taco',s:'id'},{o:'vitamina',d:'vitamin',s:'vs'},{o:'menú',d:'menu',s:'vs'},{o:'sopa',d:'suppe',s:'si'}]},
+    {ic:'👥',ti:'Mennesker & Jobs',su:'Hvad vil du gerne være? 🌟',ra:'51–60',
+     ws:[{o:'doctor',d:'doktor',s:'vs'},{o:'profesor',d:'professor',s:'vs'},{o:'director',d:'direktør',s:'si'},{o:'presidente',d:'præsident',s:'si'},{o:'turista',d:'turist',s:'vs'},{o:'estudiante',d:'student',s:'si'},{o:'policía',d:'politi',s:'si'},{o:'atleta',d:'atlet',s:'vs'},{o:'piloto',d:'pilot',s:'vs'},{o:'detective',d:'detektiv',s:'vs'}]},
+    {ic:'🌍',ti:'Steder',su:'Fra Randers til Barcelona! ✈️',ra:'61–70',
+     ws:[{o:'hotel',d:'hotel',s:'id'},{o:'restaurante',d:'restaurant',s:'vs'},{o:'hospital',d:'hospital',s:'id'},{o:'parque',d:'park',s:'si'},{o:'capital',d:'kapital',s:'vs'},{o:'océano',d:'ocean',s:'si'},{o:'teatro',d:'teater',s:'si'},{o:'museo',d:'museum',s:'vs'},{o:'galería',d:'galleri',s:'si'},{o:'plaza',d:'plads',s:'si'}]},
+    {ic:'📚',ti:'Skole & Videnskab',su:'Spansk er faktisk et rigtig godt skolefag! 🎓',ra:'71–80',
+     ws:[{o:'biología',d:'biologi',s:'vs'},{o:'física',d:'fysik',s:'si'},{o:'matemáticas',d:'matematik',s:'si'},{o:'geografía',d:'geografi',s:'vs'},{o:'historia',d:'historie',s:'vs'},{o:'literatura',d:'litteratur',s:'vs'},{o:'filosofía',d:'filosofi',s:'vs'},{o:'diploma',d:'diplom',s:'vs'},{o:'atlas',d:'atlas',s:'id'},{o:'examen',d:'eksamen',s:'vs'}]},
+    {ic:'✨',ti:'Adjektiver',su:'Beskriv verden på to sprog på én gang! 🌈',ra:'81–90',
+     ws:[{o:'normal',d:'normal',s:'id'},{o:'fantástico',d:'fantastisk',s:'vs'},{o:'perfecto',d:'perfekt',s:'vs'},{o:'moderno',d:'moderne',s:'vs'},{o:'popular',d:'populær',s:'vs'},{o:'especial',d:'speciel',s:'si'},{o:'original',d:'original',s:'id'},{o:'nacional',d:'national',s:'vs'},{o:'central',d:'central',s:'id'},{o:'cultural',d:'kulturel',s:'si'}]},
+    {ic:'🌱',ti:'Natur & Planeten',su:'Planeten samler os alle! 🌍💚',ra:'91–100',
+     ws:[{o:'planeta',d:'planet',s:'vs'},{o:'clima',d:'klima',s:'vs'},{o:'temperatura',d:'temperatur',s:'vs'},{o:'volcán',d:'vulkan',s:'si'},{o:'energía',d:'energi',s:'vs'},{o:'mineral',d:'mineral',s:'id'},{o:'ártico',d:'arktisk',s:'si'},{o:'tropical',d:'tropisk',s:'vs'},{o:'solar',d:'solær',s:'vs'},{o:'fósil',d:'fossil',s:'vs'}]},
+   ]},
+];
+
+/* ── EMOJI MAP (Lignende Ord) ───────────────────────────── */
+const SB_EMOJI={
+  'kaffe':'☕','sukker':'🍬','sirup':'🍯','spinat':'🥬','safran':'🌿',
+  'appelsin':'🍊','citron':'🍋','artiskok':'🥦','tamarind':'🍯','aubergine':'🍆',
+  'algebra':'📐','algoritme':'🖥️','kemi':'🧪','ciffer':'🔢','nul':'0️⃣',
+  'nadir':'🌑','azimut':'🧭','elixir':'✨','alkali':'🧪','almanak':'📅',
+  'tarif':'💰','magasin':'🏪','karat':'💎','madras':'🛏️','alkohol':'🍶',
+  'admiral':'⚓','sofa':'🛋️','divan':'🛋️','talisman':'🧿','hazard':'🎲',
+  'giraf':'🦒','gazelle':'🦌','jasmin':'🌸','amber':'🟡','bomuld':'👕',
+  'mumie':'🏺','maske':'🎭','safari':'🦁','lak':'💅','talk':'💬',
+  'internet':'🌐','radio':'📻','telefon':'📞','film':'🎬','video':'📹',
+  'computer':'💻','tv/television':'📺','podcast':'🎙️','blog':'✍️','digital':'💾',
+  'foto':'📸','social':'📲','kabel':'🔌','mobil':'📱',
+  'musik':'🎵','piano':'🎹','rock':'🎸','pop':'🎤','festival':'🎪',
+  'album':'💿','artist':'🌟','rytme':'🥁','disko':'🪩','diskotek':'🪩',
+  'koncert':'🎶','guitar':'🎸',
+  'sport':'⚽','golf':'⛳','tenis':'🎾','tennis':'🎾','klub':'🏆',
+  'rekord':'🏅','arena':'🏟️','maraton':'🏃','stadion':'🏟️','finale':'🥇',
+  'medalje':'🥈','champion':'🏆','olympiade':'🥇',
+  'hotel':'🏨','bank':'🏦','metro':'🚇','park':'🌳','ocean':'🌊',
+  'teater':'🎭','museum':'🏛️','galleri':'🖼️','hospital':'🏥','centrum':'🏙️',
+  'kapital':'🏙️','plads':'🏙️',
+  'doktor':'🩺','professor':'🎓','pilot':'✈️','detektiv':'🕵️','turist':'🗺️',
+  'student':'🎒','atlet':'🏃','politi':'👮','præsident':'🏛️','direktør':'💼',
+  'biologi':'🔬','fysik':'⚛️','matematik':'➗','geografi':'🗺️','historie':'📜',
+  'litteratur':'📚','filosofi':'🤔','diplom':'🎓','eksamen':'📝','atlas':'🗺️',
+  'pizza':'🍕','pasta':'🍝','chokolade':'🍫','yoghurt':'🥛','taco':'🌮',
+  'banan':'🍌','kakao':'☕','restaurant':'🍽️','cafeteria':'🍽️','menu':'📋',
+  'vitamin':'💊','suppe':'🍲',
+  'planet':'🌍','klima':'🌤️','temperatur':'🌡️','vulkan':'🌋','energi':'⚡',
+  'mineral':'💎','fossil':'🦕','atom':'⚛️','elektrisk':'⚡','solær':'☀️',
+  'arktisk':'🧊','tropisk':'🌴','naturlig':'🌿',
+  'normal':'🙂','fantastisk':'🤩','populær':'🔥','speciel':'✨','original':'💎',
+  'kulturel':'🎨','central':'📍','perfekt':'💯','moderne':'🆒','national':'🏳️',
+  'motor':'🔧','system':'⚙️','kontakt':'📞','plan':'📋','test':'📝',
+  'projekt':'💼','program':'💻','kamera':'📷','parkering':'🚗','scooter':'🛵',
+  'tiger':'🐯','elefant':'🐘','pingvin':'🐧','krokodille':'🐊','jaguar':'🐆',
+  'panda':'🐼','gorilla':'🦍','kamæleon':'🦎','kænguru':'🦘','delfin':'🐬',
+};
+
+/* ── LIGNENDE ORD — RENDER ──────────────────────────────── */
 function renderFremlaeggelse(){
+  function wEmoji(d){return SB_EMOJI[d.toLowerCase()]?SB_EMOJI[d.toLowerCase()]+' ':''}
   const view=$('view-fremlaeggelse');
-  function getSlides(){try{return JSON.parse(localStorage.getItem('slides-list')||'[]');}catch{return[];}}
-  function saveSlides(arr){dbSet('slides-list',JSON.stringify(arr));}
-  function toEmbed(url){
-    try{
-      if(url.includes('/pub'))return url.includes('embedded=true')?url:url+'&embedded=true';
-      const m=url.match(/\/d\/([^\/]+)/);
-      if(m)return`https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false&delayms=5000`;
-    }catch{}return null;
+  let activeLang=null;
+
+  function simBadge(s){
+    const map={id:['IDENTISK','sb-sim-id'],vs:['MEGET LIG.','sb-sim-vs'],si:['LIGNER','sb-sim-si']};
+    const [label,cls]=map[s]||['',''];
+    return s?`<span class="sb-sim ${cls}">${label}</span>`:'';
   }
 
-  let selected=null;
+  function buildWordRow(w,i,lang){
+    const num=`<span class="sb-w-num">${i+1}</span>`;
+    if(lang.isRTL){
+      return `<div class="sb-word-row sb-wr-ar" data-key="${(w.t||'').toLowerCase()} ${w.d.toLowerCase()}">
+        ${num}
+        <div class="sb-ar-col"><div class="sb-ar-script" style="color:${lang.accent}">${w.o}</div><div class="sb-ar-trans">${w.t}</div></div>
+        <div class="sb-ar-arrow">→</div>
+        <span class="sb-w-dan">${escapeHTML(w.d)} ${simBadge(w.s)}</span>
+      </div>`;
+    }
+    const origStyle=`color:${lang.accent}`;
+    const key=`${w.o.toLowerCase()} ${w.d.toLowerCase()}`;
+    const badge=lang.hasBadge?simBadge(w.s):'';
+    return `<div class="sb-word-row" style="border-left-color:${lang.accent}20" data-key="${key}">
+      ${num}
+      <span class="sb-w-orig" style="${origStyle}">${escapeHTML(w.o)}</span>
+      <span class="sb-w-dan">${escapeHTML(w.d)} ${badge}</span>
+    </div>`;
+  }
 
-  function render(){
-    const list=getSlides();
-    let inner='';
+  function buildSection(sec,lang,secIdx){
+    const hdrBg=lang.secColors?lang.secColors[secIdx%10]:(lang.accent);
+    const arColHeader=lang.isRTL?`<span style="text-align:right">${lang.colLabel}</span><span></span>`:`<span>${lang.colLabel}</span>`;
+    const colGrid=lang.isRTL?'36px 1.2fr 1fr 1fr':'34px 1fr 1fr';
+    return `
+<section class="sb-section" data-sec="${secIdx}">
+  <div class="sb-sec-header" style="background:linear-gradient(135deg,${hdrBg},${hdrBg}cc)">
+    <span class="sb-sec-icon">${sec.ic}</span>
+    <div><div class="sb-sec-title">${sec.ti}</div><div class="sb-sec-sub">${sec.su}</div></div>
+    <div class="sb-sec-nums">${sec.ra}</div>
+  </div>
+  <div class="sb-col-hdr" style="grid-template-columns:${colGrid}">
+    <span>#</span>${arColHeader}<span>🇩🇰 Dansk</span>
+  </div>
+  <div class="sb-words-list">${sec.ws.map((w,wi)=>{
+    const idx=(secIdx*10)+wi+1;
+    if(lang.isRTL){
+      return `<div class="sb-word-row sb-wr-ar" data-key="${(w.t||'').toLowerCase()} ${w.d.toLowerCase()}">
+        <span class="sb-w-num">${idx}</span>
+        <div class="sb-ar-col"><div class="sb-ar-script" style="color:${lang.accent}">${w.o}</div><div class="sb-ar-trans">${w.t}</div></div>
+        <div class="sb-ar-arrow">→</div>
+        <span class="sb-w-dan">${wEmoji(w.d)}${escapeHTML(w.d)} ${simBadge(w.s)}</span>
+      </div>`;
+    }
+    return `<div class="sb-word-row" style="border-left-color:${lang.accdark}" data-key="${w.o.toLowerCase()} ${w.d.toLowerCase()}">
+      <span class="sb-w-num">${idx}</span>
+      <span class="sb-w-orig" style="color:${lang.accent}">${escapeHTML(w.o)}</span>
+      <span class="sb-w-dan">${wEmoji(w.d)}${escapeHTML(w.d)}${lang.hasBadge?' '+simBadge(w.s):''}</span>
+    </div>`;
+  }).join('')}</div>
+</section>`;
+  }
 
-    if(selected!==null && list[selected]){
-      const pres=list[selected];
-      const embedUrl=toEmbed(pres.url);
-      inner=`
-<button class="save-btn" id="frem-back" style="margin-bottom:1.25rem;align-self:flex-start">← Tilbage</button>
-<h3 style="font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:1rem">${pres.name}</h3>
-${embedUrl
-  ?`<div class="slides-frame-wrap"><iframe src="${embedUrl}" allowfullscreen title="${pres.name}"></iframe></div>`
-  :`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>⚠️</span><p>Link no válido o sin permisos de incrustación.</p></div></div>`}`;
-    } else {
-      selected=null;
-      const adminForm=STATE.admin?`
-<div class="frem-add-form">
-<input class="slides-input" id="frem-name" placeholder="Nombre del alumno…" style="flex:1;min-width:130px"/>
-<input class="slides-input" id="frem-url" placeholder="Link de Google Slides…" style="flex:2;min-width:190px"/>
-<button class="save-btn" id="frem-add" style="margin:0;white-space:nowrap">＋ Añadir</button>
+  function renderHub(){
+    const hubDescs={
+      ar:'Spansk lånte 4.000+ ord fra arabisk — dit sprog er en genvej! 🚀',
+      pl:'Fælles ord fra latin og engelsk — ligner mere end du tror!',
+      ro:'Begge romanske sprog fra latin — mega nemt! ⭐'
+    };
+    const others=SPROGBRO_LANGS.filter(l=>l.id!=='es');
+
+    const mainCard=`
+<button class="sprogbro-card sprogbro-card-main" data-lang="es" style="--sb-color:rgba(124,58,237,.2);--sb-glow:rgba(124,58,237,.3)">
+  <div class="sprogbro-card-glow"></div>
+  <div class="sprogbro-card-inner">
+    <div class="sprogbro-card-icon">🇪🇸</div>
+    <div class="sprogbro-card-text">
+      <div class="sprogbro-card-title">Spansk → Dansk</div>
+      <div class="sprogbro-card-desc">100 ord fordelt på 10 emner — saml dem alle!</div>
+      <span class="sprogbro-main-badge">⭐ Vigtigste liste</span>
+    </div>
+    <div class="sprogbro-card-arrow">↗</div>
+    <div class="sprogbro-card-shine"></div>
+  </div>
+</button>`;
+
+    const otherCards=others.map(l=>`
+<button class="sprogbro-card" data-lang="${l.id}" style="--sb-color:${l.cardColor};--sb-glow:${l.cardGlow}">
+  <div class="sprogbro-card-glow"></div>
+  <div class="sprogbro-card-inner">
+    <div class="sprogbro-card-icon">${l.flag}</div>
+    <div class="sprogbro-card-text">
+      <div class="sprogbro-card-title">${l.title}</div>
+      <div class="sprogbro-card-desc">${hubDescs[l.id]||''}</div>
+    </div>
+    <div class="sprogbro-card-arrow">→</div>
+    <div class="sprogbro-card-shine"></div>
+  </div>
+</button>`).join('');
+
+    view.innerHTML=`<div class="content-view active" style="display:flex">
+<div class="sb-hub-header">
+  <p class="sb-hub-eyebrow">Dit modersmål er din superkraft</p>
+  <h2 class="section-title">Lignende <em>Ord</em></h2>
+  <p class="sb-hub-tagline">Vælg et sprog og se, hvad du allerede kender</p>
+</div>
+<div class="sprogbro-hub-wrap">
+  ${mainCard}
+  <div class="sprogbro-others-grid">${otherCards}</div>
+</div>
+</div>`;
+
+    view.querySelectorAll('.sprogbro-card[data-lang]').forEach(btn=>{
+      btn.addEventListener('click',()=>renderLang(btn.dataset.lang));
+    });
+  }
+
+  function renderLang(langId){
+    activeLang=langId;
+    const lang=SPROGBRO_LANGS.find(l=>l.id===langId);
+    if(!lang)return renderHub();
+    const legendHtml=lang.hasBadge?`
+<div class="sb-legend">
+  <div class="sb-leg-item"><span class="sb-sim sb-sim-id">IDENTISK</span> Identisk ord</div>
+  <div class="sb-leg-item"><span class="sb-sim sb-sim-vs">MEGET LIG.</span> Meget lignende</div>
+  <div class="sb-leg-item"><span class="sb-sim sb-sim-si">LIGNER</span> Genkendeligt</div>
 </div>`:'';
-      const adminList=STATE.admin&&list.length?`
-<div class="frem-admin-list">${list.map((p,i)=>`
-<div class="frem-admin-row">
-<span style="font-size:.88rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(p.name)}</span>
-<span style="font-size:.75rem;color:var(--text-dim);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 .75rem">${escapeHTML(p.url)}</span>
-<button class="frem-del" data-idx="${i}" title="Eliminar">🗑️</button>
-</div>`).join('')}</div>`:'';
-      const grid=list.length?`
-<div class="frem-grid">${list.map((p,i)=>`
-<button class="frem-card" data-idx="${i}">
-<span class="frem-card-icon">🎞️</span>
-<span class="frem-card-name">${escapeHTML(p.name)}</span>
-</button>`).join('')}</div>`
-:`<div class="slides-frame-wrap"><div class="slides-placeholder"><span>🎞️</span><p>Ingen præsentation tilgængelig endnu.</p>${STATE.admin?'<p style="font-size:.78rem;color:var(--text-dim)">Tilføj præsentationer ovenfor.</p>':''}</div></div>`;
-      inner=adminForm+adminList+grid;
-    }
+    const sections=lang.sections.map((s,i)=>buildSection(s,lang,i)).join('');
 
-    view.innerHTML=`<div class="content-view active" style="display:flex"><h2 class="section-title">🎞️ Fremlæggelse</h2>${inner}</div>`;
+    view.innerHTML=`<div class="content-view active" style="display:flex">
+<button class="save-btn sb-back-btn" id="sb-back">← Tilbage</button>
+<div class="sb-lang-header" style="background:${lang.grad}">
+  <div class="sb-lang-flags">${lang.flag} 🤝 🇩🇰</div>
+  <h2 class="sb-lang-title">${lang.title}</h2>
+  <p class="sb-lang-motto">${lang.motto}</p>
+</div>
+<div class="sprogbro-fact" style="margin-top:1.2rem">
+  <span class="sprogbro-fact-icon">💡</span>
+  <div><strong>Vidste du det?</strong><br>${lang.funFact}</div>
+</div>
+<div class="sb-search-wrap">
+  <div class="sb-search-box">
+    <span class="sb-search-icon">🔍</span>
+    <input type="text" id="sb-search-input" placeholder="${lang.searchPH}" autocomplete="off">
+    <span id="sb-search-count">100 ord</span>
+  </div>
+</div>
+${legendHtml}
+<div id="sb-no-results" class="sb-no-results" style="display:none">🤔 Ingen resultater. Prøv et andet ord!</div>
+<div class="sb-sections">${sections}</div>
+</div>`;
 
-    if(selected===null){
-      if(STATE.admin){
-        document.getElementById('frem-add')?.addEventListener('click',()=>{
-          const name=document.getElementById('frem-name').value.trim();
-          const url=document.getElementById('frem-url').value.trim();
-          if(!name||!url)return;
-          const l=getSlides();l.push({name,url});saveSlides(l);render();
-        });
-        view.querySelectorAll('.frem-del').forEach(btn=>{
-          btn.addEventListener('click',e=>{
-            e.stopPropagation();
-            const l=getSlides();l.splice(+btn.dataset.idx,1);saveSlides(l);render();
-          });
-        });
-      }
-      view.querySelectorAll('.frem-card').forEach(card=>{
-        card.addEventListener('click',()=>{selected=+card.dataset.idx;render();});
+    document.getElementById('sb-back').addEventListener('click',()=>renderHub());
+
+    const searchInput=document.getElementById('sb-search-input');
+    searchInput.addEventListener('input',()=>{
+      const q=searchInput.value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+      const rows=view.querySelectorAll('.sb-word-row');
+      let visible=0;
+      rows.forEach(r=>{
+        const key=(r.dataset.key||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+        const match=!q||key.includes(q);
+        r.classList.toggle('sb-hidden',!match);
+        if(match)visible++;
       });
-    } else {
-      document.getElementById('frem-back').addEventListener('click',()=>{selected=null;render();});
-    }
+      const total=lang.sections.reduce((n,s)=>n+s.ws.length,0);
+      document.getElementById('sb-search-count').textContent=q?(visible+' resultat'+(visible!==1?'er':'')):(total+' ord');
+      document.getElementById('sb-no-results').style.display=(visible===0&&q)?'block':'none';
+      view.querySelectorAll('.sb-section').forEach(s=>{
+        const allHidden=Array.from(s.querySelectorAll('.sb-word-row')).every(r=>r.classList.contains('sb-hidden'));
+        s.style.display=allHidden?'none':'';
+      });
+    });
   }
 
-  render();
+  renderHub();
 }
 
 /* ── ORDBOG (MyMemory API) ─────────────────────────────── */
 const ORDBOG_CACHE={};
+
+// Safety filter: block violent/offensive content from translation results
+const UNSAFE_WORDS = [
+  // Danish – violence, murder, sexual assault, threats, insults
+  'myrdet','myrde','mord','dræbt','dræbe','drab','skudt','skyde','skyde','voldtaget','voldtægt',
+  'voldtage','trussel','trusler','true','chikane','tortur','overfald','mishandling','lemlæstelse',
+  'selvmord','hænge','halshugge','henrette','nedslagte','nedslagtet','lemlæstet',
+  'idiot','kælling','luder','tøs','perker','bøsse','retard','fjols','spasser',
+  // Spanish – violence, murder, sexual assault, threats, insults
+  'matar','mató','asesinado','asesinato','asesinar','violación','violar','violado','violada',
+  'amenaza','amenazar','insulto','insultar','golpear','golpeado','abusar','abuso',
+  'tortura','torturar','secuestrar','secuestro','asaltar','asalto','homicidio',
+  'suicidio','colgar','decapitar','ejecutar','masacrar','masacre',
+  'idiota','imbécil','estúpido','puta','puto','mierda','joder','cabrón','zorra',
+  // English (in case API returns English)
+  'murdered','murder','killed','kill','raped','rape','threat','assault','abuse',
+  'suicide','torture','idiot','bitch','slut','bastard','moron','retard'
+];
+
+function isSafeTranslation(original, translated) {
+  const low = translated.toLowerCase();
+  // Block if contains any unsafe word
+  for (const w of UNSAFE_WORDS) {
+    const re = new RegExp('\\b' + w + '\\b', 'i');
+    if (re.test(low)) return false;
+  }
+  // Block if the API returned a long sentence instead of a word translation
+  // (original is 1-2 words but translation is a full sentence)
+  const origWords = original.trim().split(/\s+/).length;
+  const transWords = translated.trim().split(/\s+/).length;
+  if (origWords <= 2 && transWords > 5) return false;
+  return true;
+}
+
 async function myMemoryTranslate(text,langpair){
   const key=text+'|'+langpair;
   if(ORDBOG_CACHE[key])return ORDBOG_CACHE[key];
@@ -916,7 +1222,9 @@ async function myMemoryTranslate(text,langpair){
     const r=await fetch(url);
     const d=await r.json();
     const t=d.responseData?.translatedText||text;
-    ORDBOG_CACHE[key]=t;return t;
+    // Apply safety filter — if translation fails the check, return the original word
+    const safe = isSafeTranslation(text, t) ? t : text;
+    ORDBOG_CACHE[key]=safe;return safe;
   }catch{return text;}
 }
 // Expose globally so game.js can reuse the same translator (and cache).
@@ -930,7 +1238,8 @@ function speakSpanish(text){
     const voices=speechSynthesis.getVoices();
     const v=voices.find(v=>v.lang==='es-ES')||voices.find(v=>v.lang.startsWith('es'));
     if(v)u.voice=v;
-    speechSynthesis.speak(u);
+    // setTimeout(0) avoids Chrome Android's cancel+speak same-task silent-drop bug
+    setTimeout(()=>speechSynthesis.speak(u),0);
   }
   if(speechSynthesis.getVoices().length)go();
   else speechSynthesis.addEventListener('voiceschanged',go,{once:true});

@@ -624,7 +624,186 @@ body{overflow:hidden;overscroll-behavior:none}
   border-top:1px solid rgba(255,255,255,.05);
 }
 
-/* ── FREMLÆGGELSE ─────────────────────────────────────────── */
+/* ── LIGNENDE ORD — WORD LIST VIEW ────────────────────────── */
+.sb-back-btn{margin-bottom:1.25rem;align-self:flex-start}
+.sb-lang-header{
+  border-radius:var(--r-lg);padding:1.6rem 1.8rem;text-align:center;
+  margin-bottom:1.4rem;position:relative;overflow:hidden;
+}
+.sb-lang-header::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.18);pointer-events:none}
+.sb-lang-flags{font-size:2.4rem;margin-bottom:.5rem;position:relative;z-index:1}
+.sb-lang-title{
+  font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2rem);
+  font-weight:700;color:#fff;margin-bottom:.4rem;position:relative;z-index:1;
+}
+.sb-lang-motto{font-size:.82rem;color:rgba(255,255,255,.75);position:relative;z-index:1;max-width:500px;margin:0 auto}
+.sb-search-wrap{margin-bottom:1.1rem}
+.sb-search-box{
+  display:flex;align-items:center;gap:.75rem;
+  background:rgba(255,255,255,.06);border:1px solid var(--glass-border);
+  border-radius:14px;padding:.65rem 1.1rem;
+  transition:border-color .2s;max-width:580px;
+}
+.sb-search-box:focus-within{border-color:var(--glow2)}
+.sb-search-icon{font-size:1rem;color:var(--text-dim);flex-shrink:0}
+.sb-search-box input{
+  border:none;outline:none;background:transparent;flex:1;
+  color:var(--text);font-size:1rem;font-family:'Inter','DM Sans',sans-serif;
+}
+.sb-search-box input::placeholder{color:var(--text-muted)}
+#sb-search-count{font-size:.74rem;color:var(--glow2);font-weight:700;white-space:nowrap}
+.sb-legend{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1rem;padding:0 .1rem}
+.sb-leg-item{display:flex;align-items:center;gap:.32rem;font-size:.74rem;color:var(--text-dim);font-weight:500}
+.sb-no-results{text-align:center;padding:2rem;color:var(--text-dim);font-weight:600}
+.sb-sim{font-size:.54rem;font-weight:800;padding:.07rem .28rem;border-radius:4px;flex-shrink:0;letter-spacing:.02em}
+.sb-sim-id{background:#DCFCE7;color:#15803D}
+.sb-sim-vs{background:#DBEAFE;color:#1D4ED8}
+.sb-sim-si{background:#FEF9C3;color:#A16207}
+.sb-sections{display:flex;flex-direction:column;gap:1.8rem}
+.sb-section{display:flex;flex-direction:column;gap:.4rem}
+.sb-sec-header{
+  display:flex;align-items:center;gap:.9rem;padding:.85rem 1.2rem;
+  border-radius:14px;color:#fff;
+}
+.sb-sec-icon{font-size:1.5rem;flex-shrink:0}
+.sb-sec-title{font-family:'Inter',sans-serif;font-weight:700;font-size:1rem}
+.sb-sec-sub{font-size:.73rem;opacity:.88;margin-top:.03rem}
+.sb-sec-nums{
+  margin-left:auto;background:rgba(255,255,255,.22);border-radius:10px;
+  padding:.15rem .55rem;flex-shrink:0;font-size:.71rem;font-weight:700;
+}
+.sb-col-hdr{
+  display:grid;gap:.4rem;padding:0 .65rem .22rem;
+  border-bottom:1px solid var(--glass-border);margin-bottom:.35rem;
+}
+.sb-col-hdr span{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted)}
+.sb-words-list{display:flex;flex-direction:column;gap:.28rem}
+.sb-word-row{
+  display:grid;grid-template-columns:34px 1fr 1fr;gap:.45rem;align-items:center;
+  background:rgba(255,255,255,.04);border-radius:11px;padding:.5rem .7rem;
+  border-left:4px solid transparent;
+  transition:transform .14s ease,background .14s ease;
+}
+@media(hover:hover) and (pointer:fine){.sb-word-row:hover{transform:translateX(4px);background:rgba(255,255,255,.07)}}
+.sb-word-row.sb-hidden{display:none}
+.sb-wr-ar{grid-template-columns:36px 1.2fr 1fr 1fr}
+.sb-w-num{font-size:.6rem;font-weight:800;color:var(--text-muted);text-align:center}
+.sb-w-orig{font-weight:700;font-size:.9rem}
+.sb-w-dan{font-weight:600;font-size:.9rem;color:var(--text-dim);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+.sb-ar-col{text-align:right;direction:rtl}
+.sb-ar-script{font-size:1.05rem;font-family:Georgia,serif}
+.sb-ar-trans{font-size:.65rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;direction:ltr;text-align:right}
+.sb-ar-arrow{display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.1rem}
+
+/* ── LIGNENDE ORD HUB ─────────────────────────────────────── */
+.sb-hub-header{margin-bottom:2rem}
+.sb-hub-eyebrow{
+  font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:.75rem;font-weight:500;
+}
+.sb-hub-tagline{
+  font-size:.87rem;color:var(--text-dim);font-weight:300;
+  margin-top:.65rem;letter-spacing:.03em;
+}
+.sprogbro-fact{
+  display:flex;gap:.9rem;align-items:flex-start;
+  background:rgba(129,140,248,.06);
+  border:1px solid rgba(129,140,248,.18);
+  border-radius:var(--r);padding:1.1rem 1.3rem;
+  margin-bottom:1.75rem;max-width:640px;
+}
+.sprogbro-fact-icon{font-size:1.7rem;flex-shrink:0;line-height:1;margin-top:.1rem}
+.sprogbro-fact strong{color:var(--glow2);font-size:.88rem}
+.sprogbro-fact div{font-size:.84rem;color:var(--text-dim);line-height:1.6}
+
+/* Hub layout */
+.sprogbro-hub-wrap{display:flex;flex-direction:column;gap:1.2rem;width:100%}
+.sprogbro-others-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+
+/* Card — matches menu-card style exactly */
+.sprogbro-card{
+  position:relative;border:none;background:none;
+  cursor:pointer;border-radius:var(--r-lg);padding:0;
+  text-align:left;width:100%;
+}
+.sprogbro-card-inner{
+  position:relative;border-radius:var(--r-lg);
+  padding:1.5rem 1.6rem;
+  background:rgba(13,17,32,0.72);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  display:flex;align-items:center;gap:1.3rem;overflow:hidden;
+  transition:border-color .3s ease,transform .4s cubic-bezier(.4,0,.2,1),box-shadow .4s ease;
+  box-shadow:0 4px 20px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
+}
+@media(hover:hover) and (pointer:fine){.sprogbro-card:hover .sprogbro-card-inner{
+  border-color:var(--glass-border-hover);
+  transform:translateY(-8px) scale(1.015);
+  box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 40px var(--sb-glow,rgba(94,234,212,.06));
+}}
+.sprogbro-card-icon{
+  width:54px;height:54px;border-radius:16px;flex-shrink:0;
+  background:var(--glass);border:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;line-height:1;
+  transition:background .3s,transform .3s,box-shadow .3s;
+}
+.sprogbro-card:hover .sprogbro-card-icon{
+  background:rgba(255,255,255,.10);transform:scale(1.1);
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.sprogbro-card-text{flex:1;min-width:0}
+.sprogbro-card-title{
+  font-size:1.08rem;font-weight:600;color:var(--text);
+  margin-bottom:.28rem;letter-spacing:-.01em;
+}
+.sprogbro-card-desc{font-size:.79rem;color:var(--text-dim);font-weight:400;line-height:1.5}
+.sprogbro-card-arrow{
+  font-size:1.1rem;color:var(--text-muted);flex-shrink:0;
+  transition:color .3s,transform .3s;
+}
+.sprogbro-card:hover .sprogbro-card-arrow{color:var(--glow);transform:translateX(5px)}
+.sprogbro-card-shine{
+  position:absolute;inset:0;border-radius:var(--r-lg);pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 50%);
+}
+.sprogbro-card-glow{
+  position:absolute;inset:0;border-radius:var(--r-lg);opacity:0;
+  transition:opacity .5s;pointer-events:none;
+  background:radial-gradient(ellipse at 0% 100%,var(--sb-color,rgba(94,234,212,.18)),transparent 60%);
+}
+.sprogbro-card:hover .sprogbro-card-glow{opacity:1}
+
+/* Main Spanish card — like Temario */
+.sprogbro-card-main .sprogbro-card-inner{
+  background:rgba(16,10,28,0.75);
+  border-color:rgba(124,58,237,.2);
+  min-height:96px;
+}
+.sprogbro-card-main:hover .sprogbro-card-inner{
+  border-color:rgba(124,58,237,.5);
+  box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 50px rgba(124,58,237,.12);
+}
+.sprogbro-card-main .sprogbro-card-icon{
+  width:58px;height:58px;
+  background:rgba(124,58,237,.1);border-color:rgba(124,58,237,.25);
+}
+.sprogbro-card-main:hover .sprogbro-card-icon{
+  background:rgba(124,58,237,.2);box-shadow:0 4px 20px rgba(124,58,237,.25);
+}
+.sprogbro-card-main .sprogbro-card-title{font-size:1.18rem}
+.sprogbro-card-main .sprogbro-card-arrow{color:rgba(124,58,237,.5)}
+.sprogbro-card-main:hover .sprogbro-card-arrow{color:#A78BFA;transform:translateX(5px)}
+.sprogbro-main-badge{
+  display:inline-block;
+  background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);
+  border-radius:20px;padding:.15rem .6rem;
+  font-size:.69rem;font-weight:600;color:#A78BFA;
+  letter-spacing:.03em;margin-top:.4rem;
+}
+@media(max-width:680px){.sprogbro-others-grid{grid-template-columns:1fr}}
+
+/* ── FREMLÆGGELSE (slides — legacy classes kept) ──────────── */
 .slides-input{
   flex:1;padding:.7rem 1.1rem;
   background:rgba(255,255,255,.05);
@@ -791,7 +970,7 @@ body{overflow:hidden;overscroll-behavior:none}
   transition:background .2s,border-color .2s,box-shadow .2s,transform .2s,opacity .2s;
   user-select:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
 }
-.match-item.match-entering{animation:match-enter .45s cubic-bezier(.22,1,.36,1) both}
+.match-item.match-entering{opacity:0;animation:match-enter .45s cubic-bezier(.22,1,.36,1) both}
 .match-item:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
 .match-item.selected{
   border-color:var(--glow);background:rgba(94,234,212,.15);
@@ -1037,12 +1216,18 @@ body{overflow:hidden;overscroll-behavior:none}
   .content-view{padding:max(4.5rem,calc(env(safe-area-inset-top,0px) + 3.5rem)) 1rem calc(5.5rem + env(safe-area-inset-bottom,0px))}
 
   .slides-frame-wrap iframe{height:280px}
+  .sb-wr-ar{grid-template-columns:28px 1fr .7fr .9fr}
+  .sb-ar-script{font-size:.92rem}
+  .sb-word-row{grid-template-columns:28px 1fr 1fr;gap:.3rem}
+  .sb-w-orig,.sb-w-dan{font-size:.82rem}
+  .sprogbro-grid{grid-template-columns:1fr}
   .features-strip{flex-wrap:wrap;gap:.75rem;justify-content:center;border-radius:20px;padding:.8rem 1rem}
   .exercise-tabs{flex-wrap:wrap;border-radius:16px;gap:.4rem}
 
   /* min touch-target 44px (iOS HIG / WCAG 2.5.5) */
   .tab-btn{font-size:.75rem;padding:.5rem .9rem;min-height:44px;display:flex;align-items:center;justify-content:center}
   .match-item{padding:.65rem .8rem;font-size:.88rem;min-height:44px;display:flex;align-items:center}
+  .sb-search-box{min-height:44px}
   .vocab-chip{min-height:40px}
   .save-btn,.btn-primary{min-height:44px}
   .dd-oneup-btn{min-height:52px}
@@ -1293,6 +1478,33 @@ html[data-theme="light"]{
 [data-theme="light"] .slides-frame-wrap::before{
   background:linear-gradient(90deg,transparent,rgba(90,109,181,.2),transparent);
 }
+
+/* word list view — light theme */
+[data-theme="light"] .sb-search-box{background:rgba(255,255,255,.9);border-color:rgba(0,0,0,.09)}
+[data-theme="light"] .sb-search-box input{color:var(--text)}
+[data-theme="light"] .sb-col-hdr{border-color:rgba(0,0,0,.07)}
+[data-theme="light"] .sb-word-row{background:rgba(255,255,255,.88);border-left-color:transparent}
+[data-theme="light"] .sb-word-row:hover{background:rgba(255,255,255,1);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+[data-theme="light"] .sb-ar-script{color:inherit}
+
+/* lignende ord — light theme */
+[data-theme="light"] .sprogbro-fact{
+  background:rgba(90,109,181,.06);border-color:rgba(90,109,181,.18);
+}
+[data-theme="light"] .sprogbro-card-inner{
+  background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.08);
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+}
+[data-theme="light"] .sprogbro-card:hover .sprogbro-card-inner{
+  border-color:rgba(0,0,0,.16);box-shadow:0 14px 40px rgba(0,0,0,.12),0 0 24px var(--sb-glow,rgba(90,109,181,.18));
+}
+[data-theme="light"] .sprogbro-card-main .sprogbro-card-inner{
+  background:rgba(245,243,255,.92);border-color:rgba(124,58,237,.2);
+}
+[data-theme="light"] .sprogbro-card-title{color:var(--text)}
+[data-theme="light"] .sprogbro-card-icon{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+[data-theme="light"] .sprogbro-main-badge{background:rgba(124,58,237,.1);border-color:rgba(124,58,237,.25);color:#6D28D9}
+[data-theme="light"] .sb-hub-eyebrow,[data-theme="light"] .sb-hub-tagline{color:var(--text-dim)}
 
 /* word card top-shine overlay */
 [data-theme="light"] .word-card::before{
