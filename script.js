@@ -1032,8 +1032,8 @@ function renderFremlaeggelse(){
 
   function buildSection(sec,lang,secIdx){
     const hdrBg=lang.secColors?lang.secColors[secIdx%10]:(lang.accent);
-    const arColHeader=lang.isRTL?`<span style="text-align:right">${lang.colLabel}</span><span></span>`:`<span>${lang.colLabel}</span>`;
-    const colGrid=lang.isRTL?'36px 1.2fr 1fr 1fr':'34px 1fr 1fr';
+    const arColHeader=lang.isRTL?`<span style="text-align:right">${lang.colLabel}</span>`:`<span>${lang.colLabel}</span>`;
+    const colGrid=lang.isRTL?'34px 1.4fr 1fr':'34px 1fr 1fr';
     return `
 <section class="sb-section" data-sec="${secIdx}">
   <div class="sb-sec-header" style="background:linear-gradient(135deg,${hdrBg},${hdrBg}cc)">
@@ -1050,8 +1050,7 @@ function renderFremlaeggelse(){
       return `<div class="sb-word-row sb-wr-ar" data-key="${(w.t||'').toLowerCase()} ${w.d.toLowerCase()}">
         <span class="sb-w-num">${idx}</span>
         <div class="sb-ar-col"><div class="sb-ar-script" style="color:${lang.accent}">${w.o}</div><div class="sb-ar-trans">${w.t}</div></div>
-        <div class="sb-ar-arrow">→</div>
-        <span class="sb-w-dan">${wEmoji(w.d)}${escapeHTML(w.d)} ${simBadge(w.s)}</span>
+        <span class="sb-w-dan"><span class="sb-ar-sep">→</span>${wEmoji(w.d)}${escapeHTML(w.d)} ${simBadge(w.s)}</span>
       </div>`;
     }
     return `<div class="sb-word-row" style="border-left-color:${lang.accdark}" data-key="${w.o.toLowerCase()} ${w.d.toLowerCase()}">

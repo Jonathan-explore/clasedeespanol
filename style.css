@@ -686,14 +686,14 @@ body{overflow:hidden;overscroll-behavior:none}
 }
 @media(hover:hover) and (pointer:fine){.sb-word-row:hover{transform:translateX(4px);background:rgba(255,255,255,.07)}}
 .sb-word-row.sb-hidden{display:none}
-.sb-wr-ar{grid-template-columns:36px 1.2fr 1fr 1fr}
+.sb-wr-ar{grid-template-columns:34px 1.4fr 1fr}
 .sb-w-num{font-size:.6rem;font-weight:800;color:var(--text-muted);text-align:center}
 .sb-w-orig{font-weight:700;font-size:.9rem}
-.sb-w-dan{font-weight:600;font-size:.9rem;color:var(--text-dim);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
-.sb-ar-col{text-align:right;direction:rtl}
-.sb-ar-script{font-size:1.05rem;font-family:Georgia,serif}
-.sb-ar-trans{font-size:.65rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;direction:ltr;text-align:right}
-.sb-ar-arrow{display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.1rem}
+.sb-w-dan{font-weight:600;font-size:.9rem;color:var(--text-dim);display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+.sb-ar-col{display:flex;flex-direction:column;align-items:flex-end;gap:.1rem;min-width:0}
+.sb-ar-script{font-size:1.05rem;font-family:Georgia,serif;direction:rtl;line-height:1.3}
+.sb-ar-trans{font-size:.63rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;direction:ltr;text-align:left;word-break:break-word;line-height:1.3;align-self:flex-end}
+.sb-ar-sep{font-size:.8rem;color:var(--text-muted);flex-shrink:0;margin-right:.1rem}
 
 /* ── LIGNENDE ORD HUB ─────────────────────────────────────── */
 .sb-hub-header{margin-bottom:2rem}
@@ -1216,8 +1216,9 @@ body{overflow:hidden;overscroll-behavior:none}
   .content-view{padding:max(4.5rem,calc(env(safe-area-inset-top,0px) + 3.5rem)) 1rem calc(5.5rem + env(safe-area-inset-bottom,0px))}
 
   .slides-frame-wrap iframe{height:280px}
-  .sb-wr-ar{grid-template-columns:28px 1fr .7fr .9fr}
-  .sb-ar-script{font-size:.92rem}
+  .sb-wr-ar{grid-template-columns:24px 1.3fr 1fr}
+  .sb-ar-script{font-size:.88rem}
+  .sb-ar-trans{font-size:.58rem}
   .sb-word-row{grid-template-columns:28px 1fr 1fr;gap:.3rem}
   .sb-w-orig,.sb-w-dan{font-size:.82rem}
   .sprogbro-grid{grid-template-columns:1fr}
