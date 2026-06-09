@@ -358,8 +358,13 @@ function escapeHTML(str){
 // Requires table: linguastrike_scores (id PK, alias text, score int, wave int, power int, created_at timestamptz)
 let _lsDb=null;
 function lsGetDb(){
-  if(!_lsDb&&window.supabase)
-    _lsDb=window.supabase.createClient('https://akontludfisgxwlnayvs.supabase.co','sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq');
+  if(!_lsDb){
+    // Reuse the SPA's shared client (window._sbClient, set by script.js);
+    // only create one here as fallback to avoid duplicate GoTrueClient instances
+    if(window._sbClient)_lsDb=window._sbClient;
+    else if(window.supabase)
+      _lsDb=window._sbClient=window.supabase.createClient('https://akontludfisgxwlnayvs.supabase.co','sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq');
+  }
   return _lsDb||null;
 }
 
@@ -1799,11 +1804,13 @@ class Game {
     this._updateHUD();
   }
 
+  // La escena idle (fondo + grid) es estática: se pinta UNA vez en vez de
+  // en bucle rAF (el bucle anterior seguía corriendo tras salir de la vista
+  // y se duplicaba en cada re-entrada).
   _idleDraw(){
     if(this.started)return;
     const{ctx,W,H}=this;
     ctx.fillStyle=CFG.colors.bg;ctx.fillRect(0,0,W,H);this._drawGrid();
-    requestAnimationFrame(()=>this._idleDraw());
   }
 
   start(){
@@ -2767,7 +2774,12 @@ class Game {
           this.canvas.height = this.H;
         };
 
-        _onResize = ()=>{ if(_game) _game._resize(); };
+        _onResize = ()=>{
+          if(!_game) return;
+          _game._resize();
+          // El resize limpia el canvas; si estamos en el overlay START, repintar la escena idle
+          if(!_game.started && document.body.classList.contains('spil-active')) _game._idleDraw();
+        };
         window.addEventListener('resize', _onResize);
       }
 

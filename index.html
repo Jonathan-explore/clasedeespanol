@@ -7,7 +7,10 @@
   <title>Din Klasseværelsets Hjørne</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <!-- Fuentes en carga asíncrona: no bloquean el primer render (font-display:swap ya evita FOIT) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all';this.onload=null" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" /></noscript>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="game.css" />
   <script>if(localStorage.getItem('theme')!=='dark')document.documentElement.dataset.theme='light';</script>
@@ -499,9 +502,8 @@
   <!-- TRANSITION OVERLAY -->
   <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="game.js"></script>
-  <script src="script.js"></script>
+  <!-- Scripts: defer = no bloquean el parseo; game.js se carga bajo demanda al entrar al juego -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>

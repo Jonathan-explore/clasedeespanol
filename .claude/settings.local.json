@@ -5,7 +5,32 @@
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Format-Table -AutoSize)",
       "Bash(curl *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node test_supabase.js)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "WebFetch(domain:akontludfisgxwlnayvs.supabase.co)",
+      "Bash(npx --yes serve . -p 5555)",
+      "Bash(mkdir -p /tmp/pw-test)",
+      "Read(//tmp/**)",
+      "Bash(npm install *)",
+      "Bash(cp /tmp/verify_mobile.mjs /tmp/pw-test/verify.mjs)",
+      "Bash(node verify.mjs)",
+      "Bash(pkill -f \"serve .\")",
+      "Bash(node verify_theme.js)",
+      "Bash(cp verify_theme.js verify_theme.cjs)",
+      "Bash(node verify_theme.cjs)",
+      "Bash(node verify_tablon.cjs)",
+      "Bash(git push *)",
+      "Bash(node verify_dd.cjs)",
+      "Bash(node verify_iphone_full.cjs)",
+      "Bash(node verify_date.cjs)",
+      "Bash(git commit -m ' * ,)",
+      "Bash(node verify_temario.cjs)",
+      "Bash(node verify_match.cjs)",
+      "Bash(node --check script.js)",
+      "Bash(grep -n \"^const \\\\$\\\\|^function \\\\$\\\\|^ *\\\\$ *=\" script.js)",
+      "Bash(grep -n \"^\\\\s*function \\\\\\\\\\\\$\" script.js)"
     ]
   }
 }

@@ -16,7 +16,12 @@ const SUPABASE_URL='https://akontludfisgxwlnayvs.supabase.co';
 const SUPABASE_KEY='sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq';
 let _db=null;
 function getDb(){
-  if(!_db&&window.supabase)_db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  if(!_db){
+    // Single shared client (window._sbClient) — a second createClient with the
+    // same storage key triggers GoTrueClient's "multiple instances" warning
+    if(window._sbClient)_db=window._sbClient;
+    else if(window.supabase)_db=window._sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  }
   return _db;
 }
 async function dbGet(key){
@@ -218,30 +223,58 @@ function detectLang(text){
   const ctx=canvas.getContext('2d');
   const mobile=navigator.maxTouchPoints>0;
   const N=mobile?6:11;
+  // En móvil pintamos a media resolución (los blobs son difusos, no se nota)
+  // y a 30fps — el CSS estira el canvas al 100% del viewport.
+  // En desktop se limita a ~60fps (en pantallas de 120/144Hz pintaba cada frame).
+  const SCALE=mobile?.5:1;
+  const FRAME_MS=mobile?32:15;
+  const STEP=mobile?2:1; // a 30fps cada frame avanza el doble para mantener la velocidad visual
   let W,H,blobs=[];
-  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
+  function resize(){W=canvas.width=Math.ceil(innerWidth*SCALE);H=canvas.height=Math.ceil(innerHeight*SCALE);}
   resize();window.addEventListener('resize',resize);
   const COLORS=['hsl(210,80%,35%)','hsl(220,70%,28%)','hsl(195,85%,30%)','hsl(240,60%,30%)','hsl(180,70%,22%)','hsl(260,50%,28%)'];
+  // El gradiente de cada blob se rasteriza UNA vez a un sprite offscreen;
+  // cada frame solo hace drawImage (mucho más barato que crear el gradiente).
+  function makeSprite(color,r){
+    const off=document.createElement('canvas');
+    off.width=off.height=Math.ceil(r*2);
+    const c=off.getContext('2d');
+    const g=c.createRadialGradient(r,r,0,r,r,r);
+    g.addColorStop(0,color.replace('hsl','hsla').replace(')',',0.55)'));
+    g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.fillRect(0,0,off.width,off.height);
+    return off;
+  }
   for(let i=0;i<N;i++){
+    const r=(120+Math.random()*220)*SCALE;
+    const color=COLORS[i%COLORS.length];
     blobs.push({
-      x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-      r:120+Math.random()*220,
+      x:Math.random()*W,y:Math.random()*H,
+      r,sprite:makeSprite(color,r),
       vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
       ax:Math.random()*Math.PI*2,ay:Math.random()*Math.PI*2,
       ax2:Math.random()*.003+.0015,ay2:Math.random()*.003+.0015,
-      color:COLORS[i%COLORS.length],
       stretchX:1,stretchY:1
     });
   }
   let stretchTarget=null,stretchT=0,stretchDur=0;
-  function stretchToward(tx,ty,dur){stretchTarget={tx,ty};stretchT=0;stretchDur=dur;}
+  function stretchToward(tx,ty,dur){stretchTarget={tx:tx*SCALE,ty:ty*SCALE};stretchT=0;stretchDur=dur;}
   window._fluidStretch=stretchToward;
+  let lastPaint=0;
+  function idle(){
+    // En tema claro, con la pestaña oculta o dentro del juego no se ve el
+    // canvas: en vez de un rAF a 60fps, re-chequeamos cada 400ms.
+    return document.documentElement.dataset.theme==='light'
+      ||document.hidden
+      ||document.body.classList.contains('spil-active');
+  }
   function loop(t){
-    if(document.documentElement.dataset.theme==='light'){requestAnimationFrame(loop);return;}
-    ctx.clearRect(0,0,W,H);
+    if(idle()){setTimeout(()=>requestAnimationFrame(loop),400);return;}
+    if(t-lastPaint<FRAME_MS){requestAnimationFrame(loop);return;}
+    lastPaint=t;
     ctx.fillStyle='#0a0f1e';ctx.fillRect(0,0,W,H);
     if(stretchTarget){
-      stretchT+=16;
+      stretchT+=(FRAME_MS||16);
       const p=Math.min(stretchT/stretchDur,1);
       const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
       blobs.forEach(b=>{
@@ -255,18 +288,15 @@ function detectLang(text){
       blobs.forEach(b=>{b.stretchX+=(1-b.stretchX)*.08;b.stretchY+=(1-b.stretchY)*.08;});
     }
     ctx.save();
+    ctx.globalCompositeOperation='screen';
     blobs.forEach(b=>{
-      b.ax+=b.ax2;b.ay+=b.ay2;
-      b.x+=Math.sin(b.ax)*b.vx*60;b.y+=Math.cos(b.ay)*b.vy*60;
+      b.ax+=b.ax2*STEP;b.ay+=b.ay2*STEP;
+      b.x+=Math.sin(b.ax)*b.vx*60*SCALE*STEP;b.y+=Math.cos(b.ay)*b.vy*60*SCALE*STEP;
       if(b.x<-b.r)b.x=W+b.r;if(b.x>W+b.r)b.x=-b.r;
       if(b.y<-b.r)b.y=H+b.r;if(b.y>H+b.r)b.y=-b.r;
       ctx.save();
       ctx.translate(b.x,b.y);ctx.scale(b.stretchX,b.stretchY);
-      const g=ctx.createRadialGradient(0,0,0,0,0,b.r);
-      g.addColorStop(0,b.color.replace('hsl','hsla').replace(')',',0.55)'));
-      g.addColorStop(1,'transparent');
-      ctx.globalCompositeOperation='screen';
-      ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+      ctx.drawImage(b.sprite,-b.r,-b.r);
       ctx.restore();
     });
     ctx.restore();
@@ -310,12 +340,14 @@ function detectLang(text){
 })();
 
 /* ── ROUTER ────────────────────────────────────────────── */
+let _parallaxWake=()=>{};
 function showView(name,fromCard){
   // Salir del juego si estábamos en él
   if(STATE.currentView==='spil' && name!=='spil'){
     document.body.classList.remove('spil-active');
     if(window.LinguaStrike) window.LinguaStrike.stop();
   }
+  _parallaxWake();
   const all=document.querySelectorAll('.view');
   all.forEach(v=>v.classList.remove('active'));
   const target=$(('view-'+name));
@@ -333,15 +365,31 @@ function renderView(name){
   if(name==='spil')renderSpil();
   if(name==='stile')renderStile();
 }
+// game.js (~126KB) solo se parsea cuando el alumno entra al juego,
+// no en la carga inicial de la página.
+let _gameJsPromise=null;
+function loadGameScript(){
+  if(window.LinguaStrike)return Promise.resolve();
+  if(!_gameJsPromise){
+    _gameJsPromise=new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='game.js';
+      s.onload=resolve;
+      s.onerror=()=>{_gameJsPromise=null;reject(new Error('game.js no se pudo cargar'));};
+      document.body.appendChild(s);
+    });
+  }
+  return _gameJsPromise;
+}
 function renderSpil(){
   document.body.classList.add('spil-active');
-  if(window.LinguaStrike){
+  loadGameScript().then(()=>{
     // start() es async pero no necesitamos await aquí — el overlay START
     // se muestra y el render del canvas se inicializa solo.
-    window.LinguaStrike.start();
-  } else {
+    if(document.body.classList.contains('spil-active'))window.LinguaStrike.start();
+  }).catch(()=>{
     console.warn('[hjørne] LinguaStrike no está cargado. ¿Se cargó game.js?');
-  }
+  });
 }
 
 /* ── TRANSITIONS ───────────────────────────────────────── */
@@ -1926,27 +1974,36 @@ function initParallax(){
   let tx=[0,0,0],ty=[0,0,0]; // targets
   let cx=[0,0,0],cy=[0,0,0]; // current (lerped)
   const EASE=0.05;
+  let rafId=null;
 
+  // El loop solo corre mientras los orbes se mueven; al asentarse se detiene
+  // (antes corría a 60fps para siempre, incluso sin puntero).
   function tick(){
+    rafId=null;
     const inGame=document.body.classList.contains('spil-active');
+    let settled=true;
     for(let i=0;i<3;i++){
       // In game: smoothly drift back to 0
       const dtx=(inGame?0:tx[i])-cx[i];
       const dty=(inGame?0:ty[i])-cy[i];
       cx[i]+=dtx*EASE;
       cy[i]+=dty*EASE;
+      if(Math.abs(dtx)>.05||Math.abs(dty)>.05)settled=false;
       if(orbs[i])orbs[i].style.translate=`${cx[i].toFixed(1)}px ${cy[i].toFixed(1)}px`;
     }
     // Noise overlay moves at 25% of orb-2 — barely perceptible depth hint
     if(noise)noise.style.translate=`${(cx[1]*.25).toFixed(1)}px ${(cy[1]*.25).toFixed(1)}px`;
-    requestAnimationFrame(tick);
+    if(!settled)rafId=requestAnimationFrame(tick);
   }
+  function wake(){if(rafId===null)rafId=requestAnimationFrame(tick);}
+  _parallaxWake=wake;
 
   function applyPointer(cx,cy){
     if(document.body.classList.contains('spil-active'))return;
     const nx=(cx/window.innerWidth)-.5;
     const ny=(cy/window.innerHeight)-.5;
     for(let i=0;i<3;i++){tx[i]=nx*MAX[i];ty[i]=ny*MAX[i];}
+    wake();
   }
   document.addEventListener('mousemove',e=>applyPointer(e.clientX,e.clientY));
   document.addEventListener('touchmove',e=>{
@@ -1957,9 +2014,10 @@ function initParallax(){
   document.addEventListener('touchend',()=>{
     if(document.body.classList.contains('spil-active'))return;
     for(let i=0;i<3;i++){tx[i]=0;ty[i]=0;}
+    wake();
   });
 
-  requestAnimationFrame(tick);
+  wake();
 }
 
 document.addEventListener('DOMContentLoaded',init);

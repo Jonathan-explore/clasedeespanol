@@ -35,7 +35,9 @@ body{overflow:hidden;overscroll-behavior:none}
 @keyframes fadeInScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-@keyframes temario-breathe-light{0%,100%{box-shadow:0 2px 16px rgba(0,0,0,.055),0 0 0 0 rgba(176,120,64,.0)}50%{box-shadow:0 6px 28px rgba(176,120,64,.14),0 0 0 3px rgba(176,120,64,.07)}}
+/* La respiración anima opacity (composición GPU) en un ::after que lleva la
+   sombra, en vez de animar box-shadow (repintado por frame) */
+@keyframes temario-breathe-light{0%,100%{opacity:0}50%{opacity:1}}
 @keyframes pulse-glow{0%,100%{opacity:.15}50%{opacity:.3}}
 @keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes float-particle{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) translateX(50px);opacity:0}}
@@ -1300,6 +1302,12 @@ html[data-theme="light"]{
 [data-theme="light"] .menu-card-temario .card-inner{
   background:linear-gradient(135deg,rgba(255,246,224,.97) 0%,rgba(255,251,242,.95) 100%);
   border-color:rgba(176,120,64,.28);
+}
+[data-theme="light"] .menu-card-temario::after{
+  content:'';position:absolute;inset:0;border-radius:var(--r-lg);
+  pointer-events:none;
+  box-shadow:0 6px 28px rgba(176,120,64,.14),0 0 0 3px rgba(176,120,64,.07);
+  opacity:0;
   animation:temario-breathe-light 3s ease-in-out infinite;
 }
 [data-theme="light"] .menu-card-temario .card-inner::before{
@@ -1311,8 +1319,8 @@ html[data-theme="light"]{
 [data-theme="light"] .menu-card-temario .card-arrow{color:rgba(176,120,64,.55)}
 [data-theme="light"] .menu-card-temario:hover .card-inner{
   border-color:rgba(176,120,64,.45);
-  box-shadow:0 18px 48px rgba(176,120,64,.12),0 0 0 4px rgba(176,120,64,.06);
-  animation:none;}
+  box-shadow:0 18px 48px rgba(176,120,64,.12),0 0 0 4px rgba(176,120,64,.06);}
+[data-theme="light"] .menu-card-temario:hover::after{animation:none;opacity:0}
 [data-theme="light"] .menu-card-temario:hover .card-icon-wrap{
   background:rgba(176,120,64,.2);box-shadow:0 4px 16px rgba(176,120,64,.2);}
 [data-theme="light"] .menu-card-temario:hover .card-arrow{color:var(--glow4)}
@@ -1510,4 +1518,23 @@ html[data-theme="light"]{
 /* word card top-shine overlay */
 [data-theme="light"] .word-card::before{
   background:linear-gradient(135deg,rgba(0,0,0,.02) 0%,transparent 60%);
+}
+
+/* ── RENDIMIENTO MÓVIL ────────────────────────────────────────
+   Kernels de blur más pequeños en pantallas de teléfono: el efecto visual
+   es casi idéntico (los fondos ya son degradados suaves) pero el coste de
+   GPU/repintado cae mucho en gamas media/baja. Las animaciones se mantienen. */
+@media(max-width:640px){
+  .orb{filter:blur(40px)}
+  .card-inner{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .top-bar{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .modal-glass{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+}
+
+/* Usuarios que piden menos movimiento: apagar las animaciones decorativas
+   infinitas (las transiciones de entrada cortas se conservan) */
+@media(prefers-reduced-motion:reduce){
+  .orb,[data-theme="light"] .orb,.particle,.main-title em,
+  [data-theme="light"] .menu-card-temario::after{animation:none}
+  .particle{display:none}
 }
