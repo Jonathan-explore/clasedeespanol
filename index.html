@@ -13,6 +13,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" /></noscript>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="game.css" />
+  <link rel="stylesheet" href="pasapalabra.css" />
+  <link rel="stylesheet" href="pinturillo.css" />
   <script>if(localStorage.getItem('theme')!=='dark')document.documentElement.dataset.theme='light';</script>
 </head>
 <body>
@@ -165,6 +167,42 @@
             </div>
           </button>
 
+          <!-- Pasapalabra · El Rosco -->
+          <button class="menu-card" id="card-pasapalabra" data-view="pasapalabra" aria-label="Gå til Pasapalabra">
+            <div class="card-bg-glow card-bg-glow-4"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🎡</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Pasapalabra</h2>
+                <p class="card-desc">El Rosco — quiz for hele klassen</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Pinturillo · Tegn og gæt -->
+          <button class="menu-card" id="card-pinturillo" data-view="pinturillo" aria-label="Gå til Pinturillo">
+            <div class="card-bg-glow card-bg-glow-3"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🎨</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Pinturillo</h2>
+                <p class="card-desc">Tegn og gæt — i grupper</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
           <!-- Stile -->
           <button class="menu-card" id="card-stile" data-view="stile" aria-label="Gå til Stile">
             <div class="card-bg-glow card-bg-glow-stile"></div>
@@ -220,6 +258,8 @@
     <section id="view-ordbog"       class="view" aria-label="Ordbog"></section>
     <section id="view-yderligere"   class="view" aria-label="Yderligere materiale"></section>
     <section id="view-stile"        class="view" aria-label="Stile"></section>
+    <section id="view-pasapalabra"  class="view" aria-label="Pasapalabra"></section>
+    <section id="view-pinturillo"   class="view" aria-label="Pinturillo"></section>
 
     <!-- LINGUASTRIKE GAME VIEW -->
     <section id="view-spil" class="view" aria-label="LinguaStrike">
@@ -505,5 +545,7 @@
   <!-- Scripts: defer = no bloquean el parseo; game.js se carga bajo demanda al entrar al juego -->
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="script.js"></script>
+  <script defer src="pasapalabra.js"></script>
+  <script defer src="pinturillo.js"></script>
 </body>
 </html>

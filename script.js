@@ -24,6 +24,8 @@ function getDb(){
   }
   return _db;
 }
+// Expuesto para que pinturillo.js (modo WiFi) reutilice el mismo cliente.
+window.getDb=getDb;
 async function dbGet(key){
   const db=getDb();
   if(!db)return localStorage.getItem(key);
@@ -347,6 +349,10 @@ function showView(name,fromCard){
     document.body.classList.remove('spil-active');
     if(window.LinguaStrike) window.LinguaStrike.stop();
   }
+  // Cerrar el juego Pinturillo (timer + canal Realtime) al salir de su vista
+  if(STATE.currentView==='pinturillo' && name!=='pinturillo' && window.__pinturilloTeardown){
+    window.__pinturilloTeardown();
+  }
   _parallaxWake();
   const all=document.querySelectorAll('.view');
   all.forEach(v=>v.classList.remove('active'));
@@ -364,6 +370,8 @@ function renderView(name){
   if(name==='yderligere')renderYderligere();
   if(name==='spil')renderSpil();
   if(name==='stile')renderStile();
+  if(name==='pasapalabra'&&window.renderPasapalabra)window.renderPasapalabra();
+  if(name==='pinturillo'&&window.renderPinturillo)window.renderPinturillo();
 }
 // game.js (~126KB) solo se parsea cuando el alumno entra al juego,
 // no en la carga inicial de la página.
