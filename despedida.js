@@ -97,10 +97,7 @@
      1) ADIÓS — página emotiva proyectable
      ════════════════════════════════════════════════════════════ */
   function renderAdios(body) {
-    const n = getVocab().length;
-    const wordsLine = n >= 4
-      ? `Juntos hemos aprendido <b>${n}</b> palabras en español.`
-      : `Juntos hemos aprendido <b>un montón</b> de palabras en español.`;
+    const wordsLine = 'Juntos hemos aprendido <b>muchísimas</b> palabras en español.';
     const starters = [
       ['Gracias por…', 'Tak for…'],
       ['Me gustó cuando…', 'Jeg kunne lide, da…'],
@@ -108,7 +105,19 @@
       ['Te deseo…', 'Jeg ønsker dig…'],
       ['Eres muy…', 'Du er meget…']
     ];
+    // Frases clave de «Color Esperanza» (no la letra completa) → danés, para enseñar/cantar.
+    const LYRIC_KEYS = [
+      ['Color esperanza', 'Håbets farve'],
+      ['Saber que se puede', 'At vide at man kan'],
+      ['Querer que se pueda', 'At ville at det lykkes'],
+      ['Quitarse los miedos', 'Slippe af med frygten'],
+      ['Pintarse la cara', 'Male ansigtet'],
+      ['Entrar al futuro con el corazón', 'Gå ind i fremtiden med hjertet'],
+      ['Lo imposible se puede lograr', 'Det umulige kan lykkes'],
+      ['La vida cambia y cambiará', 'Livet ændrer sig og vil ændre sig']
+    ];
     const ytQuery = encodeURIComponent('Diego Torres Color Esperanza letra');
+    const lyricQuery = encodeURIComponent('Color Esperanza Diego Torres letra oficial');
     body.innerHTML = `
 <div class="dp-adios">
   <div class="dp-hero">
@@ -121,7 +130,7 @@
     <p class="dp-msg-es">Queridos alumnos:</p>
     <p class="dp-msg-es">${wordsLine} Pero sobre todo, hemos reído, jugado y compartido. Gracias por cada clase. Os voy a echar de menos. Cuidaos mucho y no dejéis de hablar español. 💚</p>
     <p class="dp-msg-da">Kære elever: vi har lært en masse spansk sammen — men vigtigst af alt har vi grinet, leget og delt gode stunder. Tak for hver time. Jeg vil savne jer. Pas på jer selv, og bliv ved med at tale spansk.</p>
-    <p class="dp-sign">— ${esc('Andrea')} 🌟</p>
+    <p class="dp-sign">— ${esc('Jonathan')} 🌟</p>
   </div>
 
   <div class="dp-card dp-statbox">
@@ -141,14 +150,25 @@
   <div class="dp-card dp-song">
     <h3 class="dp-h3">🎵 Canción de despedida</h3>
     <p class="dp-note">Sugerencia: <b>«Color Esperanza»</b> (Diego Torres) — habla de seguir adelante y tener esperanza. Alternativa más alegre: <b>«Vivir Mi Vida»</b> (Marc Anthony).</p>
-    <a class="dp-yt" href="https://www.youtube.com/results?search_query=${ytQuery}" target="_blank" rel="noopener">▶ Buscar en YouTube</a>
-    <p class="dp-note" style="margin-top:.6rem">Frases A1 de la canción para cantar: <i>«sé que se puede», «vivir mi vida», «color esperanza», «sentir que la vida no acaba».</i></p>
+    <div class="dp-song-btns">
+      <a class="dp-yt" href="https://www.youtube.com/results?search_query=${ytQuery}" target="_blank" rel="noopener">▶ YouTube</a>
+      <button class="dp-yt dp-lyrics-btn" id="dp-lyrics-toggle" type="button">📜 Lyrics</button>
+    </div>
+    <div class="dp-lyrics" id="dp-lyrics" hidden>
+      <p class="dp-note" style="margin-bottom:.6rem">Nøglesætninger / frases clave (español → dansk), para cantar y entender:</p>
+      <div class="dp-lyric-list">
+        ${LYRIC_KEYS.map(l => `<div class="dp-lyric-row"><b>${esc(l[0])}</b><span>${esc(l[1])}</span></div>`).join('')}
+      </div>
+      <a class="dp-yt" style="margin-top:.7rem" href="https://www.youtube.com/results?search_query=${lyricQuery}" target="_blank" rel="noopener">📜 Letra completa (oficial)</a>
+    </div>
   </div>
 
   <div class="dp-card dp-next">
     <p>Cuando queráis, id a <b>🎓 Diplomas</b> para entregar el diploma a cada uno, y a <b>💬 Muro</b> para dejar mensajes todos juntos.</p>
   </div>
 </div>`;
+    const lt = body.querySelector('#dp-lyrics-toggle');
+    if (lt) lt.addEventListener('click', () => { const p = body.querySelector('#dp-lyrics'); if (p) p.hidden = !p.hidden; });
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -156,35 +176,43 @@
      ════════════════════════════════════════════════════════════ */
   function renderDiplomas(body) {
     const vocab = getVocab().filter(w => typeof w === 'string' && w.trim());
+    // Palabras a mostrar: vocab de clase + las que les gustan ('me gusta', 'papi chulo')
+    const base = vocab.length ? vocab.slice() : ['hola', 'gracias', 'adiós', 'casa', 'perro', 'gato', 'rojo', 'azul'];
+    ['me gusta', 'papi chulo'].forEach(w => { if (!base.includes(w)) base.push(w); });
+    const defWords = base.join(', ');
     body.innerHTML = `
 <div class="dp-diploma-tool">
   <div class="dp-card dp-form">
     <h3 class="dp-h3">🎓 Lav et diplom</h3>
     <div class="dp-field"><label class="dp-lbl">Elevens navn <span class="dp-req">*</span></label>
       <input class="dp-input" id="dp-name" maxlength="24" placeholder="Skriv elevens navn" /></div>
-    <div class="dp-field"><label class="dp-lbl">Ord eleven kan på spansk (adskil med komma)</label>
-      <textarea class="dp-input dp-textarea" id="dp-words" placeholder="hola, gracias, casa, perro, rojo…">${esc(vocab.join(', '))}</textarea>
-      <span class="dp-wordcount" id="dp-wc">0 ord</span></div>
+    <div class="dp-field"><label class="dp-lbl">Antal ord eleven kan (tal på diplomet)</label>
+      <input class="dp-input" id="dp-count" type="number" min="1" max="9999" value="300" /></div>
+    <div class="dp-field"><label class="dp-lbl">Ord at vise (eksempler, adskil med komma)</label>
+      <textarea class="dp-input dp-textarea" id="dp-words" placeholder="hola, gracias, me gusta, papi chulo…">${esc(defWords)}</textarea>
+      <span class="dp-wordcount" id="dp-wc">0 ord vist</span></div>
     <div class="dp-btns">
       <button class="dp-btn dp-btn-go" id="dp-make">✨ Lav diplom</button>
       <button class="dp-btn dp-btn-dl" id="dp-dl" disabled>⬇️ Download PNG</button>
     </div>
     <p class="dp-err" id="dp-derr"></p>
-    <p class="dp-note">Navnet <b>skal</b> udfyldes. Tjek ordene, tryk «Lav diplom», og eleven kan downloade sit eget diplom. 🎉</p>
+    <p class="dp-note">Navnet <b>skal</b> udfyldes. «Antal ord» er tallet på diplomet (fx 300). Eleven kan downloade sit eget diplom. 🎉</p>
   </div>
   <div class="dp-preview">
-    <canvas id="dp-canvas" width="1000" height="730" aria-label="Diploma"></canvas>
+    <canvas id="dp-canvas" width="1000" height="760" aria-label="Diploma"></canvas>
   </div>
 </div>`;
     const canvas = body.querySelector('#dp-canvas');
     const nameI = body.querySelector('#dp-name');
+    const countI = body.querySelector('#dp-count');
     const wordsI = body.querySelector('#dp-words');
     const dlBtn = body.querySelector('#dp-dl');
     const errEl = body.querySelector('#dp-derr');
     const wcEl = body.querySelector('#dp-wc');
 
     function parseWords() { return wordsI.value.split(/[,\n;]+/).map(s => s.trim()).filter(Boolean); }
-    function updWC() { wcEl.textContent = parseWords().length + ' ord'; }
+    function getCount() { return Math.max(1, parseInt(countI.value, 10) || 0) || 300; }
+    function updWC() { wcEl.textContent = parseWords().length + ' ord vist'; }
     wordsI.addEventListener('input', updWC); updWC();
 
     async function draw() {
@@ -192,7 +220,7 @@
       if (!name) { errEl.textContent = '⚠ Skriv elevens navn først.'; nameI.focus(); dlBtn.disabled = true; return; }
       errEl.textContent = '';
       try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
-      paintDiploma(canvas, { name, words: parseWords() });
+      paintDiploma(canvas, { name, count: getCount(), words: parseWords() });
       dlBtn.disabled = false;
     }
     body.querySelector('#dp-make').addEventListener('click', draw);
@@ -204,7 +232,7 @@
       a.click();
     });
     // vista previa inicial (placeholder hasta que escriban el nombre)
-    paintDiploma(canvas, { name: 'Elevens navn', words: parseWords(), placeholder: true });
+    paintDiploma(canvas, { name: 'Elevens navn', count: getCount(), words: parseWords(), placeholder: true });
   }
 
   // Reparte palabras en líneas centradas; si no caben todas, añade "(+N flere)".
@@ -250,49 +278,49 @@
     ctx.fillText('★  din klasseværelsets hjørne  ★', W / 2, 104);
     // Título (danés)
     ctx.fillStyle = '#0b1220'; ctx.font = '700 italic 74px "Playfair Display", Georgia, serif';
-    ctx.fillText('Diplom', W / 2, 180);
+    ctx.fillText('Diplom', W / 2, 178);
     ctx.fillStyle = '#ec4899'; ctx.font = '700 26px Inter, sans-serif';
-    ctx.fillText('Spansk · Niveau A1', W / 2, 218);
+    ctx.fillText('Spansk · Niveau A1', W / 2, 216);
     // Tildeles til (otorgado a)
     ctx.fillStyle = '#475569'; ctx.font = '400 22px Inter, sans-serif';
-    ctx.fillText('Dette diplom tildeles / Para:', W / 2, 272);
+    ctx.fillText('Dette diplom tildeles / Para:', W / 2, 268);
     ctx.fillStyle = d.placeholder ? '#b8c0cc' : '#0b1220';
     ctx.font = '700 italic 54px "Playfair Display", Georgia, serif';
-    ctx.fillText(d.name, W / 2, 330);
+    ctx.fillText(d.name, W / 2, 326);
     ctx.strokeStyle = '#5eead4'; ctx.lineWidth = 3;
     const nameW = Math.min(560, Math.max(200, ctx.measureText(d.name).width));
-    ctx.beginPath(); ctx.moveTo(W / 2 - nameW / 2, 348); ctx.lineTo(W / 2 + nameW / 2, 348); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 - nameW / 2, 344); ctx.lineTo(W / 2 + nameW / 2, 344); ctx.stroke();
     // Dato motivador en danés (banda destacada)
-    ctx.fillStyle = '#fff4e0'; ctx.fillRect(120, 372, W - 240, 46);
-    ctx.strokeStyle = '#f6c177'; ctx.lineWidth = 2; ctx.strokeRect(120, 372, W - 240, 46);
+    ctx.fillStyle = '#fff4e0'; ctx.fillRect(120, 368, W - 240, 46);
+    ctx.strokeStyle = '#f6c177'; ctx.lineWidth = 2; ctx.strokeRect(120, 368, W - 240, 46);
     ctx.fillStyle = '#b45309'; ctx.font = '700 22px Inter, sans-serif';
-    ctx.fillText('Mere end 80% når aldrig A1 — men det gjorde DU! 🎉', W / 2, 402);
-    // Cuántas palabras saben
-    const n = d.words.length;
+    ctx.fillText('Mere end 80% når aldrig A1 — men det gjorde DU! 🎉', W / 2, 398);
+    // Cuántas palabras saben (número del formulario)
+    const count = d.count || (d.words ? d.words.length : 0);
     ctx.fillStyle = '#0f766e'; ctx.font = '700 26px Inter, sans-serif';
-    ctx.fillText(n > 0 ? ('Du kan allerede ' + n + ' spanske ord:') : 'Du kan allerede en masse spanske ord!', W / 2, 462);
-    // Lista de palabras escritas
-    if (n > 0) {
+    ctx.fillText(count > 0 ? ('Du kan allerede ' + count + ' spanske ord — bl.a.:') : 'Du kan allerede en masse spanske ord!', W / 2, 456);
+    // Lista de palabras escritas (ejemplos)
+    if (d.words && d.words.length) {
       ctx.fillStyle = '#334155'; ctx.font = '400 21px Inter, sans-serif';
-      const lines = layoutWords(ctx, d.words, '  ·  ', W - 220, 3);
-      lines.forEach((ln, i) => ctx.fillText(ln, W / 2, 498 + i * 32));
+      const lines = layoutWords(ctx, d.words, '  ·  ', W - 260, 3);
+      lines.forEach((ln, i) => ctx.fillText(ln, W / 2, 492 + i * 32));
     }
     // Pie
     ctx.fillStyle = '#475569'; ctx.font = '400 20px Inter, sans-serif';
-    ctx.fillText('Tillykke! · ¡Felicidades! · ' + year, W / 2, 622);
-    // Sello / medalla
-    ctx.save(); ctx.translate(W - 168, H - 132);
-    ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(0, 0, 52, 0, 7); ctx.fill();
-    ctx.fillStyle = '#fff7e6'; ctx.beginPath(); ctx.arc(0, 0, 41, 0, 7); ctx.fill();
+    ctx.fillText('Tillykke! · ¡Felicidades! · ' + year, W / 2, H - 150);
+    // Sello / medalla (abajo-derecha, sin solapar la firma ni el pie)
+    ctx.save(); ctx.translate(W - 150, H - 92);
+    ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(0, 0, 42, 0, 7); ctx.fill();
+    ctx.fillStyle = '#fff7e6'; ctx.beginPath(); ctx.arc(0, 0, 33, 0, 7); ctx.fill();
     ctx.fillStyle = '#b45309'; ctx.textAlign = 'center';
-    ctx.font = '700 28px Inter, sans-serif'; ctx.fillText('A1', 0, -2);
-    ctx.font = '700 15px Inter, sans-serif'; ctx.fillText('¡OLÉ!', 0, 20);
+    ctx.font = '700 24px Inter, sans-serif'; ctx.fillText('A1', 0, -3);
+    ctx.font = '700 13px Inter, sans-serif'; ctx.fillText('¡OLÉ!', 0, 16);
     ctx.restore();
-    // Firma
+    // Firma (abajo-izquierda)
     ctx.textAlign = 'left'; ctx.fillStyle = '#0b1220'; ctx.font = '600 italic 26px "Playfair Display", Georgia, serif';
-    ctx.fillText('Andrea', 150, H - 116);
-    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(140, H - 98); ctx.lineTo(350, H - 98); ctx.stroke();
-    ctx.fillStyle = '#475569'; ctx.font = '400 17px Inter, sans-serif'; ctx.fillText('Spansklærer · Profesora', 150, H - 76);
+    ctx.fillText('Jonathan Ponce de León', 150, H - 96);
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(140, H - 80); ctx.lineTo(470, H - 80); ctx.stroke();
+    ctx.fillStyle = '#475569'; ctx.font = '400 17px Inter, sans-serif'; ctx.fillText('Spansklærer · Profesor', 150, H - 58);
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -494,4 +522,4 @@
   window.__despedidaTeardown = teardown;
   window.__despedidaCheck = checkMessage; // para tests
 })();
-// v2: moderación completa (da/es/en) + diploma en danés con nombre y palabras
+// v3: Jonathan Ponce de León, contador ~300, me gusta/papi chulo, botón Lyrics, sin solapamientos
