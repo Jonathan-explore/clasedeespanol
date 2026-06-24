@@ -98,14 +98,29 @@
      ════════════════════════════════════════════════════════════ */
   function renderAdios(body) {
     // Estructuras de frase con BANCOS de palabras para que los alumnos formen frases enteras.
+    // Cada estructura: comienzo (es/da) + banco de palabras CON traducción + ejemplo (es/da).
     const FRASES = [
-      { es: 'Gracias por…', da: 'Tak for…', words: ['la clase', 'tu ayuda', 'tu paciencia', 'los juegos', 'enseñarme español', 'todo', 'este año'], ej: 'Gracias por todo, profe.' },
-      { es: 'Me gustó cuando…', da: 'Jeg kunne lide, da…', words: ['jugamos', 'cantamos', 'reímos', 'aprendimos', 'hablamos español', 'ganamos'], ej: 'Me gustó cuando jugamos.' },
-      { es: 'Nunca voy a olvidar…', da: 'Jeg vil aldrig glemme…', words: ['esta clase', 'a mis amigos', 'a ti', 'el español', 'este año', 'los buenos momentos'], ej: 'Nunca voy a olvidar esta clase.' },
-      { es: 'Voy a echar de menos…', da: 'Jeg vil savne…', words: ['las clases', 'a mis compañeros', 'a ti', 'hablar español', 'los viernes'], ej: 'Voy a echar de menos las clases.' },
-      { es: 'Eres muy…', da: 'Du er meget…', words: ['simpático/a', 'divertido/a', 'amable', 'inteligente', 'bueno/a', 'especial', 'paciente'], ej: 'Eres muy simpático.' },
-      { es: 'Te deseo…', da: 'Jeg ønsker dig…', words: ['mucha suerte', 'felicidad', 'lo mejor', 'un buen verano', 'éxito', 'salud'], ej: 'Te deseo mucha suerte.' },
-      { es: 'Espero…', da: 'Jeg håber…', words: ['verte pronto', 'que estés bien', 'seguir en contacto', 'que te vaya bien'], ej: 'Espero verte pronto.' }
+      { es: 'Gracias por…', da: 'Tak for…',
+        words: [['la clase', 'timen'], ['tu ayuda', 'din hjælp'], ['tu paciencia', 'din tålmodighed'], ['los juegos', 'spillene'], ['enseñarme español', 'at lære mig spansk'], ['todo', 'alt']],
+        ej: 'Gracias por todo, profe.', ejda: 'Tak for det hele, lærer.' },
+      { es: 'Me gustó cuando…', da: 'Jeg kunne lide, da…',
+        words: [['jugamos', 'vi spillede'], ['cantamos', 'vi sang'], ['reímos', 'vi grinede'], ['aprendimos', 'vi lærte'], ['hablamos español', 'vi talte spansk']],
+        ej: 'Me gustó cuando jugamos.', ejda: 'Jeg kunne lide, da vi spillede.' },
+      { es: 'Nunca voy a olvidar…', da: 'Jeg vil aldrig glemme…',
+        words: [['esta clase', 'denne klasse'], ['a mis amigos', 'mine venner'], ['a ti', 'dig'], ['el español', 'spansk'], ['los buenos momentos', 'de gode stunder']],
+        ej: 'Nunca voy a olvidar esta clase.', ejda: 'Jeg vil aldrig glemme denne klasse.' },
+      { es: 'Voy a echar de menos…', da: 'Jeg vil savne…',
+        words: [['las clases', 'timerne'], ['a mis compañeros', 'mine klassekammerater'], ['a ti', 'dig'], ['hablar español', 'at tale spansk'], ['los viernes', 'fredagene']],
+        ej: 'Voy a echar de menos las clases.', ejda: 'Jeg vil savne timerne.' },
+      { es: 'Eres muy…', da: 'Du er meget…',
+        words: [['simpático/a', 'sød'], ['divertido/a', 'sjov'], ['amable', 'venlig'], ['inteligente', 'klog'], ['bueno/a', 'god'], ['especial', 'speciel'], ['paciente', 'tålmodig']],
+        ej: 'Eres muy simpático.', ejda: 'Du er meget sød.' },
+      { es: 'Te deseo…', da: 'Jeg ønsker dig…',
+        words: [['mucha suerte', 'held og lykke'], ['felicidad', 'lykke'], ['lo mejor', 'alt det bedste'], ['un buen verano', 'en god sommer'], ['éxito', 'succes'], ['salud', 'godt helbred']],
+        ej: 'Te deseo mucha suerte.', ejda: 'Jeg ønsker dig held og lykke.' },
+      { es: 'Espero…', da: 'Jeg håber…',
+        words: [['verte pronto', 'at se dig snart'], ['que estés bien', 'at du har det godt'], ['seguir en contacto', 'at holde kontakten'], ['que te vaya bien', 'at det går dig godt']],
+        ej: 'Espero verte pronto.', ejda: 'Jeg håber at se dig snart.' }
     ];
     // Frases clave de «Color Esperanza» (no la letra completa) → danés, como ayuda.
     const LYRIC_KEYS = [
@@ -143,11 +158,11 @@
     <h3 class="dp-h3">💬 Di tu frase — elige y complétala</h3>
     <p class="dp-note">Escoge un comienzo y termínalo con una palabra de al lado. <span class="dp-note-da">Vælg en start og gør sætningen færdig med et ord.</span></p>
     <div class="dp-frases">
-      ${FRASES.map(fr => `
+      ${FRASES.map((fr, i) => `
       <div class="dp-frase">
-        <div class="dp-frase-head"><b>${esc(fr.es)}</b><span>${esc(fr.da)}</span></div>
-        <div class="dp-frase-words">${fr.words.map(w => `<span class="dp-chip">${esc(w)}</span>`).join('')}</div>
-        <div class="dp-frase-ej">👉 <i>${esc(fr.ej)}</i></div>
+        <div class="dp-frase-head"><span class="dp-frase-num">${i + 1}</span><b>${esc(fr.es)}</b><span class="dp-frase-da">${esc(fr.da)}</span></div>
+        <div class="dp-frase-words">${fr.words.map(w => `<span class="dp-chip"><b>${esc(w[0])}</b><i>${esc(w[1])}</i></span>`).join('')}</div>
+        <div class="dp-frase-ej">👉 <i>${esc(fr.ej)}</i> <span class="dp-frase-ejda">${esc(fr.ejda)}</span></div>
       </div>`).join('')}
     </div>
   </div>
@@ -519,4 +534,4 @@
   window.__despedidaTeardown = teardown;
   window.__despedidaCheck = checkMessage; // para tests
 })();
-// v4: página enfocada al alumno (ayudas para frases), canción Color Esperanza + letra (Genius)
+// v5: ayudas de frases con traducción al danés en cada opción, numeradas y ordenadas

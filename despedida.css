@@ -57,13 +57,17 @@
 /* Ayudas para formar frases (telaraña) */
 .dp-frases{display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem}
 .dp-frase{background:rgba(94,234,212,.05);border:1px solid var(--glass-border);border-radius:12px;padding:.75rem .9rem}
-.dp-frase-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem;margin-bottom:.5rem}
+.dp-frase-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-bottom:.55rem}
+.dp-frase-num{display:inline-flex;align-items:center;justify-content:center;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--glow);color:#0b1220;font-size:.78rem;font-weight:800;flex-shrink:0}
 .dp-frase-head b{color:var(--glow);font-size:1.08rem}
-.dp-frase-head span{color:var(--text-dim);font-size:.8rem}
-.dp-frase-words{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
-.dp-chip{background:rgba(255,255,255,.07);border:1px solid var(--glass-border);border-radius:50px;padding:.32rem .72rem;font-size:.86rem;color:var(--text)}
-.dp-frase-ej{font-size:.83rem;color:var(--text-dim)}
+.dp-frase-da{color:var(--text-dim);font-size:.82rem;font-style:italic}
+.dp-frase-words{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.55rem}
+.dp-chip{display:inline-flex;flex-direction:column;gap:.04rem;background:rgba(255,255,255,.07);border:1px solid var(--glass-border);border-radius:10px;padding:.35rem .72rem;line-height:1.25}
+.dp-chip b{font-size:.9rem;color:var(--text);font-weight:600}
+.dp-chip i{font-size:.72rem;color:var(--text-dim);font-style:normal}
+.dp-frase-ej{font-size:.83rem;color:var(--text-dim);margin-top:.1rem}
 .dp-frase-ej i{color:var(--text);font-style:italic}
+.dp-frase-ejda{color:var(--text-dim);font-size:.78rem}
 
 /* ── DIPLOMAS ── */
 .dp-diploma-tool{display:grid;grid-template-columns:340px 1fr;gap:1rem;width:100%;max-width:980px;align-items:start}
