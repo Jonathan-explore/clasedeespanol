@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="game.css" />
   <link rel="stylesheet" href="pasapalabra.css" />
   <link rel="stylesheet" href="pinturillo.css" />
+  <link rel="stylesheet" href="despedida.css" />
   <script>if(localStorage.getItem('theme')!=='dark')document.documentElement.dataset.theme='light';</script>
 </head>
 <body>
@@ -203,6 +204,24 @@
             </div>
           </button>
 
+          <!-- Despedida · Farvel -->
+          <button class="menu-card" id="card-despedida" data-view="despedida" aria-label="Gå til Despedida">
+            <div class="card-bg-glow card-bg-glow-2"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">👋</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Despedida</h2>
+                <p class="card-desc">Sidste dag — diplomer & beskeder</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
           <!-- Stile -->
           <button class="menu-card" id="card-stile" data-view="stile" aria-label="Gå til Stile">
             <div class="card-bg-glow card-bg-glow-stile"></div>
@@ -260,6 +279,7 @@
     <section id="view-stile"        class="view" aria-label="Stile"></section>
     <section id="view-pasapalabra"  class="view" aria-label="Pasapalabra"></section>
     <section id="view-pinturillo"   class="view" aria-label="Pinturillo"></section>
+    <section id="view-despedida"    class="view" aria-label="Despedida"></section>
 
     <!-- LINGUASTRIKE GAME VIEW -->
     <section id="view-spil" class="view" aria-label="LinguaStrike">
@@ -547,5 +567,6 @@
   <script defer src="script.js"></script>
   <script defer src="pasapalabra.js"></script>
   <script defer src="pinturillo.js"></script>
+  <script defer src="despedida.js"></script>
 </body>
 </html>

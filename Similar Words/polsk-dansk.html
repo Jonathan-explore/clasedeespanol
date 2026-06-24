@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="da"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Polsk → Dansk · 100 Ord | Randers Ungdomsskole</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:#F1F5F9;color:#0F172A;line-height:1.6}
+header{color:white;padding:2.2rem 2rem 3.2rem;text-align:center;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(255,255,255,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,255,255,.05) 0%,transparent 60%);pointer-events:none}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:#F1F5F9;clip-path:ellipse(55% 100% at 50% 100%)}
+.school-badge{display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:30px;padding:.3rem 1.1rem;font-family:'Poppins',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.04em;margin-bottom:1.2rem;position:relative}
+.header-flags{font-size:2.8rem;display:block;margin-bottom:.6rem;position:relative}
+header h1{font-family:'Poppins',sans-serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:900;line-height:1.1;margin-bottom:.5rem;position:relative}
+header h1 em{font-style:normal;color:#FCD34D}
+header p{font-size:.95rem;opacity:.78;max-width:500px;margin:0 auto 1.2rem;position:relative}
+.header-chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;position:relative}
+.chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:.25rem .8rem;font-size:.74rem;font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;position:relative;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);border-radius:20px;padding:.3rem 1rem;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;color:white;text-decoration:none;margin-bottom:1rem;transition:background .2s}
+.back-link:hover{background:rgba(255,255,255,.28)}
+.motto{background:linear-gradient(90deg,#FCD34D,#FBBF24);color:#0F172A;padding:.8rem 2rem;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:.9rem}
+.nav-sticky{position:sticky;top:0;z-index:200;background:white;border-bottom:2px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.nav-scroll{max-width:1200px;margin:0 auto;padding:.6rem 1rem;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-item{display:inline-flex;align-items:center;gap:.22rem;white-space:nowrap;text-decoration:none;padding:.28rem .75rem;border-radius:18px;border:2px solid;font-family:'Poppins',sans-serif;font-size:.71rem;font-weight:700;transition:all .18s;cursor:pointer}
+main{max-width:1060px;margin:0 auto;padding:1.4rem 1rem 3rem}
+.search-wrapper{max-width:580px;margin:0 auto 1.6rem}
+.search-box{display:flex;align-items:center;background:white;border:2px solid #E2E8F0;border-radius:14px;padding:.65rem 1.1rem;gap:.75rem;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:border-color .2s}
+.search-box:focus-within{border-color:#6366F1}
+.search-box input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:.97rem;flex:1;color:#0F172A;background:transparent}
+.search-box input::placeholder{color:#94A3B8}
+#searchCount{font-size:.76rem;color:#6366F1;font-weight:800;white-space:nowrap}
+.fun-fact{background:white;border-radius:18px;padding:1.3rem;margin-bottom:1.8rem;display:flex;gap:.9rem;align-items:flex-start;border:2px dashed #C7D2FE;box-shadow:0 2px 10px rgba(99,102,241,.06)}
+.ff-icon{font-size:1.9rem;flex-shrink:0;line-height:1;margin-top:.1rem}
+.ff-content h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:.9rem;color:#4F46E5;margin-bottom:.3rem}
+.ff-content p{font-size:.86rem;color:#334155}
+.legend{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1.1rem;padding:0 .2rem}
+.leg-item{display:flex;align-items:center;gap:.3rem;font-size:.76rem;color:#475569;font-weight:600}
+.leg-badge{font-size:.57rem;font-weight:800;padding:.08rem .3rem;border-radius:4px}
+.no-results{text-align:center;padding:2rem;color:#94A3B8;font-family:'Poppins',sans-serif;font-weight:600;display:none;font-size:.95rem}
+.section{margin-bottom:2.3rem;scroll-margin-top:60px}
+.sec-header{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.3rem;border-radius:15px;color:white;margin-bottom:.9rem}
+.sec-icon{font-size:1.6rem;flex-shrink:0}
+.sec-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.08rem}
+.sec-sub{font-size:.75rem;opacity:.9;margin-top:.04rem}
+.sec-nums{margin-left:auto;background:rgba(255,255,255,.22);border-radius:11px;padding:.18rem .6rem;flex-shrink:0;font-family:'Poppins',sans-serif;font-size:.73rem;font-weight:700}
+.words-list{display:flex;flex-direction:column;gap:.34rem}
+.word-row{background:white;border-radius:11px;padding:.55rem .75rem;border-left:4px solid transparent;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .14s ease,box-shadow .14s ease;display:grid;gap:.45rem;align-items:center}
+.word-row:hover{transform:translateX(4px);box-shadow:0 4px 14px rgba(0,0,0,.10)}
+.word-row.hidden{display:none}
+.w-num{font-family:'Poppins',sans-serif;font-size:.62rem;font-weight:800;color:#CBD5E1;text-align:center}
+.w-orig{font-family:'Poppins',sans-serif;font-weight:700;font-size:.93rem}
+.w-trans{font-size:.68rem;color:#94A3B8;font-family:Georgia,serif;margin-top:.05rem}
+.w-dan{font-family:'Poppins',sans-serif;font-weight:700;font-size:.93rem;color:#374151;display:flex;align-items:center;gap:.38rem}
+.sim{font-size:.56rem;font-weight:800;padding:.08rem .28rem;border-radius:4px;flex-shrink:0}
+.sim-id{background:#DCFCE7;color:#15803D}
+.sim-vs{background:#DBEAFE;color:#1D4ED8}
+.sim-si{background:#FEF9C3;color:#A16207}
+footer{background:#0F172A;color:white;padding:1.8rem 2rem;margin-top:1.8rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem}
+.footer-card{background:rgba(255,255,255,.07);border-radius:12px;padding:1rem}
+.footer-card h4{font-family:'Poppins',sans-serif;color:#FCD34D;font-size:.8rem;font-weight:800;margin-bottom:.4rem}
+.footer-card p{font-size:.79rem;opacity:.73;line-height:1.5}
+.footer-logo{font-size:.72rem;opacity:.3;border-top:1px solid rgba(255,255,255,.1);padding-top:.9rem;font-family:'Poppins',sans-serif}
+@media(max-width:580px){.footer-grid{grid-template-columns:1fr}.w-orig,.w-dan{font-size:.84rem}}
+@media print{.nav-sticky,.motto,.search-wrapper{display:none}body{background:white;font-size:11px}header{background:#0F172A !important;padding:1.2rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}header::after{display:none}main{padding:.4rem}.section{break-inside:avoid-page}.sec-header,.word-row{-webkit-print-color-adjust:exact;print-color-adjust:exact}.word-row{box-shadow:none;border:1px solid #E2E8F0;padding:.3rem .55rem}.word-row:hover{transform:none}footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+.word-row{border-left-color:#DC2626}</style>
+</head><body>
+<header style="background:linear-gradient(135deg,#7F1D1D 0%,#B91C1C 45%,#DC2626 100%)">
+  <a href="hub.html" class="back-link">← Tilbage til startsiden</a>
+  <div class="school-badge">🏫 Randers Ungdomsskole · Spansk · ProfeBot 🎓</div>
+  <span class="header-flags">🇵🇱 🤝 🇩🇰</span>
+  <h1>Polsk → <em>Dansk</em></h1>
+  <p>Polsk og dansk deler hundredvis af internationale ord — du kender dem allerede!</p>
+  <div class="header-chips">
+    <span class="chip">📚 10 afsnit</span><span class="chip">🌍 100 ord</span><span class="chip">🔍 Søgning</span>
+  </div>
+</header>
+<div class="motto">💬 "Polsk og dansk er ikke så forskellige som du tror — prøv selv!"</div>
+<nav class="nav-sticky"><div class="nav-scroll"><a href="#s1" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">📱 Teknologi</a><a href="#s2" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">🎵 Musik & Kultur</a><a href="#s3" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">⚽ Sport</a><a href="#s4" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">🍕 Mad & Drikke</a><a href="#s5" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">📚 Skole & Videnskab</a><a href="#s6" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">🌍 Steder & Bygninger</a><a href="#s7" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">👥 Mennesker & Jobs</a><a href="#s8" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">✨ Adjektiver</a><a href="#s9" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">🌱 Natur</a><a href="#s10" class="nav-item" style="color:#B91C1C;border-color:#FEE2E2;background:#FEE2E233">🚗 Transport & Hverdagsliv</a></div></nav>
+<main>
+  <div class="search-wrapper">
+    <div class="search-box">
+      <span style="font-size:1rem;color:#94A3B8">🔍</span>
+      <input type="text" id="searchInput" placeholder="Søg på polsk eller dansk..." oninput="filterWords()" autocomplete="off">
+      <span id="searchCount">100 ord</span>
+    </div>
+  </div>
+  <div class="fun-fact">
+    <div class="ff-icon">💡</div>
+    <div class="ff-content">
+      <h3>Vidste du det? 🇵🇱</h3>
+      <p>Polsk og dansk deler masser af ord fra <strong>latin, græsk og engelsk</strong>. Det skyldes, at begge sprog har lånt internationalt ordforråd gennem århundreder. Polsk er faktisk meget tættere på dansk end de fleste tror! 🏰</p>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><span class="leg-badge sim-id">IDENTISK</span> Identisk ord</div>
+    <div class="leg-item"><span class="leg-badge sim-vs">MEGET LIG.</span> Meget lignende</div>
+    <div class="leg-item"><span class="leg-badge sim-si">LIGNER</span> Genkendeligt</div>
+  </div>
+  <div id="noResults" class="no-results">🤔 Ingen resultater. Prøv et andet ord!</div>
+  <section class="section" id="s1">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">📱</span>
+            <div><div class="sec-title">Teknologi</div><div class="sec-sub">Disse ord er ens på polsk og dansk — fordi de kommer fra engelsk!</div></div>
+            <div class="sec-nums">1–10</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="internet" data-dan="internet">
+              <span class="w-num">1</span>
+              <span class="w-orig" style="color:#B91C1C">internet</span>
+              <span class="w-dan">internet</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="radio" data-dan="radio">
+              <span class="w-num">2</span>
+              <span class="w-orig" style="color:#B91C1C">radio</span>
+              <span class="w-dan">radio</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="telefon" data-dan="telefon">
+              <span class="w-num">3</span>
+              <span class="w-orig" style="color:#B91C1C">telefon</span>
+              <span class="w-dan">telefon</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="film" data-dan="film">
+              <span class="w-num">4</span>
+              <span class="w-orig" style="color:#B91C1C">film</span>
+              <span class="w-dan">film</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="foto" data-dan="foto">
+              <span class="w-num">5</span>
+              <span class="w-orig" style="color:#B91C1C">foto</span>
+              <span class="w-dan">foto</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="wideo" data-dan="video">
+              <span class="w-num">6</span>
+              <span class="w-orig" style="color:#B91C1C">wideo</span>
+              <span class="w-dan">video</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="blog" data-dan="blog">
+              <span class="w-num">7</span>
+              <span class="w-orig" style="color:#B91C1C">blog</span>
+              <span class="w-dan">blog</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="podcast" data-dan="podcast">
+              <span class="w-num">8</span>
+              <span class="w-orig" style="color:#B91C1C">podcast</span>
+              <span class="w-dan">podcast</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="komputer" data-dan="computer">
+              <span class="w-num">9</span>
+              <span class="w-orig" style="color:#B91C1C">komputer</span>
+              <span class="w-dan">computer</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="digital" data-dan="digital">
+              <span class="w-num">10</span>
+              <span class="w-orig" style="color:#B91C1C">digital</span>
+              <span class="w-dan">digital</span>
+            </div></div>
+        </section><section class="section" id="s2">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">🎵</span>
+            <div><div class="sec-title">Musik & Kultur</div><div class="sec-sub">Musik og kultur deles på tværs af alle grænser!</div></div>
+            <div class="sec-nums">11–20</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="muzyka" data-dan="musik">
+              <span class="w-num">11</span>
+              <span class="w-orig" style="color:#B91C1C">muzyka</span>
+              <span class="w-dan">musik</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="piano" data-dan="piano">
+              <span class="w-num">12</span>
+              <span class="w-orig" style="color:#B91C1C">piano</span>
+              <span class="w-dan">piano</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="gitara" data-dan="guitar">
+              <span class="w-num">13</span>
+              <span class="w-orig" style="color:#B91C1C">gitara</span>
+              <span class="w-dan">guitar</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="rock" data-dan="rock">
+              <span class="w-num">14</span>
+              <span class="w-orig" style="color:#B91C1C">rock</span>
+              <span class="w-dan">rock</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="pop" data-dan="pop">
+              <span class="w-num">15</span>
+              <span class="w-orig" style="color:#B91C1C">pop</span>
+              <span class="w-dan">pop</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="festiwal" data-dan="festival">
+              <span class="w-num">16</span>
+              <span class="w-orig" style="color:#B91C1C">festiwal</span>
+              <span class="w-dan">festival</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="koncert" data-dan="koncert">
+              <span class="w-num">17</span>
+              <span class="w-orig" style="color:#B91C1C">koncert</span>
+              <span class="w-dan">koncert</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="album" data-dan="album">
+              <span class="w-num">18</span>
+              <span class="w-orig" style="color:#B91C1C">album</span>
+              <span class="w-dan">album</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="dyskoteka" data-dan="diskotek">
+              <span class="w-num">19</span>
+              <span class="w-orig" style="color:#B91C1C">dyskoteka</span>
+              <span class="w-dan">diskotek</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="rytm" data-dan="rytme">
+              <span class="w-num">20</span>
+              <span class="w-orig" style="color:#B91C1C">rytm</span>
+              <span class="w-dan">rytme</span>
+            </div></div>
+        </section><section class="section" id="s3">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">⚽</span>
+            <div><div class="sec-title">Sport</div><div class="sec-sub">Sport-ord rejser fra sprog til sprog uden pas!</div></div>
+            <div class="sec-nums">21–30</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="sport" data-dan="sport">
+              <span class="w-num">21</span>
+              <span class="w-orig" style="color:#B91C1C">sport</span>
+              <span class="w-dan">sport</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="golf" data-dan="golf">
+              <span class="w-num">22</span>
+              <span class="w-orig" style="color:#B91C1C">golf</span>
+              <span class="w-dan">golf</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="tenis" data-dan="tenis">
+              <span class="w-num">23</span>
+              <span class="w-orig" style="color:#B91C1C">tenis</span>
+              <span class="w-dan">tenis</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="klub" data-dan="klub">
+              <span class="w-num">24</span>
+              <span class="w-orig" style="color:#B91C1C">klub</span>
+              <span class="w-dan">klub</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="rekord" data-dan="rekord">
+              <span class="w-num">25</span>
+              <span class="w-orig" style="color:#B91C1C">rekord</span>
+              <span class="w-dan">rekord</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="stadion" data-dan="stadion">
+              <span class="w-num">26</span>
+              <span class="w-orig" style="color:#B91C1C">stadion</span>
+              <span class="w-dan">stadion</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="maraton" data-dan="maraton">
+              <span class="w-num">27</span>
+              <span class="w-orig" style="color:#B91C1C">maraton</span>
+              <span class="w-dan">maraton</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="medal" data-dan="medalje">
+              <span class="w-num">28</span>
+              <span class="w-orig" style="color:#B91C1C">medal</span>
+              <span class="w-dan">medalje</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="finał" data-dan="finale">
+              <span class="w-num">29</span>
+              <span class="w-orig" style="color:#B91C1C">finał</span>
+              <span class="w-dan">finale</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="arena" data-dan="arena">
+              <span class="w-num">30</span>
+              <span class="w-orig" style="color:#B91C1C">arena</span>
+              <span class="w-dan">arena</span>
+            </div></div>
+        </section><section class="section" id="s4">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">🍕</span>
+            <div><div class="sec-title">Mad & Drikke</div><div class="sec-sub">Lækker mad har altid de samme navne!</div></div>
+            <div class="sec-nums">31–40</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="pizza" data-dan="pizza">
+              <span class="w-num">31</span>
+              <span class="w-orig" style="color:#B91C1C">pizza</span>
+              <span class="w-dan">pizza</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="pasta" data-dan="pasta">
+              <span class="w-num">32</span>
+              <span class="w-orig" style="color:#B91C1C">pasta</span>
+              <span class="w-dan">pasta</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="banan" data-dan="banan">
+              <span class="w-num">33</span>
+              <span class="w-orig" style="color:#B91C1C">banan</span>
+              <span class="w-dan">banan</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="kakao" data-dan="kakao">
+              <span class="w-num">34</span>
+              <span class="w-orig" style="color:#B91C1C">kakao</span>
+              <span class="w-dan">kakao</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="jogurt" data-dan="yoghurt">
+              <span class="w-num">35</span>
+              <span class="w-orig" style="color:#B91C1C">jogurt</span>
+              <span class="w-dan">yoghurt</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="restauracja" data-dan="restaurant">
+              <span class="w-num">36</span>
+              <span class="w-orig" style="color:#B91C1C">restauracja</span>
+              <span class="w-dan">restaurant</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="menu" data-dan="menu">
+              <span class="w-num">37</span>
+              <span class="w-orig" style="color:#B91C1C">menu</span>
+              <span class="w-dan">menu</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="czekolada" data-dan="chokolade">
+              <span class="w-num">38</span>
+              <span class="w-orig" style="color:#B91C1C">czekolada</span>
+              <span class="w-dan">chokolade</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="taco" data-dan="taco">
+              <span class="w-num">39</span>
+              <span class="w-orig" style="color:#B91C1C">taco</span>
+              <span class="w-dan">taco</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="cukier" data-dan="sukker">
+              <span class="w-num">40</span>
+              <span class="w-orig" style="color:#B91C1C">cukier</span>
+              <span class="w-dan">sukker</span>
+            </div></div>
+        </section><section class="section" id="s5">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">📚</span>
+            <div><div class="sec-title">Skole & Videnskab</div><div class="sec-sub">Alle skolefag stammer fra latin og græsk — både polsk og dansk!</div></div>
+            <div class="sec-nums">41–50</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="biologia" data-dan="biologi">
+              <span class="w-num">41</span>
+              <span class="w-orig" style="color:#B91C1C">biologia</span>
+              <span class="w-dan">biologi</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="fizyka" data-dan="fysik">
+              <span class="w-num">42</span>
+              <span class="w-orig" style="color:#B91C1C">fizyka</span>
+              <span class="w-dan">fysik</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="matematyka" data-dan="matematik">
+              <span class="w-num">43</span>
+              <span class="w-orig" style="color:#B91C1C">matematyka</span>
+              <span class="w-dan">matematik</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="geografia" data-dan="geografi">
+              <span class="w-num">44</span>
+              <span class="w-orig" style="color:#B91C1C">geografia</span>
+              <span class="w-dan">geografi</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="historia" data-dan="historie">
+              <span class="w-num">45</span>
+              <span class="w-orig" style="color:#B91C1C">historia</span>
+              <span class="w-dan">historie</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="literatura" data-dan="litteratur">
+              <span class="w-num">46</span>
+              <span class="w-orig" style="color:#B91C1C">literatura</span>
+              <span class="w-dan">litteratur</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="filozofia" data-dan="filosofi">
+              <span class="w-num">47</span>
+              <span class="w-orig" style="color:#B91C1C">filozofia</span>
+              <span class="w-dan">filosofi</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="dyplom" data-dan="diplom">
+              <span class="w-num">48</span>
+              <span class="w-orig" style="color:#B91C1C">dyplom</span>
+              <span class="w-dan">diplom</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="egzamin" data-dan="eksamen">
+              <span class="w-num">49</span>
+              <span class="w-orig" style="color:#B91C1C">egzamin</span>
+              <span class="w-dan">eksamen</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="atlas" data-dan="atlas">
+              <span class="w-num">50</span>
+              <span class="w-orig" style="color:#B91C1C">atlas</span>
+              <span class="w-dan">atlas</span>
+            </div></div>
+        </section><section class="section" id="s6">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">🌍</span>
+            <div><div class="sec-title">Steder & Bygninger</div><div class="sec-sub">Steder hedder næsten det samme overalt i Europa!</div></div>
+            <div class="sec-nums">51–60</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="hotel" data-dan="hotel">
+              <span class="w-num">51</span>
+              <span class="w-orig" style="color:#B91C1C">hotel</span>
+              <span class="w-dan">hotel</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="bank" data-dan="bank">
+              <span class="w-num">52</span>
+              <span class="w-orig" style="color:#B91C1C">bank</span>
+              <span class="w-dan">bank</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="teatr" data-dan="teater">
+              <span class="w-num">53</span>
+              <span class="w-orig" style="color:#B91C1C">teatr</span>
+              <span class="w-dan">teater</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="muzeum" data-dan="museum">
+              <span class="w-num">54</span>
+              <span class="w-orig" style="color:#B91C1C">muzeum</span>
+              <span class="w-dan">museum</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="galeria" data-dan="galleri">
+              <span class="w-num">55</span>
+              <span class="w-orig" style="color:#B91C1C">galeria</span>
+              <span class="w-dan">galleri</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="park" data-dan="park">
+              <span class="w-num">56</span>
+              <span class="w-orig" style="color:#B91C1C">park</span>
+              <span class="w-dan">park</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="szpital" data-dan="hospital">
+              <span class="w-num">57</span>
+              <span class="w-orig" style="color:#B91C1C">szpital</span>
+              <span class="w-dan">hospital</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="metro" data-dan="metro">
+              <span class="w-num">58</span>
+              <span class="w-orig" style="color:#B91C1C">metro</span>
+              <span class="w-dan">metro</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="ocean" data-dan="ocean">
+              <span class="w-num">59</span>
+              <span class="w-orig" style="color:#B91C1C">ocean</span>
+              <span class="w-dan">ocean</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="centrum" data-dan="centrum">
+              <span class="w-num">60</span>
+              <span class="w-orig" style="color:#B91C1C">centrum</span>
+              <span class="w-dan">centrum</span>
+            </div></div>
+        </section><section class="section" id="s7">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">👥</span>
+            <div><div class="sec-title">Mennesker & Jobs</div><div class="sec-sub">Jobnavne er internationale — ligesom jobmarkedet!</div></div>
+            <div class="sec-nums">61–70</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="doktor" data-dan="doktor">
+              <span class="w-num">61</span>
+              <span class="w-orig" style="color:#B91C1C">doktor</span>
+              <span class="w-dan">doktor</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="profesor" data-dan="professor">
+              <span class="w-num">62</span>
+              <span class="w-orig" style="color:#B91C1C">profesor</span>
+              <span class="w-dan">professor</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="pilot" data-dan="pilot">
+              <span class="w-num">63</span>
+              <span class="w-orig" style="color:#B91C1C">pilot</span>
+              <span class="w-dan">pilot</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="detektyw" data-dan="detektiv">
+              <span class="w-num">64</span>
+              <span class="w-orig" style="color:#B91C1C">detektyw</span>
+              <span class="w-dan">detektiv</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="turysta" data-dan="turist">
+              <span class="w-num">65</span>
+              <span class="w-orig" style="color:#B91C1C">turysta</span>
+              <span class="w-dan">turist</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="student" data-dan="student">
+              <span class="w-num">66</span>
+              <span class="w-orig" style="color:#B91C1C">student</span>
+              <span class="w-dan">student</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="artysta" data-dan="artist">
+              <span class="w-num">67</span>
+              <span class="w-orig" style="color:#B91C1C">artysta</span>
+              <span class="w-dan">artist</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="atleta" data-dan="atlet">
+              <span class="w-num">68</span>
+              <span class="w-orig" style="color:#B91C1C">atleta</span>
+              <span class="w-dan">atlet</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="policja" data-dan="politi">
+              <span class="w-num">69</span>
+              <span class="w-orig" style="color:#B91C1C">policja</span>
+              <span class="w-dan">politi</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="prezydent" data-dan="præsident">
+              <span class="w-num">70</span>
+              <span class="w-orig" style="color:#B91C1C">prezydent</span>
+              <span class="w-dan">præsident</span>
+            </div></div>
+        </section><section class="section" id="s8">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">✨</span>
+            <div><div class="sec-title">Adjektiver</div><div class="sec-sub">Beskriv verden på to sprog på én gang!</div></div>
+            <div class="sec-nums">71–80</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="normalny" data-dan="normal">
+              <span class="w-num">71</span>
+              <span class="w-orig" style="color:#B91C1C">normalny</span>
+              <span class="w-dan">normal</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="fantastyczny" data-dan="fantastisk">
+              <span class="w-num">72</span>
+              <span class="w-orig" style="color:#B91C1C">fantastyczny</span>
+              <span class="w-dan">fantastisk</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="popularny" data-dan="populær">
+              <span class="w-num">73</span>
+              <span class="w-orig" style="color:#B91C1C">popularny</span>
+              <span class="w-dan">populær</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="specjalny" data-dan="speciel">
+              <span class="w-num">74</span>
+              <span class="w-orig" style="color:#B91C1C">specjalny</span>
+              <span class="w-dan">speciel</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="oryginalny" data-dan="original">
+              <span class="w-num">75</span>
+              <span class="w-orig" style="color:#B91C1C">oryginalny</span>
+              <span class="w-dan">original</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="kulturalny" data-dan="kulturel">
+              <span class="w-num">76</span>
+              <span class="w-orig" style="color:#B91C1C">kulturalny</span>
+              <span class="w-dan">kulturel</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="centralny" data-dan="central">
+              <span class="w-num">77</span>
+              <span class="w-orig" style="color:#B91C1C">centralny</span>
+              <span class="w-dan">central</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="naturalny" data-dan="naturlig">
+              <span class="w-num">78</span>
+              <span class="w-orig" style="color:#B91C1C">naturalny</span>
+              <span class="w-dan">naturlig</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="tropikalny" data-dan="tropisk">
+              <span class="w-num">79</span>
+              <span class="w-orig" style="color:#B91C1C">tropikalny</span>
+              <span class="w-dan">tropisk</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="arktyczny" data-dan="arktisk">
+              <span class="w-num">80</span>
+              <span class="w-orig" style="color:#B91C1C">arktyczny</span>
+              <span class="w-dan">arktisk</span>
+            </div></div>
+        </section><section class="section" id="s9">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">🌱</span>
+            <div><div class="sec-title">Natur</div><div class="sec-sub">Naturen taler et sprog alle forstår!</div></div>
+            <div class="sec-nums">81–90</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="planeta" data-dan="planet">
+              <span class="w-num">81</span>
+              <span class="w-orig" style="color:#B91C1C">planeta</span>
+              <span class="w-dan">planet</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="klimat" data-dan="klima">
+              <span class="w-num">82</span>
+              <span class="w-orig" style="color:#B91C1C">klimat</span>
+              <span class="w-dan">klima</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="temperatura" data-dan="temperatur">
+              <span class="w-num">83</span>
+              <span class="w-orig" style="color:#B91C1C">temperatura</span>
+              <span class="w-dan">temperatur</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="wulkan" data-dan="vulkan">
+              <span class="w-num">84</span>
+              <span class="w-orig" style="color:#B91C1C">wulkan</span>
+              <span class="w-dan">vulkan</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="energia" data-dan="energi">
+              <span class="w-num">85</span>
+              <span class="w-orig" style="color:#B91C1C">energia</span>
+              <span class="w-dan">energi</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="minerał" data-dan="mineral">
+              <span class="w-num">86</span>
+              <span class="w-orig" style="color:#B91C1C">minerał</span>
+              <span class="w-dan">mineral</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="fossyl" data-dan="fossil">
+              <span class="w-num">87</span>
+              <span class="w-orig" style="color:#B91C1C">fossyl</span>
+              <span class="w-dan">fossil</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="atom" data-dan="atom">
+              <span class="w-num">88</span>
+              <span class="w-orig" style="color:#B91C1C">atom</span>
+              <span class="w-dan">atom</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="elektryczny" data-dan="elektrisk">
+              <span class="w-num">89</span>
+              <span class="w-orig" style="color:#B91C1C">elektryczny</span>
+              <span class="w-dan">elektrisk</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="solarny" data-dan="solær">
+              <span class="w-num">90</span>
+              <span class="w-orig" style="color:#B91C1C">solarny</span>
+              <span class="w-dan">solær</span>
+            </div></div>
+        </section><section class="section" id="s10">
+          <div class="sec-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+            <span class="sec-icon">🚗</span>
+            <div><div class="sec-title">Transport & Hverdagsliv</div><div class="sec-sub">Hverdagsordet er det letteste at genkende!</div></div>
+            <div class="sec-nums">91–100</div>
+          </div>
+          <div style="display:grid;grid-template-columns:34px 1fr 1fr;gap:.4rem;padding:0 .7rem .22rem;border-bottom:1px solid #E2E8F0;margin-bottom:.38rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇵🇱 Polsk</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list"><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="motor" data-dan="motor">
+              <span class="w-num">91</span>
+              <span class="w-orig" style="color:#B91C1C">motor</span>
+              <span class="w-dan">motor</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="system" data-dan="system">
+              <span class="w-num">92</span>
+              <span class="w-orig" style="color:#B91C1C">system</span>
+              <span class="w-dan">system</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="kontakt" data-dan="kontakt">
+              <span class="w-num">93</span>
+              <span class="w-orig" style="color:#B91C1C">kontakt</span>
+              <span class="w-dan">kontakt</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="plan" data-dan="plan">
+              <span class="w-num">94</span>
+              <span class="w-orig" style="color:#B91C1C">plan</span>
+              <span class="w-dan">plan</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="test" data-dan="test">
+              <span class="w-num">95</span>
+              <span class="w-orig" style="color:#B91C1C">test</span>
+              <span class="w-dan">test</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="projekt" data-dan="projekt">
+              <span class="w-num">96</span>
+              <span class="w-orig" style="color:#B91C1C">projekt</span>
+              <span class="w-dan">projekt</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="program" data-dan="program">
+              <span class="w-num">97</span>
+              <span class="w-orig" style="color:#B91C1C">program</span>
+              <span class="w-dan">program</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="kamera" data-dan="kamera">
+              <span class="w-num">98</span>
+              <span class="w-orig" style="color:#B91C1C">kamera</span>
+              <span class="w-dan">kamera</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="parking" data-dan="parkering">
+              <span class="w-num">99</span>
+              <span class="w-orig" style="color:#B91C1C">parking</span>
+              <span class="w-dan">parkering</span>
+            </div><div class="word-row" style="grid-template-columns:34px 1fr 1fr" data-orig="skuter" data-dan="scooter">
+              <span class="w-num">100</span>
+              <span class="w-orig" style="color:#B91C1C">skuter</span>
+              <span class="w-dan">scooter</span>
+            </div></div>
+        </section>
+</main>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-card"><h4>🇵🇱 Dit polske modersmål</h4><p>Polsk er et rigt og smukt slavisk sprog. At kende polsk giver dig et kæmpe forspring med internationale ord — som alle bunder i det samme latin og græsk!</p></div>
+      <div class="footer-card"><h4>🚀 Øvelse gør mester!</h4><p>Dit modersmål er din styrke — ikke en hindring! <em>Fejl er ikke fiasko — de er springbrættet til succes!</em> 💪</p></div>
+    </div>
+    <div class="footer-logo">🎓 ProfeBot · Randers Ungdomsskole · Polsk–Dansk · 2025</div>
+  </div>
+</footer>
+<script>
+function filterWords(){
+  const q=document.getElementById('searchInput').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  const rows=document.querySelectorAll('.word-row');let v=0;
+  rows.forEach(r=>{
+    const o=(r.dataset.orig||''),d=(r.dataset.dan||'');
+    const m=!q||o.includes(q)||d.includes(q);
+    r.classList.toggle('hidden',!m);if(m)v++;
+  });
+  document.getElementById('searchCount').textContent=q?v+' resultat'+(v!==1?'er':''):'100 ord';
+  document.getElementById('noResults').style.display=(v===0&&q)?'block':'none';
+  document.querySelectorAll('.section').forEach(s=>{
+    s.style.display=Array.from(s.querySelectorAll('.word-row')).every(r=>r.classList.contains('hidden'))?'none':'';
+  });
+}
+</script>
+</body></html>

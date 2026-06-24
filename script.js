@@ -353,6 +353,10 @@ function showView(name,fromCard){
   if(STATE.currentView==='pinturillo' && name!=='pinturillo' && window.__pinturilloTeardown){
     window.__pinturilloTeardown();
   }
+  // Cerrar el muro de mensajes (canal Realtime) al salir de Despedida
+  if(STATE.currentView==='despedida' && name!=='despedida' && window.__despedidaTeardown){
+    window.__despedidaTeardown();
+  }
   _parallaxWake();
   const all=document.querySelectorAll('.view');
   all.forEach(v=>v.classList.remove('active'));
@@ -372,6 +376,7 @@ function renderView(name){
   if(name==='stile')renderStile();
   if(name==='pasapalabra'&&window.renderPasapalabra)window.renderPasapalabra();
   if(name==='pinturillo'&&window.renderPinturillo)window.renderPinturillo();
+  if(name==='despedida'&&window.renderDespedida)window.renderDespedida();
 }
 // game.js (~126KB) solo se parsea cuando el alumno entra al juego,
 // no en la carga inicial de la página.

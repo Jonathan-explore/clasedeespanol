@@ -8,7 +8,7 @@
 // ─── GLOBAL CONFIG ───────────────────────────────────────────
 const CFG = {
   player: {
-    radius:16, speed:230, maxHp:100,
+    radius:16, speed:260, maxHp:100,
     fireRateMs:480, projectileSpeed:520,
     projectileRadius:5, projectileDamage:40,
     invincibilityMs:700,
@@ -1601,16 +1601,27 @@ class Player {
     this.alive=true;this.numProjectiles=1;this.fireTimer=0;this.invincibleTimer=0;
     this.keys={w:false,a:false,s:false,d:false};
     this.trail=[];this.pulseTimer=0;this.angle=0;
+    // Entrada analógica (joystick táctil): vector con magnitud 0..1 = acelerador.
+    this.moveX=0;this.moveY=0;this.analog=false;
   }
   handleKey(code,down){
     const map={KeyW:'w',KeyA:'a',KeyS:'s',KeyD:'d',ArrowUp:'w',ArrowLeft:'a',ArrowDown:'s',ArrowRight:'d'};
     if(map[code]!==undefined)this.keys[map[code]]=down;
   }
+  // El joystick fija un vector (mx,my) cuya MAGNITUD controla la velocidad,
+  // así el control es analógico y no "todo o nada" como con teclas.
+  setAnalog(mx,my){this.moveX=mx;this.moveY=my;this.analog=true;}
+  clearAnalog(){this.moveX=0;this.moveY=0;this.analog=false;}
   update(dt,W,H){
     let dx=0,dy=0;
-    if(this.keys.a)dx-=1;if(this.keys.d)dx+=1;
-    if(this.keys.w)dy-=1;if(this.keys.s)dy+=1;
-    if(dx&&dy){dx*=0.7071;dy*=0.7071}
+    if(this.analog){
+      // Vector analógico del joystick (ya viene con magnitud 0..1).
+      dx=this.moveX;dy=this.moveY;
+    }else{
+      if(this.keys.a)dx-=1;if(this.keys.d)dx+=1;
+      if(this.keys.w)dy-=1;if(this.keys.s)dy+=1;
+      if(dx&&dy){dx*=0.7071;dy*=0.7071}
+    }
     const moving=dx||dy;
     if(moving)this.angle=Math.atan2(dy,dx);
     this.x=clamp(this.x+dx*this.speed*dt,this.r,W-this.r);
@@ -1765,8 +1776,16 @@ class Game {
   }
 
   _resize(){
-    this.W=window.innerWidth;this.H=window.innerHeight;
-    this.canvas.width=this.W;this.canvas.height=this.H;
+    // W/H son unidades LÓGICAS (CSS px). El backing store se multiplica por
+    // devicePixelRatio (cap 2) para que en móviles retina no se vea borroso
+    // ("como pantalla zoom"). El render escala con ctx.setTransform(dpr).
+    const cssW=window.innerWidth, cssH=window.innerHeight;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    this.W=cssW;this.H=cssH;this.dpr=dpr;
+    this.canvas.width=Math.round(cssW*dpr);
+    this.canvas.height=Math.round(cssH*dpr);
+    this.canvas.style.width=cssW+'px';
+    this.canvas.style.height=cssH+'px';
   }
 
   // ── INIT ──────────────────────────────────────────────────
@@ -1810,6 +1829,7 @@ class Game {
   _idleDraw(){
     if(this.started)return;
     const{ctx,W,H}=this;
+    ctx.setTransform(this.dpr||1,0,0,this.dpr||1,0,0);
     ctx.fillStyle=CFG.colors.bg;ctx.fillRect(0,0,W,H);this._drawGrid();
   }
 
@@ -2044,6 +2064,9 @@ class Game {
   // ── DRAW ──────────────────────────────────────────────────
   _draw(){
     const{ctx,W,H,now}=this;
+    // Escalar el contexto por dpr: el juego dibuja en unidades lógicas (W,H)
+    // y queda nítido en pantallas retina. Se fija al inicio de cada frame.
+    ctx.setTransform(this.dpr||1,0,0,this.dpr||1,0,0);
     ctx.fillStyle=CFG.colors.bg;ctx.fillRect(0,0,W,H);this._drawGrid();
 
     // Draw capture zones (behind everything)
@@ -2467,7 +2490,7 @@ class Game {
   <span class="ls-lb-rank">${medals[i]||String(i+1)}</span>
   <span class="ls-lb-alias">${escapeHTML(r.alias)}</span>
   <span class="ls-lb-score">${Number(r.score).toLocaleString('da-DK')}</span>
-  <span class="ls-lb-wave">B${r.wave}</span>
+  <span class="ls-lb-wave">B${Number(r.wave)||1}</span>
 </div>`).join('');
     }catch{lb.innerHTML='<span class="ls-go-lb-empty">Fejl ved indlæsning.</span>';}
   }
@@ -2635,9 +2658,9 @@ class Game {
     if (isTouch) document.body.classList.add('has-touch');
 
     if (isTouch) {
-      const OUTER_R  = 45;               // mitad del contenedor (90 px)
-      const MAX_DISP = 28;               // desplazamiento máximo del knob — menos recorrido
-      const DEAD     = MAX_DISP * 0.15;  // zona muerta (~4 px)
+      const OUTER_R   = 45;              // mitad del contenedor (90 px)
+      const MAX_DISP  = 40;              // recorrido del knob hasta velocidad máxima
+      const DEAD_FRAC = 0.12;            // zona muerta como fracción del recorrido
 
       const gameRoot = document.getElementById('ls-root');
       const joyEl    = document.getElementById('ls-joystick');
@@ -2650,9 +2673,7 @@ class Game {
         activeId = null;
         if (joyEl)   joyEl.style.display = 'none';
         if (joyKnob) joyKnob.style.transform = 'translate(-50%,-50%)';
-        ['KeyW','KeyA','KeyS','KeyD'].forEach(k => {
-          if (self.player) self.player.handleKey(k, false);
-        });
+        if (self.player) self.player.clearAnalog();
       }
 
       if (gameRoot && joyEl && joyKnob) {
@@ -2684,16 +2705,23 @@ class Game {
           const rect = gameRoot.getBoundingClientRect();
           let dx = (e.clientX - rect.left) - cX;
           let dy = (e.clientY - rect.top)  - cY;
-          const dist = Math.hypot(dx, dy);
-          if (dist > MAX_DISP) { dx = dx / dist * MAX_DISP; dy = dy / dist * MAX_DISP; }
+          let dist = Math.hypot(dx, dy);
+          if (dist > MAX_DISP) { dx = dx / dist * MAX_DISP; dy = dy / dist * MAX_DISP; dist = MAX_DISP; }
 
           joyKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
 
           if (self.player) {
-            self.player.handleKey('KeyW', dy < -DEAD);
-            self.player.handleKey('KeyS', dy >  DEAD);
-            self.player.handleKey('KeyA', dx < -DEAD);
-            self.player.handleKey('KeyD', dx >  DEAD);
+            // Vector normalizado (0..1). Por debajo de la zona muerta → parar.
+            const mag = dist / MAX_DISP;
+            if (mag <= DEAD_FRAC) {
+              self.player.clearAnalog();
+            } else {
+              // Remapear (mag-dead)/(1-dead) → la velocidad crece suave desde el
+              // borde de la zona muerta hasta el máximo, conservando la dirección.
+              const t = Math.min(1, (mag - DEAD_FRAC) / (1 - DEAD_FRAC));
+              const k = t / mag;           // escala dirección·acelerador
+              self.player.setAnalog((dx / MAX_DISP) * k, (dy / MAX_DISP) * k);
+            }
           }
           e.preventDefault();
         }, { passive: false });
@@ -2718,7 +2746,11 @@ class Game {
         catch { return null; }
       }
       try {
-        const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(word) + '&langpair=es|da');
+        // Timeout de 4s: si la red falla/cuelga, no dejamos fetches colgados.
+        const ctrl = new AbortController();
+        const to = setTimeout(()=>ctrl.abort(), 4000);
+        const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(word) + '&langpair=es|da', { signal: ctrl.signal });
+        clearTimeout(to);
         const d = await r.json();
         return (d.responseData && d.responseData.translatedText) || null;
       } catch { return null; }
@@ -2756,22 +2788,28 @@ class Game {
      * reuses it on subsequent calls (no stacked listeners). Shows the
      * start overlay; player clicks "Start" to actually begin.
      */
-    async start(){
-      try { await injectTablonVocab(); }
-      catch(err){ console.warn('[LinguaStrike] vocab inject failed', err); }
-
+    start(){
+      // El juego se prepara SIN esperar a la red: antes esto hacía
+      // `await injectTablonVocab()` (traducciones por fetch) antes de crear
+      // el Game, así que con conexión lenta/sin internet el canvas quedaba en
+      // blanco y el botón START no respondía. Ahora el vocab se inyecta en
+      // segundo plano y la partida es jugable al instante.
       if(!_game){
         _game = new Game();
 
         // Override _resize so canvas matches the spil view container.
+        // W/H lógicos = tamaño CSS del contenedor; backing store × dpr (cap 2)
+        // para nitidez retina. El render escala con ctx.setTransform(dpr).
         _game._resize = function(){
           const container = document.getElementById('view-spil');
-          const w = container ? container.clientWidth  : window.innerWidth;
-          const h = container ? container.clientHeight : window.innerHeight;
-          this.W = w || window.innerWidth;
-          this.H = h || window.innerHeight;
-          this.canvas.width  = this.W;
-          this.canvas.height = this.H;
+          const cssW = (container && container.clientWidth)  || window.innerWidth;
+          const cssH = (container && container.clientHeight) || window.innerHeight;
+          const dpr  = Math.min(window.devicePixelRatio||1, 2);
+          this.W = cssW; this.H = cssH; this.dpr = dpr;
+          this.canvas.width  = Math.round(cssW*dpr);
+          this.canvas.height = Math.round(cssH*dpr);
+          this.canvas.style.width  = cssW+'px';
+          this.canvas.style.height = cssH+'px';
         };
 
         _onResize = ()=>{
@@ -2799,6 +2837,10 @@ class Game {
       if(startOv) startOv.style.display = '';
       // Kick the idle draw so the canvas isn't blank
       _game._idleDraw();
+
+      // Enriquecer las preguntas con el vocabulario del Tablón en segundo
+      // plano (no bloquea el render ni el botón START).
+      injectTablonVocab().catch(err=>console.warn('[LinguaStrike] vocab inject failed', err));
     },
 
     /** Stops the loop and hides overlays — keeps the Game in memory. */

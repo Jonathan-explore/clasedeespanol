@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Lignende Ord · Spansk & Dansk | Randers Ungdomsskole</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c1:#3B82F6;--c1d:#1D4ED8;
+  --c2:#8B5CF6;--c2d:#6D28D9;
+  --c3:#10B981;--c3d:#047857;
+  --c4:#F59E0B;--c4d:#B45309;
+  --c5:#EF4444;--c5d:#B91C1C;
+  --c6:#14B8A6;--c6d:#0F766E;
+  --c7:#6366F1;--c7d:#4338CA;
+  --c8:#EC4899;--c8d:#BE185D;
+  --c9:#84CC16;--c9d:#4D7C0F;
+  --c10:#10B981;--c10d:#065F46;
+  --ca:#047857;--cp:#B91C1C;--cr:#1D4ED8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:#F1F5F9;color:#0F172A;line-height:1.6;overflow-x:hidden}
+
+/* ── PROGRESS BAR (top of page) ── */
+#prog-bar-wrap{position:fixed;top:0;left:0;right:0;z-index:9999;height:5px;background:rgba(0,0,0,.08)}
+#prog-bar{height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#EC4899,#10B981);transition:width .5s ease;border-radius:0 3px 3px 0}
+
+/* ── FLOATING PROGRESS ORB ── */
+#orb{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9000;background:linear-gradient(135deg,#7C3AED,#EC4899);border-radius:50%;width:70px;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(124,58,237,.5);cursor:pointer;transition:transform .3s,box-shadow .3s;user-select:none}
+#orb:hover{transform:scale(1.1);box-shadow:0 12px 35px rgba(124,58,237,.65)}
+#orb-count{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.3rem;color:#fff;line-height:1}
+#orb-label{font-size:.5rem;color:rgba(255,255,255,.8);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:.05rem}
+#orb-ring{position:absolute;inset:-4px;border-radius:50%;border:3px solid transparent;background:conic-gradient(#fff var(--pct,0%),transparent 0%) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude}
+
+/* ── QUIZ MODE OVERLAY on words ── */
+body.quiz .w-dan-inner{filter:blur(6px);transition:filter .3s;cursor:pointer;user-select:none}
+body.quiz .word-row:hover .w-dan-inner,
+body.quiz .word-row.revealed .w-dan-inner{filter:blur(0)}
+body.quiz .word-row.revealed .w-dan-inner{animation:revealPop .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes revealPop{0%{transform:scale(.85);opacity:.3}100%{transform:scale(1);opacity:1}}
+
+/* ── COLLECTED STATE ── */
+.word-row.collected{background:linear-gradient(90deg,#F0FDF4,#ECFDF5) !important}
+.word-row.collected .collect-btn{color:#10B981 !important;transform:scale(1.3)}
+.word-row.collected{border-left-color:#10B981 !important}
+.collect-btn{font-size:1.1rem;cursor:pointer;transition:transform .3s,color .2s;color:#CBD5E1;flex-shrink:0;background:none;border:none;padding:0;line-height:1}
+.collect-btn:hover{color:#A78BFA;transform:scale(1.2)}
+@keyframes collectPop{0%{transform:scale(1)}50%{transform:scale(1.8)}100%{transform:scale(1.3)}}
+.word-row.just-collected .collect-btn{animation:collectPop .4s ease both}
+
+/* ── CONFETTI ── */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999}
+
+/* ── MILESTONE TOAST ── */
+#milestone{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.7);z-index:99998;background:linear-gradient(135deg,#7C3AED,#EC4899);border-radius:28px;padding:2.5rem 3rem;text-align:center;color:#fff;box-shadow:0 30px 80px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:all .45s cubic-bezier(.34,1.56,.64,1);max-width:340px;width:90%}
+#milestone.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+#milestone-emoji{font-size:3.5rem;display:block;margin-bottom:.6rem}
+#milestone-title{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:.3rem}
+#milestone-sub{font-size:.93rem;opacity:.85;line-height:1.5}
+#milestone-close{margin-top:1.4rem;display:inline-block;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:20px;padding:.45rem 1.4rem;font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:background .2s}
+#milestone-close:hover{background:rgba(255,255,255,.35)}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,#0F172A 0%,#1E1040 45%,#0F3460 100%);color:white;padding:3.5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:36px;background:#F1F5F9;clip-path:ellipse(55% 100% at 50% 100%)}
+.h-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hpt{position:absolute;animation:hpFloat var(--hd,7s) var(--hdl,0s) linear infinite;opacity:0;bottom:-40px;left:var(--hx,50%)}
+@keyframes hpFloat{0%{opacity:0;transform:translateY(0) rotate(0)}15%{opacity:.6}85%{opacity:.25}100%{opacity:0;transform:translateY(-100%) rotate(360deg)}}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;position:relative;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);border-radius:20px;padding:.3rem 1rem;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;color:white;text-decoration:none;margin-bottom:1.2rem;transition:background .2s}
+.back-link:hover{background:rgba(255,255,255,.25)}
+.school-badge{display:inline-block;border:1.5px solid rgba(255,255,255,.32);background:rgba(255,255,255,.09);border-radius:30px;padding:.35rem 1.2rem;font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.04em;margin-bottom:1.4rem;position:relative}
+.header-flags{font-size:3rem;display:flex;justify-content:center;gap:.4rem;margin-bottom:.9rem;position:relative}
+.header-flags span{display:inline-block;animation:hfb 2s ease-in-out infinite}
+.header-flags span:nth-child(2){animation-delay:.3s}
+@keyframes hfb{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+header h1{font-family:'Poppins',sans-serif;font-size:clamp(1.9rem,5.5vw,3.2rem);font-weight:900;line-height:1.1;margin-bottom:.65rem;position:relative}
+header h1 em{font-style:normal;color:#FCD34D}
+header p{font-size:1rem;opacity:.72;max-width:520px;margin:0 auto 1.6rem;position:relative}
+.h-chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;position:relative}
+.chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:.28rem .85rem;font-size:.76rem;font-weight:600}
+
+/* ── MOTTO ── */
+.motto{background:linear-gradient(90deg,#FCD34D,#FBBF24);color:#0F172A;padding:.9rem 2rem;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:.92rem}
+
+/* ── NAV ── */
+.nav-sticky{position:sticky;top:5px;z-index:500;background:white;border-bottom:2px solid #E2E8F0;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.nav-scroll{max-width:1200px;margin:0 auto;padding:.65rem 1rem;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;align-items:center}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-item{display:inline-flex;align-items:center;gap:.25rem;white-space:nowrap;text-decoration:none;padding:.32rem .8rem;border-radius:20px;border:2px solid transparent;font-family:'Poppins',sans-serif;font-size:.73rem;font-weight:700;transition:all .18s;cursor:pointer}
+.nav-sep{color:#CBD5E1;font-size:1.1rem;flex-shrink:0;padding:0 .1rem}
+.quiz-btn{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff !important;border-color:transparent !important;box-shadow:0 3px 12px rgba(124,58,237,.35)}
+.quiz-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+body.quiz .quiz-btn{background:linear-gradient(135deg,#B91C1C,#EF4444) !important;animation:quizPulse 1.5s ease-in-out infinite}
+@keyframes quizPulse{0%,100%{box-shadow:0 3px 12px rgba(185,28,28,.35)}50%{box-shadow:0 6px 22px rgba(185,28,28,.6)}}
+.nia{color:var(--ca);border-color:#BBF7D0;background:#F0FDF4}.nia:hover{background:var(--ca);color:#fff;border-color:var(--ca)}
+.nip{color:var(--cp);border-color:#FECACA;background:#FEF2F2}.nip:hover{background:var(--cp);color:#fff;border-color:var(--cp)}
+.nir{color:var(--cr);border-color:#BFDBFE;background:#EFF6FF}.nir:hover{background:var(--cr);color:#fff;border-color:var(--cr)}
+.ni1{color:var(--c1d);border-color:#BFDBFE;background:#EFF6FF}.ni1:hover{background:var(--c1d);color:#fff}
+.ni2{color:var(--c2d);border-color:#DDD6FE;background:#F5F3FF}.ni2:hover{background:var(--c2d);color:#fff}
+.ni3{color:var(--c3d);border-color:#A7F3D0;background:#F0FDF4}.ni3:hover{background:var(--c3d);color:#fff}
+.ni4{color:var(--c4d);border-color:#FDE68A;background:#FFFBEB}.ni4:hover{background:var(--c4d);color:#fff}
+.ni5{color:var(--c5d);border-color:#FECACA;background:#FEF2F2}.ni5:hover{background:var(--c5d);color:#fff}
+.ni6{color:var(--c6d);border-color:#99F6E4;background:#F0FDFA}.ni6:hover{background:var(--c6d);color:#fff}
+.ni7{color:var(--c7d);border-color:#C7D2FE;background:#EEF2FF}.ni7:hover{background:var(--c7d);color:#fff}
+.ni8{color:var(--c8d);border-color:#FBCFE8;background:#FDF2F8}.ni8:hover{background:var(--c8d);color:#fff}
+.ni9{color:var(--c9d);border-color:#D9F99D;background:#F7FEE7}.ni9:hover{background:var(--c9d);color:#fff}
+.ni10{color:var(--c10d);border-color:#A7F3D0;background:#ECFDF5}.ni10:hover{background:var(--c10d);color:#fff}
+
+/* ── MAIN ── */
+main{max-width:1100px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+/* ── SEARCH ── */
+.search-wrapper{max-width:600px;margin:0 auto 1.8rem}
+.search-box{display:flex;align-items:center;background:white;border:2px solid #E2E8F0;border-radius:18px;padding:.7rem 1.2rem;gap:.8rem;box-shadow:0 4px 18px rgba(0,0,0,.06);transition:border-color .2s,box-shadow .2s}
+.search-box:focus-within{border-color:#7C3AED;box-shadow:0 4px 20px rgba(124,58,237,.12)}
+.si{font-size:1.1rem;color:#94A3B8}
+.search-box input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:1rem;flex:1;color:#0F172A;background:transparent}
+.search-box input::placeholder{color:#CBD5E1}
+#searchCount{font-size:.78rem;color:#7C3AED;font-weight:800;white-space:nowrap}
+
+/* ── FUN FACT ── */
+.fun-fact{background:white;border-radius:22px;padding:1.4rem;margin-bottom:2rem;display:flex;gap:1rem;align-items:flex-start;border:2px dashed #DDD6FE;box-shadow:0 2px 14px rgba(99,102,241,.07)}
+.ff-icon{font-size:2rem;flex-shrink:0;line-height:1;margin-top:.1rem}
+.ff-content h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:.92rem;color:#6D28D9;margin-bottom:.35rem}
+.ff-content p{font-size:.88rem;color:#334155}
+
+/* ── MULTILANG ── */
+.multilang-wrapper{margin-bottom:2.5rem;scroll-margin-top:70px}
+.multilang-heading{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.3rem;color:#0F172A;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.multilang-sub{font-size:.88rem;color:#64748B;margin-bottom:1.2rem;max-width:720px;line-height:1.5}
+.multilang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.mini-lang-card{border-radius:20px;padding:1.3rem;border:2px solid transparent;transition:transform .25s,box-shadow .25s}
+.mini-lang-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.1)}
+.ml-arabic{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#86EFAC}
+.ml-polish{background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border-color:#FCA5A5}
+.ml-romanian{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-color:#93C5FD}
+.mini-card-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.mini-flag{font-size:1.7rem}
+.mini-lang-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem}
+.ml-arabic .mini-lang-name{color:var(--ca)}
+.ml-polish .mini-lang-name{color:var(--cp)}
+.ml-romanian .mini-lang-name{color:var(--cr)}
+.mini-card-why{font-size:.75rem;color:#334155;background:rgba(255,255,255,.75);border-radius:10px;padding:.5rem .7rem;margin-bottom:.8rem;line-height:1.55}
+.mini-words{display:flex;flex-direction:column;gap:.3rem}
+.mini-word-row{display:grid;grid-template-columns:1fr auto 1fr;gap:.3rem;align-items:center;background:rgba(255,255,255,.9);border-radius:10px;padding:.45rem .65rem;font-size:.82rem;transition:transform .2s,box-shadow .2s;cursor:default}
+.mini-word-row:hover{transform:translateX(4px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.mw-orig{font-family:'Poppins',sans-serif;font-weight:700}
+.ml-arabic .mw-orig{font-size:.98rem;direction:rtl;text-align:right;color:var(--ca);font-family:Georgia,serif}
+.ml-polish .mw-orig{color:var(--cp)}
+.ml-romanian .mw-orig{color:var(--cr)}
+.mw-arrow{color:#94A3B8;font-weight:700;flex-shrink:0;text-align:center}
+.mw-esp{font-family:'Poppins',sans-serif;font-weight:700;color:#0F172A;font-size:.85rem}
+.mw-dan{font-size:.68rem;color:#6366F1;font-weight:600}
+.mw-trans{font-size:.65rem;color:#94A3B8;font-weight:500}
+.mw-col{display:flex;flex-direction:column}
+
+/* ── DIVIDER ── */
+.section-divider{display:flex;align-items:center;gap:1rem;margin:2.2rem 0 1.8rem}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,transparent,#E2E8F0)}
+.section-divider::after{background:linear-gradient(90deg,#E2E8F0,transparent)}
+.section-divider span{font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:800;color:#94A3B8;white-space:nowrap;text-transform:uppercase;letter-spacing:.08em}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.3rem}
+.leg-item{display:flex;align-items:center;gap:.35rem;font-size:.78rem;color:#475569;font-weight:600}
+.leg-badge{font-size:.58rem;font-weight:800;padding:.1rem .38rem;border-radius:5px}
+.sim-id{background:#DCFCE7;color:#15803D}
+.sim-vs{background:#DBEAFE;color:#1D4ED8}
+.sim-si{background:#FEF9C3;color:#A16207}
+
+/* ── NO RESULTS ── */
+.no-results{text-align:center;padding:2.5rem;color:#94A3B8;font-family:'Poppins',sans-serif;font-weight:600;display:none;font-size:1rem}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:2.5rem;scroll-margin-top:68px}
+.sec-header{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-radius:18px;color:white;margin-bottom:1rem;position:relative;overflow:hidden;transition:transform .2s}
+.sec-header:hover{transform:scale(1.01)}
+.sec-header::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:rgba(255,255,255,.07);border-radius:50%}
+.sec-icon{font-size:1.8rem;flex-shrink:0;position:relative;z-index:1}
+.sec-text{position:relative;z-index:1}
+.sec-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.15rem}
+.sec-sub{font-size:.78rem;opacity:.88;margin-top:.04rem}
+.sec-nums{margin-left:auto;background:rgba(255,255,255,.22);border-radius:12px;padding:.22rem .7rem;flex-shrink:0;font-family:'Poppins',sans-serif;font-size:.76rem;font-weight:700;position:relative;z-index:1}
+.sec-prog{margin-left:.5rem;font-size:.7rem;background:rgba(255,255,255,.15);border-radius:10px;padding:.15rem .5rem;font-family:'Poppins',sans-serif;font-weight:700;position:relative;z-index:1;white-space:nowrap}
+.col-headers{display:grid;grid-template-columns:34px 1fr 1fr 28px;gap:.5rem;padding:0 .9rem .4rem;margin-bottom:.4rem}
+.col-headers span{font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8}
+.words-list{display:flex;flex-direction:column;gap:.4rem}
+
+/* Word row */
+.word-row{display:grid;grid-template-columns:34px 1fr 1fr 28px;gap:.5rem;align-items:center;background:white;border-radius:14px;padding:.68rem .9rem;border-left:4px solid transparent;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:transform .18s ease,box-shadow .18s ease,background .3s,border-left-color .3s;opacity:0;transform:translateX(-30px)}
+.word-row.visible{opacity:1;transform:translateX(0);transition:opacity .4s ease,transform .4s ease,background .3s,border-left-color .3s,box-shadow .18s}
+.word-row:hover{transform:translateX(6px);box-shadow:0 5px 18px rgba(0,0,0,.1)}
+.word-row.collected:hover{transform:translateX(6px)}
+.word-row.hidden{display:none}
+.w-num{font-family:'Poppins',sans-serif;font-size:.65rem;font-weight:800;color:#CBD5E1;text-align:center}
+.w-esp{font-family:'Poppins',sans-serif;font-weight:700;font-size:.96rem}
+.w-dan{font-family:'Poppins',sans-serif;font-weight:600;font-size:.96rem;color:#374151;display:flex;align-items:center;gap:.4rem}
+.w-dan-inner{display:flex;align-items:center;gap:.4rem;transition:filter .3s}
+.sim{font-size:.58rem;font-weight:800;padding:.1rem .34rem;border-radius:5px;letter-spacing:.02em;flex-shrink:0}
+
+/* Section colours */
+.s1 .sec-header{background:linear-gradient(135deg,var(--c1),var(--c1d))} .s1 .word-row{border-left-color:var(--c1)} .s1 .w-esp{color:var(--c1d)}
+.s2 .sec-header{background:linear-gradient(135deg,var(--c2),var(--c2d))} .s2 .word-row{border-left-color:var(--c2)} .s2 .w-esp{color:var(--c2d)}
+.s3 .sec-header{background:linear-gradient(135deg,var(--c3),var(--c3d))} .s3 .word-row{border-left-color:var(--c3)} .s3 .w-esp{color:var(--c3d)}
+.s4 .sec-header{background:linear-gradient(135deg,var(--c4),var(--c4d))} .s4 .word-row{border-left-color:var(--c4)} .s4 .w-esp{color:var(--c4d)}
+.s5 .sec-header{background:linear-gradient(135deg,var(--c5),var(--c5d))} .s5 .word-row{border-left-color:var(--c5)} .s5 .w-esp{color:var(--c5d)}
+.s6 .sec-header{background:linear-gradient(135deg,var(--c6),var(--c6d))} .s6 .word-row{border-left-color:var(--c6)} .s6 .w-esp{color:var(--c6d)}
+.s7 .sec-header{background:linear-gradient(135deg,var(--c7),var(--c7d))} .s7 .word-row{border-left-color:var(--c7)} .s7 .w-esp{color:var(--c7d)}
+.s8 .sec-header{background:linear-gradient(135deg,var(--c8),var(--c8d))} .s8 .word-row{border-left-color:var(--c8)} .s8 .w-esp{color:var(--c8d)}
+.s9 .sec-header{background:linear-gradient(135deg,var(--c9),var(--c9d))} .s9 .word-row{border-left-color:var(--c9)} .s9 .w-esp{color:var(--c9d)}
+.s10 .sec-header{background:linear-gradient(135deg,#10B981,var(--c10d))} .s10 .word-row{border-left-color:#10B981} .s10 .w-esp{color:var(--c10d)}
+
+/* ── FOOTER ── */
+footer{background:#0F172A;color:white;padding:2.5rem 2rem;margin-top:2rem}
+.footer-inner{max-width:900px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.footer-card{background:rgba(255,255,255,.07);border-radius:15px;padding:1.1rem}
+.footer-card h4{font-family:'Poppins',sans-serif;color:#FCD34D;font-size:.83rem;font-weight:800;margin-bottom:.45rem}
+.footer-card p{font-size:.81rem;opacity:.72;line-height:1.55}
+.footer-logo{text-align:center;font-size:.74rem;opacity:.3;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;font-family:'Poppins',sans-serif}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){.multilang-grid{grid-template-columns:1fr}}
+@media(max-width:580px){.footer-grid{grid-template-columns:1fr}.w-esp,.w-dan{font-size:.86rem}.sec-title{font-size:1rem}.col-headers,.word-row{grid-template-columns:28px 1fr 1fr 24px}}
+@media print{
+  #prog-bar-wrap,#orb,.nav-sticky,.motto,.search-wrapper,#confetti-canvas,#milestone{display:none!important}
+  body{background:white}header{background:#0F172A!important;padding:1.5rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  header::after{display:none}.section{break-inside:avoid-page}.sec-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .word-row{opacity:1!important;transform:none!important;box-shadow:none;padding:.35rem .6rem;border:1px solid #E2E8F0}
+  .w-dan-inner{filter:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="prog-bar-wrap"><div id="prog-bar"></div></div>
+
+<!-- Floating progress orb -->
+<div id="orb" title="Dine samlede ord — klik for at nulstille">
+  <div id="orb-ring" style="--pct:0%"></div>
+  <div id="orb-count">0</div>
+  <div id="orb-label">/ 100</div>
+</div>
+
+<!-- Milestone toast -->
+<div id="milestone">
+  <span id="milestone-emoji">🌟</span>
+  <div id="milestone-title">Flot!</div>
+  <div id="milestone-sub"></div>
+  <div id="milestone-close" onclick="closeMilestone()">Fortsæt! 🚀</div>
+</div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- HEADER -->
+<header>
+  <div class="h-particles" id="hparticles"></div>
+  <a href="hub.html" class="back-link">← Tilbage til Sprogbro</a>
+  <div class="school-badge">🏫 Randers Ungdomsskole &nbsp;·&nbsp; Spansk &nbsp;·&nbsp; ProfeBot 🎓</div>
+  <div class="header-flags">
+    <span>🇪🇸</span><span>🤝</span><span>🇩🇰</span>
+  </div>
+  <h1>100 Ord der <em>Ligner</em><br>Spansk & Dansk</h1>
+  <p>Disse ord kender du allerede — du ved det bare ikke endnu! 🎉<br>Klik på ⭐ ved hvert ord for at <strong>samle det!</strong></p>
+  <div class="h-chips">
+    <span class="chip">📚 10 tematiske afsnit</span>
+    <span class="chip">🌍 100 ord</span>
+    <span class="chip">⭐ Saml dem alle!</span>
+    <span class="chip">🎯 Quiz mode</span>
+  </div>
+</header>
+
+<div class="motto">
+  💬 &nbsp;"Sproget er en bro til nye verdener — og du har allerede bygget det halve!" 🌉
+</div>
+
+<!-- NAV -->
+<nav class="nav-sticky" aria-label="Afsnit">
+  <div class="nav-scroll">
+    <button class="nav-item quiz-btn" id="quizBtn" onclick="toggleQuiz()" title="Skjul de danske ord og test dig selv!">🎯 Quiz Mode</button>
+    <span class="nav-sep">│</span>
+    <a href="#arabisk"  class="nav-item nia">🇸🇦 Arabisk</a>
+    <a href="#polsk"    class="nav-item nip">🇵🇱 Polsk</a>
+    <a href="#rumaensk" class="nav-item nir">🇷🇴 Rumænsk</a>
+    <span class="nav-sep">│</span>
+    <a href="#s1"  class="nav-item ni1">📱 Teknologi</a>
+    <a href="#s2"  class="nav-item ni2">🎵 Musik</a>
+    <a href="#s3"  class="nav-item ni3">⚽ Sport</a>
+    <a href="#s4"  class="nav-item ni4">🐾 Dyr</a>
+    <a href="#s5"  class="nav-item ni5">🍕 Mad</a>
+    <a href="#s6"  class="nav-item ni6">👥 Mennesker</a>
+    <a href="#s7"  class="nav-item ni7">🌍 Steder</a>
+    <a href="#s8"  class="nav-item ni8">📚 Skole</a>
+    <a href="#s9"  class="nav-item ni9">✨ Adjektiver</a>
+    <a href="#s10" class="nav-item ni10">🌱 Natur</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="search-wrapper">
+    <div class="search-box">
+      <span class="si">🔍</span>
+      <input type="text" id="searchInput" placeholder="Søg et ord på spansk eller dansk..." oninput="filterWords()" autocomplete="off">
+      <span id="searchCount">100 ord</span>
+    </div>
+  </div>
+
+  <div class="fun-fact">
+    <div class="ff-icon">💡</div>
+    <div class="ff-content">
+      <h3>Vidste du det? 🇩🇰</h3>
+      <p>Spansk og dansk deler <strong>hundredvis af lignende ord</strong> takket være <strong>latin, græsk og engelsk</strong>. Disse ord kaldes <em>kognater</em>. At kende dem er din <strong>hemmelige superkraft</strong> til at lære spansk hurtigere! 🦸 &nbsp;Sjov kendsgerning: <strong>Bad Bunny</strong> er en af de mest streamede artister på Spotify nogensinde — og han synger ALT på spansk! 🎧</p>
+    </div>
+  </div>
+
+  <!-- MULTILANG -->
+  <div class="multilang-wrapper" id="dit-sprog">
+    <div class="multilang-heading">🌍 Dit modersmål møder spansk!</div>
+    <div class="multilang-sub">Mange elever taler arabisk, polsk eller rumænsk derhjemme. <strong>Det er faktisk en kæmpe fordel!</strong> Dit modersmål har meget til fælles med spansk — enten fordi spansk lånte ord fra arabisk, eller fordi alle tre sprog stammer fra latin. Se selv! 👇</div>
+    <div class="multilang-grid">
+
+      <!-- ARABISK -->
+      <div class="mini-lang-card ml-arabic" id="arabisk">
+        <div class="mini-card-header">
+          <span class="mini-flag">🇸🇦</span>
+          <span class="mini-lang-name">Arabisk → Spansk</span>
+        </div>
+        <div class="mini-card-why">🕌 <strong>Spansk lånte over 4.000 ord fra arabisk!</strong> Maurerne boede i Spanien i næsten 800 år (711–1492). Disse spanske ord kom direkte fra arabisk — du kender dem allerede!</div>
+        <div class="mini-words">
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">القَهْوَة</span><span class="mw-trans">(qahwa)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">café ☕</span><span class="mw-dan">kaffe</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">السُّكَّر</span><span class="mw-trans">(sukkar)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">azúcar 🍬</span><span class="mw-dan">sukker</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">الكُحُول</span><span class="mw-trans">(al-kuḥūl)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">alcohol</span><span class="mw-dan">alkohol</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">الجَبْر</span><span class="mw-trans">(al-jabr)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">álgebra 📐</span><span class="mw-dan">algebra</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">نَارَنْج</span><span class="mw-trans">(nāranj)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">naranja 🍊</span><span class="mw-dan">appelsin</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">القُطُن</span><span class="mw-trans">(al-quṭun)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">algodón 👕</span><span class="mw-dan">bomuld</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">صُفَّة</span><span class="mw-trans">(ṣuffa)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">sofá 🛋️</span><span class="mw-dan">sofa</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig">المَطْبَخ</span><span class="mw-trans">(al-matbakh)</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">almacén 🏪</span><span class="mw-dan">lager</span></div></div>
+        </div>
+      </div>
+
+      <!-- POLSK -->
+      <div class="mini-lang-card ml-polish" id="polsk">
+        <div class="mini-card-header">
+          <span class="mini-flag">🇵🇱</span>
+          <span class="mini-lang-name">Polsk → Spansk</span>
+        </div>
+        <div class="mini-card-why">🏰 Polsk og spansk har begge lånt <strong>masser af internationale ord</strong> fra latin og engelsk. Disse ord lyder næsten ens på begge sprog — prøv at læse dem højt!</div>
+        <div class="mini-words">
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">muzyka</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">música 🎵</span><span class="mw-dan">musik</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">teatr</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">teatro 🎭</span><span class="mw-dan">teater</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">film</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">film 🎬</span><span class="mw-dan">film</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">hotel</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">hotel 🏨</span><span class="mw-dan">hotel</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">pizza</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">pizza 🍕</span><span class="mw-dan">pizza</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">student</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">estudiante 🎒</span><span class="mw-dan">studerende</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">park</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">parque 🌳</span><span class="mw-dan">park</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cp)">sport</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">sport ⚽</span><span class="mw-dan">sport</span></div></div>
+        </div>
+      </div>
+
+      <!-- RUMÆNSK -->
+      <div class="mini-lang-card ml-romanian" id="rumaensk">
+        <div class="mini-card-header">
+          <span class="mini-flag">🇷🇴</span>
+          <span class="mini-lang-name">Rumænsk → Spansk</span>
+        </div>
+        <div class="mini-card-why">⭐ <strong>Mega-nemt!</strong> Rumænsk og spansk er begge <strong>romanske sprog</strong> — de stammer begge direkte fra latin. De ligner hinanden mere end næsten alle andre europæiske sprog!</div>
+        <div class="mini-words">
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">familie</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">familia 👨‍👩‍👧</span><span class="mw-dan">familie</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">mamă</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">mamá 💛</span><span class="mw-dan">mor</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">casă</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">casa 🏠</span><span class="mw-dan">hus</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">muzică</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">música 🎵</span><span class="mw-dan">musik</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">animal</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">animal 🐾</span><span class="mw-dan">dyr</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">natural</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">natural 🌿</span><span class="mw-dan">naturlig</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">doctor</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">doctor 🩺</span><span class="mw-dan">læge</span></div></div>
+          <div class="mini-word-row"><div class="mw-col"><span class="mw-orig" style="color:var(--cr)">student</span></div><span class="mw-arrow">→</span><div class="mw-col"><span class="mw-esp">estudiante 🎒</span><span class="mw-dan">studerende</span></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-divider"><span>🇪🇸 🤝 🇩🇰 Spansk & Dansk — 100 Ord</span></div>
+
+  <div class="legend">
+    <div class="leg-item"><span class="leg-badge sim-id">IDENTISK</span> Identisk ord</div>
+    <div class="leg-item"><span class="leg-badge sim-vs">MEGET LIG.</span> Meget lignende</div>
+    <div class="leg-item"><span class="leg-badge sim-si">LIGNER</span> Genkendeligt</div>
+    <div class="leg-item">⭐ Klik for at samle!</div>
+  </div>
+
+  <div id="noResults" class="no-results">🤔 Ingen resultater. Prøv et andet ord!</div>
+
+  <!-- S1 TEKNOLOGI -->
+  <section class="section s1" id="s1">
+    <div class="sec-header"><span class="sec-icon">📱</span><div class="sec-text"><div class="sec-title">Teknologi</div><div class="sec-sub">Ord vi bruger hver eneste dag 📲</div></div><div class="sec-nums">1 – 10</div><div class="sec-prog" id="prog-s1">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="internet" data-dan="internet"><span class="w-num">1</span><span class="w-esp">internet 🌐</span><span class="w-dan"><span class="w-dan-inner">internet <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn" title="Saml dette ord!">☆</button></div>
+      <div class="word-row" data-esp="video" data-dan="video"><span class="w-num">2</span><span class="w-esp">video 🎥</span><span class="w-dan"><span class="w-dan-inner">video <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="radio" data-dan="radio"><span class="w-num">3</span><span class="w-esp">radio 📻</span><span class="w-dan"><span class="w-dan-inner">radio <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="foto" data-dan="foto"><span class="w-num">4</span><span class="w-esp">foto 📸</span><span class="w-dan"><span class="w-dan-inner">foto <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="blog" data-dan="blog"><span class="w-num">5</span><span class="w-esp">blog 💻</span><span class="w-dan"><span class="w-dan-inner">blog <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="podcast" data-dan="podcast"><span class="w-num">6</span><span class="w-esp">podcast 🎙️</span><span class="w-dan"><span class="w-dan-inner">podcast <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="digital" data-dan="digital"><span class="w-num">7</span><span class="w-esp">digital 💾</span><span class="w-dan"><span class="w-dan-inner">digital <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="social" data-dan="social"><span class="w-num">8</span><span class="w-esp">social 📲</span><span class="w-dan"><span class="w-dan-inner">social <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="cable" data-dan="kabel"><span class="w-num">9</span><span class="w-esp">cable 🔌</span><span class="w-dan"><span class="w-dan-inner">kabel <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="movil" data-dan="mobil"><span class="w-num">10</span><span class="w-esp">móvil 📱</span><span class="w-dan"><span class="w-dan-inner">mobil <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S2 MUSIK -->
+  <section class="section s2" id="s2">
+    <div class="sec-header"><span class="sec-icon">🎵</span><div class="sec-text"><div class="sec-title">Musik</div><div class="sec-sub">Spansk musik er overalt på Spotify! 🎧</div></div><div class="sec-nums">11 – 20</div><div class="sec-prog" id="prog-s2">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="guitarra" data-dan="guitar"><span class="w-num">11</span><span class="w-esp">guitarra 🎸</span><span class="w-dan"><span class="w-dan-inner">guitar <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="piano" data-dan="piano"><span class="w-num">12</span><span class="w-esp">piano 🎹</span><span class="w-dan"><span class="w-dan-inner">piano <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="rock" data-dan="rock"><span class="w-num">13</span><span class="w-esp">rock 🎸</span><span class="w-dan"><span class="w-dan-inner">rock <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="pop" data-dan="pop"><span class="w-num">14</span><span class="w-esp">pop 🎤</span><span class="w-dan"><span class="w-dan-inner">pop <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="disco" data-dan="disko"><span class="w-num">15</span><span class="w-esp">disco 🪩</span><span class="w-dan"><span class="w-dan-inner">disko <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="festival" data-dan="festival"><span class="w-num">16</span><span class="w-esp">festival 🎪</span><span class="w-dan"><span class="w-dan-inner">festival <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="concierto" data-dan="koncert"><span class="w-num">17</span><span class="w-esp">concierto 🎶</span><span class="w-dan"><span class="w-dan-inner">koncert <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="album" data-dan="album"><span class="w-num">18</span><span class="w-esp">álbum 💿</span><span class="w-dan"><span class="w-dan-inner">album <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="artista" data-dan="artist"><span class="w-num">19</span><span class="w-esp">artista 🌟</span><span class="w-dan"><span class="w-dan-inner">artist <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="ritmo" data-dan="rytme"><span class="w-num">20</span><span class="w-esp">ritmo 🥁</span><span class="w-dan"><span class="w-dan-inner">rytme <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S3 SPORT -->
+  <section class="section s3" id="s3">
+    <div class="sec-header"><span class="sec-icon">⚽</span><div class="sec-text"><div class="sec-title">Sport</div><div class="sec-sub">Real Madrid eller FC København? 😄</div></div><div class="sec-nums">21 – 30</div><div class="sec-prog" id="prog-s3">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="golf" data-dan="golf"><span class="w-num">21</span><span class="w-esp">golf ⛳</span><span class="w-dan"><span class="w-dan-inner">golf <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="tenis" data-dan="tennis"><span class="w-num">22</span><span class="w-esp">tenis 🎾</span><span class="w-dan"><span class="w-dan-inner">tennis <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="sport" data-dan="sport"><span class="w-num">23</span><span class="w-esp">sport 🏆</span><span class="w-dan"><span class="w-dan-inner">sport <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="club" data-dan="klub"><span class="w-num">24</span><span class="w-esp">club 🏟️</span><span class="w-dan"><span class="w-dan-inner">klub <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="record" data-dan="rekord"><span class="w-num">25</span><span class="w-esp">récord 🏅</span><span class="w-dan"><span class="w-dan-inner">rekord <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="final" data-dan="finale"><span class="w-num">26</span><span class="w-esp">final 🥇</span><span class="w-dan"><span class="w-dan-inner">finale <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="arena" data-dan="arena"><span class="w-num">27</span><span class="w-esp">arena 🏟️</span><span class="w-dan"><span class="w-dan-inner">arena <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="maraton" data-dan="maraton"><span class="w-num">28</span><span class="w-esp">maratón 🏃</span><span class="w-dan"><span class="w-dan-inner">maraton <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="campeon" data-dan="champion"><span class="w-num">29</span><span class="w-esp">campeón 🏆</span><span class="w-dan"><span class="w-dan-inner">champion <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="olimpiada" data-dan="olympiade"><span class="w-num">30</span><span class="w-esp">olimpiada 🥇</span><span class="w-dan"><span class="w-dan-inner">olympiade <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S4 DYR -->
+  <section class="section s4" id="s4">
+    <div class="sec-header"><span class="sec-icon">🐾</span><div class="sec-text"><div class="sec-title">Dyr</div><div class="sec-sub">Samme navne overalt i verden! 🌍</div></div><div class="sec-nums">31 – 40</div><div class="sec-prog" id="prog-s4">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="tigre" data-dan="tiger"><span class="w-num">31</span><span class="w-esp">tigre 🐯</span><span class="w-dan"><span class="w-dan-inner">tiger <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="elefante" data-dan="elefant"><span class="w-num">32</span><span class="w-esp">elefante 🐘</span><span class="w-dan"><span class="w-dan-inner">elefant <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="pinguino" data-dan="pingvin"><span class="w-num">33</span><span class="w-esp">pingüino 🐧</span><span class="w-dan"><span class="w-dan-inner">pingvin <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="cocodrilo" data-dan="krokodille"><span class="w-num">34</span><span class="w-esp">cocodrilo 🐊</span><span class="w-dan"><span class="w-dan-inner">krokodille <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="jaguar" data-dan="jaguar"><span class="w-num">35</span><span class="w-esp">jaguar 🐆</span><span class="w-dan"><span class="w-dan-inner">jaguar <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="panda" data-dan="panda"><span class="w-num">36</span><span class="w-esp">panda 🐼</span><span class="w-dan"><span class="w-dan-inner">panda <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="gorila" data-dan="gorilla"><span class="w-num">37</span><span class="w-esp">gorila 🦍</span><span class="w-dan"><span class="w-dan-inner">gorilla <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="camaleon" data-dan="kamaeleon"><span class="w-num">38</span><span class="w-esp">camaleón 🦎</span><span class="w-dan"><span class="w-dan-inner">kamæleon <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="canguro" data-dan="kaenguru"><span class="w-num">39</span><span class="w-esp">canguro 🦘</span><span class="w-dan"><span class="w-dan-inner">kænguru <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="delfin" data-dan="delfin"><span class="w-num">40</span><span class="w-esp">delfín 🐬</span><span class="w-dan"><span class="w-dan-inner">delfin <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S5 MAD -->
+  <section class="section s5" id="s5">
+    <div class="sec-header"><span class="sec-icon">🍕</span><div class="sec-text"><div class="sec-title">Mad & Drikke</div><div class="sec-sub">Spansk mad er fantastisk — ¡muy rico! 😋</div></div><div class="sec-nums">41 – 50</div><div class="sec-prog" id="prog-s5">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="pizza" data-dan="pizza"><span class="w-num">41</span><span class="w-esp">pizza 🍕</span><span class="w-dan"><span class="w-dan-inner">pizza <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="pasta" data-dan="pasta"><span class="w-num">42</span><span class="w-esp">pasta 🍝</span><span class="w-dan"><span class="w-dan-inner">pasta <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="banana" data-dan="banan"><span class="w-num">43</span><span class="w-esp">banana 🍌</span><span class="w-dan"><span class="w-dan-inner">banan <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="chocolate" data-dan="chokolade"><span class="w-num">44</span><span class="w-esp">chocolate 🍫</span><span class="w-dan"><span class="w-dan-inner">chokolade <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="cafe" data-dan="kaffe"><span class="w-num">45</span><span class="w-esp">café ☕</span><span class="w-dan"><span class="w-dan-inner">kaffe <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="yogur" data-dan="yoghurt"><span class="w-num">46</span><span class="w-esp">yogur 🥛</span><span class="w-dan"><span class="w-dan-inner">yoghurt <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="taco" data-dan="taco"><span class="w-num">47</span><span class="w-esp">taco 🌮</span><span class="w-dan"><span class="w-dan-inner">taco <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="vitamina" data-dan="vitamin"><span class="w-num">48</span><span class="w-esp">vitamina 💊</span><span class="w-dan"><span class="w-dan-inner">vitamin <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="menu" data-dan="menu"><span class="w-num">49</span><span class="w-esp">menú 📋</span><span class="w-dan"><span class="w-dan-inner">menu <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="sopa" data-dan="suppe"><span class="w-num">50</span><span class="w-esp">sopa 🍲</span><span class="w-dan"><span class="w-dan-inner">suppe <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S6 MENNESKER -->
+  <section class="section s6" id="s6">
+    <div class="sec-header"><span class="sec-icon">👥</span><div class="sec-text"><div class="sec-title">Mennesker & Jobs</div><div class="sec-sub">Hvad vil du gerne være? 🌟</div></div><div class="sec-nums">51 – 60</div><div class="sec-prog" id="prog-s6">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="doctor" data-dan="doktor"><span class="w-num">51</span><span class="w-esp">doctor 🩺</span><span class="w-dan"><span class="w-dan-inner">doktor <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="profesor" data-dan="professor"><span class="w-num">52</span><span class="w-esp">profesor 🎓</span><span class="w-dan"><span class="w-dan-inner">professor <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="director" data-dan="direktoer"><span class="w-num">53</span><span class="w-esp">director 💼</span><span class="w-dan"><span class="w-dan-inner">direktør <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="presidente" data-dan="praesidente"><span class="w-num">54</span><span class="w-esp">presidente 🏛️</span><span class="w-dan"><span class="w-dan-inner">præsident <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="turista" data-dan="turist"><span class="w-num">55</span><span class="w-esp">turista ✈️</span><span class="w-dan"><span class="w-dan-inner">turist <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="estudiante" data-dan="student"><span class="w-num">56</span><span class="w-esp">estudiante 🎒</span><span class="w-dan"><span class="w-dan-inner">student <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="policia" data-dan="politi"><span class="w-num">57</span><span class="w-esp">policía 👮</span><span class="w-dan"><span class="w-dan-inner">politi <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="atleta" data-dan="atlet"><span class="w-num">58</span><span class="w-esp">atleta 🏃</span><span class="w-dan"><span class="w-dan-inner">atlet <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="piloto" data-dan="pilot"><span class="w-num">59</span><span class="w-esp">piloto ✈️</span><span class="w-dan"><span class="w-dan-inner">pilot <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="detective" data-dan="detektiv"><span class="w-num">60</span><span class="w-esp">detective 🕵️</span><span class="w-dan"><span class="w-dan-inner">detektiv <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S7 STEDER -->
+  <section class="section s7" id="s7">
+    <div class="sec-header"><span class="sec-icon">🌍</span><div class="sec-text"><div class="sec-title">Steder</div><div class="sec-sub">Fra Randers til Barcelona! ✈️</div></div><div class="sec-nums">61 – 70</div><div class="sec-prog" id="prog-s7">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="hotel" data-dan="hotel"><span class="w-num">61</span><span class="w-esp">hotel 🏨</span><span class="w-dan"><span class="w-dan-inner">hotel <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="restaurante" data-dan="restaurant"><span class="w-num">62</span><span class="w-esp">restaurante 🍽️</span><span class="w-dan"><span class="w-dan-inner">restaurant <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="hospital" data-dan="hospital"><span class="w-num">63</span><span class="w-esp">hospital 🏥</span><span class="w-dan"><span class="w-dan-inner">hospital <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="parque" data-dan="park"><span class="w-num">64</span><span class="w-esp">parque 🌳</span><span class="w-dan"><span class="w-dan-inner">park <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="capital" data-dan="kapital"><span class="w-num">65</span><span class="w-esp">capital 🏙️</span><span class="w-dan"><span class="w-dan-inner">kapital <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="oceano" data-dan="ocean"><span class="w-num">66</span><span class="w-esp">océano 🌊</span><span class="w-dan"><span class="w-dan-inner">ocean <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="teatro" data-dan="teater"><span class="w-num">67</span><span class="w-esp">teatro 🎭</span><span class="w-dan"><span class="w-dan-inner">teater <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="museo" data-dan="museum"><span class="w-num">68</span><span class="w-esp">museo 🏛️</span><span class="w-dan"><span class="w-dan-inner">museum <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="galeria" data-dan="galleri"><span class="w-num">69</span><span class="w-esp">galería 🖼️</span><span class="w-dan"><span class="w-dan-inner">galleri <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="plaza" data-dan="plads"><span class="w-num">70</span><span class="w-esp">plaza 🏟️</span><span class="w-dan"><span class="w-dan-inner">plads <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S8 SKOLE -->
+  <section class="section s8" id="s8">
+    <div class="sec-header"><span class="sec-icon">📚</span><div class="sec-text"><div class="sec-title">Skole & Videnskab</div><div class="sec-sub">Spansk er faktisk et rigtig godt skolefag! 🎓</div></div><div class="sec-nums">71 – 80</div><div class="sec-prog" id="prog-s8">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="biologia" data-dan="biologi"><span class="w-num">71</span><span class="w-esp">biología 🔬</span><span class="w-dan"><span class="w-dan-inner">biologi <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="fisica" data-dan="fysik"><span class="w-num">72</span><span class="w-esp">física ⚛️</span><span class="w-dan"><span class="w-dan-inner">fysik <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="matematicas" data-dan="matematik"><span class="w-num">73</span><span class="w-esp">matemáticas ➕</span><span class="w-dan"><span class="w-dan-inner">matematik <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="geografia" data-dan="geografi"><span class="w-num">74</span><span class="w-esp">geografía 🗺️</span><span class="w-dan"><span class="w-dan-inner">geografi <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="historia" data-dan="historie"><span class="w-num">75</span><span class="w-esp">historia 📜</span><span class="w-dan"><span class="w-dan-inner">historie <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="literatura" data-dan="litteratur"><span class="w-num">76</span><span class="w-esp">literatura 📖</span><span class="w-dan"><span class="w-dan-inner">litteratur <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="filosofia" data-dan="filosofi"><span class="w-num">77</span><span class="w-esp">filosofía 🤔</span><span class="w-dan"><span class="w-dan-inner">filosofi <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="diploma" data-dan="diplom"><span class="w-num">78</span><span class="w-esp">diploma 🎓</span><span class="w-dan"><span class="w-dan-inner">diplom <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="atlas" data-dan="atlas"><span class="w-num">79</span><span class="w-esp">atlas 🗺️</span><span class="w-dan"><span class="w-dan-inner">atlas <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="examen" data-dan="eksamen"><span class="w-num">80</span><span class="w-esp">examen 📝</span><span class="w-dan"><span class="w-dan-inner">eksamen <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S9 ADJEKTIVER -->
+  <section class="section s9" id="s9">
+    <div class="sec-header"><span class="sec-icon">✨</span><div class="sec-text"><div class="sec-title">Adjektiver</div><div class="sec-sub">Beskriv verden på to sprog på én gang! 🌈</div></div><div class="sec-nums">81 – 90</div><div class="sec-prog" id="prog-s9">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="normal" data-dan="normal"><span class="w-num">81</span><span class="w-esp">normal 😐</span><span class="w-dan"><span class="w-dan-inner">normal <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="fantastico" data-dan="fantastisk"><span class="w-num">82</span><span class="w-esp">fantástico 🤩</span><span class="w-dan"><span class="w-dan-inner">fantastisk <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="perfecto" data-dan="perfekt"><span class="w-num">83</span><span class="w-esp">perfecto 💯</span><span class="w-dan"><span class="w-dan-inner">perfekt <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="moderno" data-dan="moderne"><span class="w-num">84</span><span class="w-esp">moderno 🆒</span><span class="w-dan"><span class="w-dan-inner">moderne <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="popular" data-dan="populaer"><span class="w-num">85</span><span class="w-esp">popular 🔥</span><span class="w-dan"><span class="w-dan-inner">populær <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="especial" data-dan="speciel"><span class="w-num">86</span><span class="w-esp">especial 🌟</span><span class="w-dan"><span class="w-dan-inner">speciel <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="original" data-dan="original"><span class="w-num">87</span><span class="w-esp">original 💎</span><span class="w-dan"><span class="w-dan-inner">original <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="nacional" data-dan="national"><span class="w-num">88</span><span class="w-esp">nacional 🏳️</span><span class="w-dan"><span class="w-dan-inner">national <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="central" data-dan="central"><span class="w-num">89</span><span class="w-esp">central 📍</span><span class="w-dan"><span class="w-dan-inner">central <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="cultural" data-dan="kulturel"><span class="w-num">90</span><span class="w-esp">cultural 🎨</span><span class="w-dan"><span class="w-dan-inner">kulturel <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+  <!-- S10 NATUR -->
+  <section class="section s10" id="s10">
+    <div class="sec-header"><span class="sec-icon">🌱</span><div class="sec-text"><div class="sec-title">Natur & Planeten</div><div class="sec-sub">Planeten samler os alle! 🌍💚</div></div><div class="sec-nums">91 – 100</div><div class="sec-prog" id="prog-s10">0/10</div></div>
+    <div class="col-headers"><span>#</span><span>🇪🇸 Spansk</span><span>🇩🇰 Dansk</span><span>⭐</span></div>
+    <div class="words-list">
+      <div class="word-row" data-esp="planeta" data-dan="planet"><span class="w-num">91</span><span class="w-esp">planeta 🌍</span><span class="w-dan"><span class="w-dan-inner">planet <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="clima" data-dan="klima"><span class="w-num">92</span><span class="w-esp">clima 🌤️</span><span class="w-dan"><span class="w-dan-inner">klima <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="temperatura" data-dan="temperatur"><span class="w-num">93</span><span class="w-esp">temperatura 🌡️</span><span class="w-dan"><span class="w-dan-inner">temperatur <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="volcan" data-dan="vulkan"><span class="w-num">94</span><span class="w-esp">volcán 🌋</span><span class="w-dan"><span class="w-dan-inner">vulkan <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="energia" data-dan="energi"><span class="w-num">95</span><span class="w-esp">energía ⚡</span><span class="w-dan"><span class="w-dan-inner">energi <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="mineral" data-dan="mineral"><span class="w-num">96</span><span class="w-esp">mineral 💎</span><span class="w-dan"><span class="w-dan-inner">mineral <span class="sim sim-id">IDENTISK</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="artico" data-dan="arktisk"><span class="w-num">97</span><span class="w-esp">ártico 🧊</span><span class="w-dan"><span class="w-dan-inner">arktisk <span class="sim sim-si">LIGNER</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="tropical" data-dan="tropisk"><span class="w-num">98</span><span class="w-esp">tropical 🌴</span><span class="w-dan"><span class="w-dan-inner">tropisk <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="solar" data-dan="solaer"><span class="w-num">99</span><span class="w-esp">solar ☀️</span><span class="w-dan"><span class="w-dan-inner">solær <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+      <div class="word-row" data-esp="fosil" data-dan="fossil"><span class="w-num">100</span><span class="w-esp">fósil 🦕</span><span class="w-dan"><span class="w-dan-inner">fossil <span class="sim sim-vs">MEGET LIG.</span></span></span><button class="collect-btn">☆</button></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-card">
+        <h4>💡 Hvorfor ligner sprogene hinanden?</h4>
+        <p>Spansk og dansk har begge lånt ord fra latin, græsk og engelsk. Internationale ord rejser rundt i verden — ligesom du en dag vil gøre, når du taler spansk!</p>
+      </div>
+      <div class="footer-card">
+        <h4>🚀 Øvelse gør mester!</h4>
+        <p>At kende disse 100 ord er allerede din superkraft. Bliv ved og kom langt! — <em>Fejl er ikke fiasko, de er springbrættet til succes.</em> 💪</p>
+      </div>
+    </div>
+    <div class="footer-logo">🎓 ProfeBot · Randers Ungdomsskole · Spanskundervisning · 2025</div>
+  </div>
+</footer>
+
+<script>
+// ── Header floating particles ──
+(function(){
+  const E=['🇪🇸','🇩🇰','⭐','🎵','✨','📚','🌍','💫','🔥','🎯'];
+  const c=document.getElementById('hparticles');
+  for(let i=0;i<14;i++){
+    const d=document.createElement('div');d.className='hpt';
+    d.textContent=E[i%E.length];
+    d.style.cssText=`--hx:${Math.random()*100}%;--hd:${5+Math.random()*7}s;--hdl:${Math.random()*6}s;font-size:${.8+Math.random()*1.1}rem`;
+    c.appendChild(d);
+  }
+})();
+
+// ── Word collection system ──
+let collected = 0;
+const TOTAL = 100;
+const MILESTONES = {25:'🌟','25t':'25 ord! Du er super godt i gang!',50:'🔥','50t':'Halvvejs! Du er fantastisk! 🎉',75:'⚡','75t':'75 ord! Du er næsten mester!',100:'🏆','100t':'ALLE 100 ORD! Du er et SPROGBRO-MESTER! 🎊'};
+const sectionMap = {s1:[1,10],s2:[11,20],s3:[21,30],s4:[31,40],s5:[41,50],s6:[51,60],s7:[61,70],s8:[71,80],s9:[81,90],s10:[91,100]};
+
+function updateOrb(){
+  document.getElementById('orb-count').textContent = collected;
+  const pct = (collected/TOTAL*100).toFixed(1);
+  document.getElementById('prog-bar').style.width = pct+'%';
+  document.getElementById('orb-ring').style.setProperty('--pct', pct+'%');
+}
+
+function updateSectionProg(row){
+  const num = parseInt(row.querySelector('.w-num').textContent);
+  for(const [sid,[from,to]] of Object.entries(sectionMap)){
+    if(num>=from && num<=to){
+      const sec = document.getElementById(sid);
+      if(!sec) return;
+      const rows = sec.querySelectorAll('.word-row');
+      const done = Array.from(rows).filter(r=>r.classList.contains('collected')).length;
+      const el = document.getElementById('prog-'+sid);
+      if(el){ el.textContent = done+'/10'; if(done===10) el.textContent='✅ 10/10'; }
+      return;
+    }
+  }
+}
+
+document.querySelectorAll('.collect-btn').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    const row = btn.closest('.word-row');
+    if(row.classList.contains('collected')){
+      row.classList.remove('collected','just-collected');
+      btn.textContent='☆';
+      collected--;
+    } else {
+      row.classList.add('collected','just-collected');
+      btn.textContent='⭐';
+      collected++;
+      setTimeout(()=>row.classList.remove('just-collected'),500);
+      if([25,50,75,100].includes(collected)) showMilestone(collected);
+    }
+    updateOrb();
+    updateSectionProg(row);
+  });
+});
+
+// Quiz mode: click row to reveal in quiz mode
+document.querySelectorAll('.word-row').forEach(row=>{
+  row.addEventListener('click', e=>{
+    if(!document.body.classList.contains('quiz')) return;
+    if(e.target.classList.contains('collect-btn')) return;
+    row.classList.toggle('revealed');
+  });
+});
+
+// Reset orb on long press (2s)
+let orbTimer;
+document.getElementById('orb').addEventListener('mousedown',()=>{orbTimer=setTimeout(resetAll,1500)});
+document.getElementById('orb').addEventListener('mouseup',()=>clearTimeout(orbTimer));
+document.getElementById('orb').addEventListener('touchstart',()=>{orbTimer=setTimeout(resetAll,1500)},{passive:true});
+document.getElementById('orb').addEventListener('touchend',()=>clearTimeout(orbTimer));
+function resetAll(){
+  if(!confirm('Nulstil alle samlede ord?')) return;
+  collected=0;
+  document.querySelectorAll('.word-row.collected').forEach(r=>{r.classList.remove('collected');r.querySelector('.collect-btn').textContent='☆';});
+  document.querySelectorAll('.sec-prog').forEach((el,i)=>{el.textContent='0/10';});
+  updateOrb();
+}
+
+// ── Quiz mode ──
+function toggleQuiz(){
+  document.body.classList.toggle('quiz');
+  document.querySelectorAll('.word-row').forEach(r=>r.classList.remove('revealed'));
+  const btn=document.getElementById('quizBtn');
+  btn.textContent = document.body.classList.contains('quiz') ? '✅ Quiz: Sluk' : '🎯 Quiz Mode';
+}
+
+// ── Milestone popup ──
+function showMilestone(n){
+  const emojis={25:'🌟',50:'🔥',75:'⚡',100:'🏆'};
+  const msgs={25:'25 ord samlet!\nDu er super godt i gang! 💪',50:'Halvvejs! 50 ord!\nDu er en sprogstjerne! ⭐',75:'75 ord! Næsten der!\nKun 25 ord tilbage! 😤',100:'ALLE 100 ORD!\nDu er et SPROGBRO-MESTER! 🎓🎊'};
+  document.getElementById('milestone-emoji').textContent = emojis[n];
+  document.getElementById('milestone-title').textContent = msgs[n].split('\n')[0];
+  document.getElementById('milestone-sub').textContent = msgs[n].split('\n')[1];
+  document.getElementById('milestone').classList.add('show');
+  launchConfetti();
+}
+function closeMilestone(){document.getElementById('milestone').classList.remove('show')}
+
+// ── Confetti ──
+function launchConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.width=innerWidth; canvas.height=innerHeight;
+  const ctx=canvas.getContext('2d');
+  const pieces=[];
+  const COLORS=['#A78BFA','#F472B6','#34D399','#FBBF24','#60A5FA','#F87171','#4ADE80'];
+  for(let i=0;i<180;i++){
+    pieces.push({x:Math.random()*canvas.width,y:-20,vx:(Math.random()-0.5)*8,vy:Math.random()*5+3,r:Math.random()*6+3,c:COLORS[i%COLORS.length],rot:Math.random()*360,vrot:(Math.random()-0.5)*8,alpha:1});
+  }
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.12; p.rot+=p.vrot; p.alpha-=0.008;
+      if(p.alpha<=0) return;
+      ctx.save(); ctx.globalAlpha=p.alpha; ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);
+      ctx.restore();
+    });
+    frame++;
+    if(frame<220) requestAnimationFrame(draw); else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ── Scroll animations ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+},{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.word-row').forEach((row,i)=>{
+  row.style.transitionDelay = (i%10)*0.04+'s';
+  observer.observe(row);
+});
+
+// ── Search ──
+function filterWords(){
+  const raw=document.getElementById('searchInput').value;
+  const q=raw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+  const rows=document.querySelectorAll('.word-row');
+  let vis=0;
+  rows.forEach(r=>{
+    const esp=(r.dataset.esp||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const dan=(r.dataset.dan||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const match=!q||esp.includes(q)||dan.includes(q);
+    r.classList.toggle('hidden',!match);
+    if(match) vis++;
+  });
+  document.getElementById('searchCount').textContent=q?vis+' resultat'+(vis!==1?'er':''):'100 ord';
+  document.getElementById('noResults').style.display=(vis===0&&q)?'block':'none';
+  document.querySelectorAll('.section').forEach(s=>{
+    const all=Array.from(s.querySelectorAll('.word-row')).every(r=>r.classList.contains('hidden'));
+    s.style.display=all?'none':'';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="da"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Arabisk → Dansk · 100 Ord | Randers Ungdomsskole</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:#F1F5F9;color:#0F172A;line-height:1.6}
+header{color:white;padding:2.2rem 2rem 3.2rem;text-align:center;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(255,255,255,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,255,255,.05) 0%,transparent 60%);pointer-events:none}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:#F1F5F9;clip-path:ellipse(55% 100% at 50% 100%)}
+.school-badge{display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:30px;padding:.3rem 1.1rem;font-family:'Poppins',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.04em;margin-bottom:1.2rem;position:relative}
+.header-flags{font-size:2.8rem;display:block;margin-bottom:.6rem;position:relative}
+header h1{font-family:'Poppins',sans-serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:900;line-height:1.1;margin-bottom:.5rem;position:relative}
+header h1 em{font-style:normal;color:#FCD34D}
+header p{font-size:.95rem;opacity:.78;max-width:500px;margin:0 auto 1.2rem;position:relative}
+.header-chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;position:relative}
+.chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:.25rem .8rem;font-size:.74rem;font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;position:relative;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);border-radius:20px;padding:.3rem 1rem;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;color:white;text-decoration:none;margin-bottom:1rem;transition:background .2s}
+.back-link:hover{background:rgba(255,255,255,.28)}
+.motto{background:linear-gradient(90deg,#FCD34D,#FBBF24);color:#0F172A;padding:.8rem 2rem;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:.9rem}
+.nav-sticky{position:sticky;top:0;z-index:200;background:white;border-bottom:2px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.nav-scroll{max-width:1200px;margin:0 auto;padding:.6rem 1rem;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-item{display:inline-flex;align-items:center;gap:.22rem;white-space:nowrap;text-decoration:none;padding:.28rem .75rem;border-radius:18px;border:2px solid;font-family:'Poppins',sans-serif;font-size:.71rem;font-weight:700;transition:all .18s;cursor:pointer}
+main{max-width:1060px;margin:0 auto;padding:1.4rem 1rem 3rem}
+.search-wrapper{max-width:580px;margin:0 auto 1.6rem}
+.search-box{display:flex;align-items:center;background:white;border:2px solid #E2E8F0;border-radius:14px;padding:.65rem 1.1rem;gap:.75rem;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:border-color .2s}
+.search-box:focus-within{border-color:#6366F1}
+.search-box input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:.97rem;flex:1;color:#0F172A;background:transparent}
+.search-box input::placeholder{color:#94A3B8}
+#searchCount{font-size:.76rem;color:#6366F1;font-weight:800;white-space:nowrap}
+.fun-fact{background:white;border-radius:18px;padding:1.3rem;margin-bottom:1.8rem;display:flex;gap:.9rem;align-items:flex-start;border:2px dashed #C7D2FE;box-shadow:0 2px 10px rgba(99,102,241,.06)}
+.ff-icon{font-size:1.9rem;flex-shrink:0;line-height:1;margin-top:.1rem}
+.ff-content h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:.9rem;color:#4F46E5;margin-bottom:.3rem}
+.ff-content p{font-size:.86rem;color:#334155}
+.legend{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1.1rem;padding:0 .2rem}
+.leg-item{display:flex;align-items:center;gap:.3rem;font-size:.76rem;color:#475569;font-weight:600}
+.leg-badge{font-size:.57rem;font-weight:800;padding:.08rem .3rem;border-radius:4px}
+.no-results{text-align:center;padding:2rem;color:#94A3B8;font-family:'Poppins',sans-serif;font-weight:600;display:none;font-size:.95rem}
+.section{margin-bottom:2.3rem;scroll-margin-top:60px}
+.sec-header{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.3rem;border-radius:15px;color:white;margin-bottom:.9rem}
+.sec-icon{font-size:1.6rem;flex-shrink:0}
+.sec-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.08rem}
+.sec-sub{font-size:.75rem;opacity:.9;margin-top:.04rem}
+.sec-nums{margin-left:auto;background:rgba(255,255,255,.22);border-radius:11px;padding:.18rem .6rem;flex-shrink:0;font-family:'Poppins',sans-serif;font-size:.73rem;font-weight:700}
+.words-list{display:flex;flex-direction:column;gap:.34rem}
+.word-row{background:white;border-radius:11px;padding:.55rem .75rem;border-left:4px solid transparent;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .14s ease,box-shadow .14s ease;display:grid;gap:.45rem;align-items:center}
+.word-row:hover{transform:translateX(4px);box-shadow:0 4px 14px rgba(0,0,0,.10)}
+.word-row.hidden{display:none}
+.w-num{font-family:'Poppins',sans-serif;font-size:.62rem;font-weight:800;color:#CBD5E1;text-align:center}
+.w-orig{font-family:'Poppins',sans-serif;font-weight:700;font-size:.93rem}
+.w-trans{font-size:.68rem;color:#94A3B8;font-family:Georgia,serif;margin-top:.05rem}
+.w-dan{font-family:'Poppins',sans-serif;font-weight:700;font-size:.93rem;color:#374151;display:flex;align-items:center;gap:.38rem}
+.sim{font-size:.56rem;font-weight:800;padding:.08rem .28rem;border-radius:4px;flex-shrink:0}
+.sim-id{background:#DCFCE7;color:#15803D}
+.sim-vs{background:#DBEAFE;color:#1D4ED8}
+.sim-si{background:#FEF9C3;color:#A16207}
+footer{background:#0F172A;color:white;padding:1.8rem 2rem;margin-top:1.8rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem}
+.footer-card{background:rgba(255,255,255,.07);border-radius:12px;padding:1rem}
+.footer-card h4{font-family:'Poppins',sans-serif;color:#FCD34D;font-size:.8rem;font-weight:800;margin-bottom:.4rem}
+.footer-card p{font-size:.79rem;opacity:.73;line-height:1.5}
+.footer-logo{font-size:.72rem;opacity:.3;border-top:1px solid rgba(255,255,255,.1);padding-top:.9rem;font-family:'Poppins',sans-serif}
+@media(max-width:580px){.footer-grid{grid-template-columns:1fr}.w-orig,.w-dan{font-size:.84rem}}
+@media print{.nav-sticky,.motto,.search-wrapper{display:none}body{background:white;font-size:11px}header{background:#0F172A !important;padding:1.2rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}header::after{display:none}main{padding:.4rem}.section{break-inside:avoid-page}.sec-header,.word-row{-webkit-print-color-adjust:exact;print-color-adjust:exact}.word-row{box-shadow:none;border:1px solid #E2E8F0;padding:.3rem .55rem}.word-row:hover{transform:none}footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+.word-row{border-left-color:#16A34A}</style>
+</head><body>
+<header style="background:linear-gradient(135deg,#064E3B 0%,#065F46 45%,#047857 100%)">
+  <a href="hub.html" class="back-link">← Tilbage til startsiden</a>
+  <div class="school-badge">🏫 Randers Ungdomsskole · Spansk · ProfeBot 🎓</div>
+  <span class="header-flags">🇸🇦 🤝 🇩🇰</span>
+  <h1>Arabisk → <em>Dansk</em></h1>
+  <p>Arabisk har givet dansk og europæisk over 1.000 ord! Du kender dem allerede.</p>
+  <div class="header-chips">
+    <span class="chip">📚 10 afsnit</span><span class="chip">🌍 100 ord</span>
+    <span class="chip">🕌 Historiske lån</span><span class="chip">🔍 Søgning</span>
+  </div>
+</header>
+<div class="motto">💬 "Arabisk er ikke et fremmed sprog — det er en del af det dansk, du allerede taler!" 🌟</div>
+<nav class="nav-sticky"><div class="nav-scroll"><a href="#s1" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🍽️ Arabisk i dit køkken</a><a href="#s2" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🔬 Arabisk videnskab ændrede verden</a><a href="#s3" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🏪 Handel & Hverdagsliv</a><a href="#s4" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🦒 Natur, Dyr & Planter</a><a href="#s5" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">📱 Teknologi</a><a href="#s6" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🎵 Musik & Kultur</a><a href="#s7" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">⚽ Sport & Fritid</a><a href="#s8" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🍕 Mad & Drikke (moderne)</a><a href="#s9" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">📚 Skole & Uddannelse</a><a href="#s10" class="nav-item" style="color:#15803D;border-color:#DCFCE7;background:#F0FDF4">🌍 Steder & Transport</a></div></nav>
+<main>
+  <div class="search-wrapper">
+    <div class="search-box">
+      <span style="font-size:1rem;color:#94A3B8">🔍</span>
+      <input type="text" id="searchInput" placeholder="Søg på dansk eller translitteration..." oninput="filterWords()" autocomplete="off">
+      <span id="searchCount">100 ord</span>
+    </div>
+  </div>
+  <div class="fun-fact">
+    <div class="ff-icon">💡</div>
+    <div class="ff-content">
+      <h3>Vidste du det? 🇸🇦</h3>
+      <p>Arabisk er et af de vigtigste sprog i verdenshistorien. Araberne var mestre inden for <strong>matematik, astronomi, medicin og handel</strong>. De gav Europa ord som <em>algebra, algoritme, kaffe og sukker</em>. Næste gang du drikker kaffe eller løser en matematikopgave, tænk på arabisk! ☕🧮</p>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><span class="leg-badge sim-id">IDENTISK</span> Identisk ord</div>
+    <div class="leg-item"><span class="leg-badge sim-vs">MEGET LIG.</span> Meget lignende</div>
+    <div class="leg-item"><span class="leg-badge sim-si">LIGNER</span> Genkendeligt</div>
+  </div>
+  <div id="noResults" class="no-results">🤔 Ingen resultater. Prøv et andet ord!</div>
+  <section class="section" id="s1" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🍽️</span>
+            <div><div class="sec-title">Arabisk i dit køkken</div><div class="sec-sub">Disse ord gav araberne til resten af verden for over 1.000 år siden!</div></div>
+            <div class="sec-nums">1–10</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="qahwa" data-dan="kaffe">
+              <span class="w-num">1</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">قهوة</div><div class="w-trans">qahwa</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">kaffe <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sukkar" data-dan="sukker">
+              <span class="w-num">2</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">سكر</div><div class="w-trans">sukkar</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">sukker <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sharāb" data-dan="sirup">
+              <span class="w-num">3</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">شراب</div><div class="w-trans">sharāb</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">sirup <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="isfanākh" data-dan="spinat">
+              <span class="w-num">4</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">إسفناخ</div><div class="w-trans">isfanākh</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">spinat <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="za'farān" data-dan="safran">
+              <span class="w-num">5</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">زعفران</div><div class="w-trans">za'farān</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">safran <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="nāranj" data-dan="appelsin">
+              <span class="w-num">6</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">نارنج</div><div class="w-trans">nāranj</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">appelsin <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="laymūn" data-dan="citron">
+              <span class="w-num">7</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ليمون</div><div class="w-trans">laymūn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">citron <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-kharshūf" data-dan="artiskok">
+              <span class="w-num">8</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الخرشوف</div><div class="w-trans">al-kharshūf</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">artiskok <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tamar hindī" data-dan="tamarind">
+              <span class="w-num">9</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تمر هندي</div><div class="w-trans">tamar hindī</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">tamarind <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bādhinjān" data-dan="aubergine">
+              <span class="w-num">10</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بادنجان</div><div class="w-trans">bādhinjān</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">aubergine <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section><section class="section" id="s2" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🔬</span>
+            <div><div class="sec-title">Arabisk videnskab ændrede verden</div><div class="sec-sub">Arabiske lærde opfandt algebra, algoritmer og kemi — din matematiktime er arabisk!</div></div>
+            <div class="sec-nums">11–20</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-jabr" data-dan="algebra">
+              <span class="w-num">11</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الجبر</div><div class="w-trans">al-jabr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">algebra <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-khwārazmī" data-dan="algoritme">
+              <span class="w-num">12</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">خوارزم</div><div class="w-trans">al-Khwārazmī</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">algoritme <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-kīmiyā'" data-dan="kemi">
+              <span class="w-num">13</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الكيمياء</div><div class="w-trans">al-kīmiyā'</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">kemi <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sifr" data-dan="ciffer">
+              <span class="w-num">14</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">صفر</div><div class="w-trans">sifr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">ciffer <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sifr" data-dan="nul">
+              <span class="w-num">15</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">صفر</div><div class="w-trans">sifr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">nul <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="nādhir" data-dan="nadir">
+              <span class="w-num">16</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ناظر</div><div class="w-trans">nādhir</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">nadir <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-samt" data-dan="azimut">
+              <span class="w-num">17</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">السمت</div><div class="w-trans">al-samt</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">azimut <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-iksīr" data-dan="elixir">
+              <span class="w-num">18</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الإكسير</div><div class="w-trans">al-iksīr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">elixir <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-qaly" data-dan="alkali">
+              <span class="w-num">19</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">القلي</div><div class="w-trans">al-qaly</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">alkali <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-manākh" data-dan="almanak">
+              <span class="w-num">20</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">المناخ</div><div class="w-trans">al-manākh</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">almanak <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section><section class="section" id="s3" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🏪</span>
+            <div><div class="sec-title">Handel & Hverdagsliv</div><div class="sec-sub">Arabiske købmænd rejste hele verden rundt — og gav os disse ord med!</div></div>
+            <div class="sec-nums">21–30</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ta'rīfah" data-dan="tarif">
+              <span class="w-num">21</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تعريفة</div><div class="w-trans">ta'rīfah</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">tarif <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="makhāzin" data-dan="magasin">
+              <span class="w-num">22</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">مخازن</div><div class="w-trans">makhāzin</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">magasin <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="qīrāt" data-dan="karat">
+              <span class="w-num">23</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">قيراط</div><div class="w-trans">qīrāt</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">karat <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="matrah" data-dan="madras">
+              <span class="w-num">24</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">مطرح</div><div class="w-trans">matrah</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">madras <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="al-kuhl" data-dan="alkohol">
+              <span class="w-num">25</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الكحل</div><div class="w-trans">al-kuhl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">alkohol <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="amīr al-baḥr" data-dan="admiral">
+              <span class="w-num">26</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">أمير البحر</div><div class="w-trans">amīr al-baḥr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">admiral <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="suffah" data-dan="sofa">
+              <span class="w-num">27</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">صفّة</div><div class="w-trans">suffah</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">sofa <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="dīwān" data-dan="divan">
+              <span class="w-num">28</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ديوان</div><div class="w-trans">dīwān</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">divan <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tilasm" data-dan="talisman">
+              <span class="w-num">29</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">طلسم</div><div class="w-trans">tilasm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">talisman <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="az-zahr" data-dan="hazard">
+              <span class="w-num">30</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">الزهر</div><div class="w-trans">az-zahr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">hazard <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section><section class="section" id="s4" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🦒</span>
+            <div><div class="sec-title">Natur, Dyr & Planter</div><div class="sec-sub">Arabisk er fyldt med smukke ord til naturen!</div></div>
+            <div class="sec-nums">31–40</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="zarāfah" data-dan="giraf">
+              <span class="w-num">31</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">زرافة</div><div class="w-trans">zarāfah</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">giraf <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ghazāl" data-dan="gazelle">
+              <span class="w-num">32</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">غزال</div><div class="w-trans">ghazāl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">gazelle <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="yāsamīn" data-dan="jasmin">
+              <span class="w-num">33</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ياسمين</div><div class="w-trans">yāsamīn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">jasmin <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ʿanbar" data-dan="amber">
+              <span class="w-num">34</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">عنبر</div><div class="w-trans">ʿanbar</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">amber <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="qutn" data-dan="bomuld">
+              <span class="w-num">35</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">قطن</div><div class="w-trans">qutn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">bomuld <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mūmiyā" data-dan="mumie">
+              <span class="w-num">36</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">موميا</div><div class="w-trans">mūmiyā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">mumie <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="maskhara" data-dan="maske">
+              <span class="w-num">37</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">مسخرة</div><div class="w-trans">maskhara</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">maske <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="safārī" data-dan="safari">
+              <span class="w-num">38</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">سفاري</div><div class="w-trans">safārī</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">safari <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="lakk" data-dan="lak">
+              <span class="w-num">39</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">لك</div><div class="w-trans">lakk</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">lak <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="talq" data-dan="talk">
+              <span class="w-num">40</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">طلق</div><div class="w-trans">talq</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">talk <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div></div>
+        </section><section class="section" id="s5" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">📱</span>
+            <div><div class="sec-title">Teknologi</div><div class="sec-sub">Moderne arabisk bruger de samme globale ord som dansk!</div></div>
+            <div class="sec-nums">41–50</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="internet" data-dan="internet">
+              <span class="w-num">41</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">إنترنت</div><div class="w-trans">internet</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">internet <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="rādyō" data-dan="radio">
+              <span class="w-num">42</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">راديو</div><div class="w-trans">rādyō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">radio <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tilifūn" data-dan="telefon">
+              <span class="w-num">43</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تليفون</div><div class="w-trans">tilifūn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">telefon <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="fīlm" data-dan="film">
+              <span class="w-num">44</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فيلم</div><div class="w-trans">fīlm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">film <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="vīdyō" data-dan="video">
+              <span class="w-num">45</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فيديو</div><div class="w-trans">vīdyō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">video <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="kombiyūtar" data-dan="computer">
+              <span class="w-num">46</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كمبيوتر</div><div class="w-trans">kombiyūtar</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">computer <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tilifiziyōn" data-dan="tv/television">
+              <span class="w-num">47</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تلفزيون</div><div class="w-trans">tilifiziyōn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">tv/television <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bōdkāst" data-dan="podcast">
+              <span class="w-num">48</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بودكاست</div><div class="w-trans">bōdkāst</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">podcast <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="blōj" data-dan="blog">
+              <span class="w-num">49</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بلوج</div><div class="w-trans">blōj</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">blog <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="dījitāl" data-dan="digital">
+              <span class="w-num">50</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ديجيتال</div><div class="w-trans">dījitāl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">digital <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div></div>
+        </section><section class="section" id="s6" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🎵</span>
+            <div><div class="sec-title">Musik & Kultur</div><div class="sec-sub">Musik har ingen grænser — heller ikke i sproget!</div></div>
+            <div class="sec-nums">51–60</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mūsīqā" data-dan="musik">
+              <span class="w-num">51</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">موسيقى</div><div class="w-trans">mūsīqā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">musik <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="byānō" data-dan="piano">
+              <span class="w-num">52</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بيانو</div><div class="w-trans">byānō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">piano <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="rūk" data-dan="rock">
+              <span class="w-num">53</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">روك</div><div class="w-trans">rūk</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">rock <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bōb" data-dan="pop">
+              <span class="w-num">54</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بوب</div><div class="w-trans">bōb</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">pop <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="fastīfāl" data-dan="festival">
+              <span class="w-num">55</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فستيفال</div><div class="w-trans">fastīfāl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">festival <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ālbūm" data-dan="album">
+              <span class="w-num">56</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ألبوم</div><div class="w-trans">ālbūm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">album <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ārtīst" data-dan="artist">
+              <span class="w-num">57</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">أرتيست</div><div class="w-trans">ārtīst</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">artist <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="rītm" data-dan="rytme">
+              <span class="w-num">58</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ريتم</div><div class="w-trans">rītm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">rytme <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="diskō" data-dan="disko">
+              <span class="w-num">59</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ديسكو</div><div class="w-trans">diskō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">disko <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="kūnshirtō" data-dan="koncert">
+              <span class="w-num">60</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كونشيرتو</div><div class="w-trans">kūnshirtō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">koncert <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section><section class="section" id="s7" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">⚽</span>
+            <div><div class="sec-title">Sport & Fritid</div><div class="sec-sub">Sport taler alle sprog — næsten ens overalt!</div></div>
+            <div class="sec-nums">61–70</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sbōrt" data-dan="sport">
+              <span class="w-num">61</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">سبورت</div><div class="w-trans">sbōrt</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">sport <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ghōlf" data-dan="golf">
+              <span class="w-num">62</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">غولف</div><div class="w-trans">ghōlf</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">golf <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tans" data-dan="tenis">
+              <span class="w-num">63</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تنس</div><div class="w-trans">tans</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">tenis <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="klūb" data-dan="klub">
+              <span class="w-num">64</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كلوب</div><div class="w-trans">klūb</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">klub <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="rīkōrd" data-dan="rekord">
+              <span class="w-num">65</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ريكورد</div><div class="w-trans">rīkōrd</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">rekord <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="arīnā" data-dan="arena">
+              <span class="w-num">66</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">أرينا</div><div class="w-trans">arīnā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">arena <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mārāthōn" data-dan="maraton">
+              <span class="w-num">67</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ماراثون</div><div class="w-trans">mārāthōn</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">maraton <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="stādyūm" data-dan="stadion">
+              <span class="w-num">68</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ستاديوم</div><div class="w-trans">stādyūm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">stadion <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="fāynāl" data-dan="finale">
+              <span class="w-num">69</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فاينال</div><div class="w-trans">fāynāl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">finale <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mīdālya" data-dan="medalje">
+              <span class="w-num">70</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ميدالية</div><div class="w-trans">mīdālya</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">medalje <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section><section class="section" id="s8" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🍕</span>
+            <div><div class="sec-title">Mad & Drikke (moderne)</div><div class="sec-sub">Mad er international — og sproget er det også!</div></div>
+            <div class="sec-nums">71–80</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bītzā" data-dan="pizza">
+              <span class="w-num">71</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بيتزا</div><div class="w-trans">bītzā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">pizza <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bāstā" data-dan="pasta">
+              <span class="w-num">72</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">باستا</div><div class="w-trans">bāstā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">pasta <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="shōkōlāta" data-dan="chokolade">
+              <span class="w-num">73</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">شوكولاتة</div><div class="w-trans">shōkōlāta</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">chokolade <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="yōghurt" data-dan="yoghurt">
+              <span class="w-num">74</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">يوغرت</div><div class="w-trans">yōghurt</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">yoghurt <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tākō" data-dan="taco">
+              <span class="w-num">75</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تاكو</div><div class="w-trans">tākō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">taco <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="banānā" data-dan="banan">
+              <span class="w-num">76</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بنانا</div><div class="w-trans">banānā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">banan <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="kākāw" data-dan="kakao">
+              <span class="w-num">77</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كاكاو</div><div class="w-trans">kākāw</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">kakao <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ristōrān" data-dan="restaurant">
+              <span class="w-num">78</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ريستوران</div><div class="w-trans">ristōrān</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">restaurant <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="kāfitīryā" data-dan="cafeteria">
+              <span class="w-num">79</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كافيتيريا</div><div class="w-trans">kāfitīryā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">cafeteria <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mīnyū" data-dan="menu">
+              <span class="w-num">80</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">مينيو</div><div class="w-trans">mīnyū</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">menu <span class="sim sim-id">IDENTISK</span></span>
+            </div></div>
+        </section><section class="section" id="s9" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">📚</span>
+            <div><div class="sec-title">Skole & Uddannelse</div><div class="sec-sub">Alle disse skolefag har arabiske eller internationale rødder!</div></div>
+            <div class="sec-nums">81–90</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="biyōlōjyā" data-dan="biologi">
+              <span class="w-num">81</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بيولوجيا</div><div class="w-trans">biyōlōjyā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">biologi <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="fīzyā'" data-dan="fysik">
+              <span class="w-num">82</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فيزياء</div><div class="w-trans">fīzyā'</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">fysik <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="jīōghrāfyā" data-dan="geografi">
+              <span class="w-num">83</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">جيوغرافيا</div><div class="w-trans">jīōghrāfyā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">geografi <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="hīstōryā" data-dan="historie">
+              <span class="w-num">84</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">هيستوريا</div><div class="w-trans">hīstōryā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">historie <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="fīlōsōfyā" data-dan="filosofi">
+              <span class="w-num">85</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">فيلوسوفيا</div><div class="w-trans">fīlōsōfyā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">filosofi <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="diblōm" data-dan="diplom">
+              <span class="w-num">86</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">دبلوم</div><div class="w-trans">diblōm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">diplom <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="iksāman" data-dan="eksamen">
+              <span class="w-num">87</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">إكسامن</div><div class="w-trans">iksāman</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">eksamen <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="atlas" data-dan="atlas">
+              <span class="w-num">88</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">أطلس</div><div class="w-trans">atlas</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">atlas <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="duktūr" data-dan="doktor">
+              <span class="w-num">89</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">دكتور</div><div class="w-trans">duktūr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">doktor <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="burfasōr" data-dan="professor">
+              <span class="w-num">90</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">برفسور</div><div class="w-trans">burfasōr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">professor <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div></div>
+        </section><section class="section" id="s10" style="scroll-margin-top:60px">
+          <div class="sec-header" style="background:linear-gradient(135deg,#16A34A,#15803D)">
+            <span class="sec-icon">🌍</span>
+            <div><div class="sec-title">Steder & Transport</div><div class="sec-sub">Arabiske rejsende opdagede verden — og sproget fulgte med!</div></div>
+            <div class="sec-nums">91–100</div>
+          </div>
+          <div class="col-headers" style="display:grid;grid-template-columns:36px 1.2fr 1fr 1fr;gap:.45rem;padding:0 .7rem .25rem;border-bottom:1px solid #E2E8F0;margin-bottom:.4rem">
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">#</span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8;text-align:right">🇸🇦 Arabisk</span>
+            <span></span>
+            <span style="font-family:Poppins,sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94A3B8">🇩🇰 Dansk</span>
+          </div>
+          <div class="words-list" style="border-left:3px solid #16A34A05"><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="hūtayl" data-dan="hotel">
+              <span class="w-num">91</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">هوتيل</div><div class="w-trans">hūtayl</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">hotel <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bank" data-dan="bank">
+              <span class="w-num">92</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بنك</div><div class="w-trans">bank</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">bank <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mitrō" data-dan="metro">
+              <span class="w-num">93</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">ميترو</div><div class="w-trans">mitrō</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">metro <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="mōtōr" data-dan="motor">
+              <span class="w-num">94</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">موتور</div><div class="w-trans">mōtōr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">motor <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="sistīm" data-dan="system">
+              <span class="w-num">95</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">سيستيم</div><div class="w-trans">sistīm</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">system <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="bārk" data-dan="park">
+              <span class="w-num">96</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بارك</div><div class="w-trans">bārk</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">park <span class="sim sim-id">IDENTISK</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="ōshan" data-dan="ocean">
+              <span class="w-num">97</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">أوشن</div><div class="w-trans">ōshan</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">ocean <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="blānit" data-dan="planet">
+              <span class="w-num">98</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">بلانيت</div><div class="w-trans">blānit</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">planet <span class="sim sim-si">LIGNER</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="klīmā" data-dan="klima">
+              <span class="w-num">99</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">كليما</div><div class="w-trans">klīmā</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">klima <span class="sim sim-vs">MEGET LIG.</span></span>
+            </div><div class="word-row" style="grid-template-columns:36px 1.2fr 1fr 1fr" data-ar="tambarātīr" data-dan="temperatur">
+              <span class="w-num">100</span>
+              <div style="text-align:right;direction:rtl"><div class="w-orig" style="color:#15803D;font-size:1.1rem;font-family:Georgia,serif">تمبراتير</div><div class="w-trans">tambarātīr</div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#CBD5E1">→</div>
+              <span class="w-dan">temperatur <span class="sim sim-si">LIGNER</span></span>
+            </div></div>
+        </section>
+</main>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-card"><h4>🕌 Arabisk i dit liv</h4><p>Hvert eneste gang du siger <em>algebra, kaffe eller sofa</em>, taler du faktisk arabisk! Sproget lever i vores dagligdag uden at vi tænker over det.</p></div>
+      <div class="footer-card"><h4>🚀 Øvelse gør mester!</h4><p>Dit arabiske modersmål er en kæmpe fordel i sprogtimerne. <em>Fejl er ikke fiasko — de er springbrættet til succes!</em> 💪</p></div>
+    </div>
+    <div class="footer-logo">🎓 ProfeBot · Randers Ungdomsskole · Arabisk–Dansk · 2025</div>
+  </div>
+</footer>
+<script>
+function filterWords(){
+  const q=document.getElementById('searchInput').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  const rows=document.querySelectorAll('.word-row');let v=0;
+  rows.forEach(r=>{
+    const ar=(r.dataset.ar||''),dan=(r.dataset.dan||'');
+    const m=!q||ar.includes(q)||dan.includes(q);
+    r.classList.toggle('hidden',!m);if(m)v++;
+  });
+  document.getElementById('searchCount').textContent=q?v+' resultat'+(v!==1?'er':''):'100 ord';
+  document.getElementById('noResults').style.display=(v===0&&q)?'block':'none';
+  document.querySelectorAll('.section').forEach(s=>{
+    s.style.display=Array.from(s.querySelectorAll('.word-row')).every(r=>r.classList.contains('hidden'))?'none':'';
+  });
+}
+</script>
+</body></html>
