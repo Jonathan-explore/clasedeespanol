@@ -97,15 +97,17 @@
      1) ADIÓS — página emotiva proyectable
      ════════════════════════════════════════════════════════════ */
   function renderAdios(body) {
-    const wordsLine = 'Juntos hemos aprendido <b>muchísimas</b> palabras en español.';
-    const starters = [
-      ['Gracias por…', 'Tak for…'],
-      ['Me gustó cuando…', 'Jeg kunne lide, da…'],
-      ['Nunca voy a olvidar…', 'Jeg vil aldrig glemme…'],
-      ['Te deseo…', 'Jeg ønsker dig…'],
-      ['Eres muy…', 'Du er meget…']
+    // Estructuras de frase con BANCOS de palabras para que los alumnos formen frases enteras.
+    const FRASES = [
+      { es: 'Gracias por…', da: 'Tak for…', words: ['la clase', 'tu ayuda', 'tu paciencia', 'los juegos', 'enseñarme español', 'todo', 'este año'], ej: 'Gracias por todo, profe.' },
+      { es: 'Me gustó cuando…', da: 'Jeg kunne lide, da…', words: ['jugamos', 'cantamos', 'reímos', 'aprendimos', 'hablamos español', 'ganamos'], ej: 'Me gustó cuando jugamos.' },
+      { es: 'Nunca voy a olvidar…', da: 'Jeg vil aldrig glemme…', words: ['esta clase', 'a mis amigos', 'a ti', 'el español', 'este año', 'los buenos momentos'], ej: 'Nunca voy a olvidar esta clase.' },
+      { es: 'Voy a echar de menos…', da: 'Jeg vil savne…', words: ['las clases', 'a mis compañeros', 'a ti', 'hablar español', 'los viernes'], ej: 'Voy a echar de menos las clases.' },
+      { es: 'Eres muy…', da: 'Du er meget…', words: ['simpático/a', 'divertido/a', 'amable', 'inteligente', 'bueno/a', 'especial', 'paciente'], ej: 'Eres muy simpático.' },
+      { es: 'Te deseo…', da: 'Jeg ønsker dig…', words: ['mucha suerte', 'felicidad', 'lo mejor', 'un buen verano', 'éxito', 'salud'], ej: 'Te deseo mucha suerte.' },
+      { es: 'Espero…', da: 'Jeg håber…', words: ['verte pronto', 'que estés bien', 'seguir en contacto', 'que te vaya bien'], ej: 'Espero verte pronto.' }
     ];
-    // Frases clave de «Color Esperanza» (no la letra completa) → danés, para enseñar/cantar.
+    // Frases clave de «Color Esperanza» (no la letra completa) → danés, como ayuda.
     const LYRIC_KEYS = [
       ['Color esperanza', 'Håbets farve'],
       ['Saber que se puede', 'At vide at man kan'],
@@ -116,20 +118,18 @@
       ['Lo imposible se puede lograr', 'Det umulige kan lykkes'],
       ['La vida cambia y cambiará', 'Livet ændrer sig og vil ændre sig']
     ];
-    const ytQuery = encodeURIComponent('Diego Torres Color Esperanza letra');
-    const lyricQuery = encodeURIComponent('Color Esperanza Diego Torres letra oficial');
+    const ytListen = encodeURIComponent('Diego Torres Color Esperanza');
     body.innerHTML = `
 <div class="dp-adios">
   <div class="dp-hero">
     <div class="dp-hero-emoji">🌿✨</div>
     <h1 class="dp-hero-title">¡Hasta siempre!</h1>
-    <p class="dp-hero-da">Farvel og tak — det har været en fornøjelse</p>
+    <p class="dp-hero-da">Farvel og tak</p>
   </div>
 
   <div class="dp-card dp-msg">
-    <p class="dp-msg-es">Queridos alumnos:</p>
-    <p class="dp-msg-es">${wordsLine} Pero sobre todo, hemos reído, jugado y compartido. Gracias por cada clase. Os voy a echar de menos. Cuidaos mucho y no dejéis de hablar español. 💚</p>
-    <p class="dp-msg-da">Kære elever: vi har lært en masse spansk sammen — men vigtigst af alt har vi grinet, leget og delt gode stunder. Tak for hver time. Jeg vil savne jer. Pas på jer selv, og bliv ved med at tale spansk.</p>
+    <p class="dp-msg-es">Queridos alumnos: hemos aprendido mucho español, pero sobre todo hemos reído, jugado y compartido. Gracias por cada clase. Os voy a echar de menos. ¡No dejéis de hablar español! 💚</p>
+    <p class="dp-msg-da">Kære elever: vi har lært en masse spansk sammen — men vigtigst af alt har vi grinet, leget og delt gode stunder. Jeg vil savne jer. Bliv ved med at tale spansk!</p>
     <p class="dp-sign">— ${esc('Jonathan')} 🌟</p>
   </div>
 
@@ -140,35 +140,32 @@
   </div>
 
   <div class="dp-card">
-    <h3 class="dp-h3">🕸️ La telaraña — di algo bonito en español</h3>
-    <p class="dp-note">En círculo, lanzad el ovillo de lana y completad una frase. Al final, todos quedáis unidos por el hilo. <span class="dp-note-da">Sig en sætning på spansk, og kast garnnøglet videre.</span></p>
-    <div class="dp-starters">
-      ${starters.map(s => `<div class="dp-starter"><b>${esc(s[0])}</b><span>${esc(s[1])}</span></div>`).join('')}
+    <h3 class="dp-h3">💬 Di tu frase — elige y complétala</h3>
+    <p class="dp-note">Escoge un comienzo y termínalo con una palabra de al lado. <span class="dp-note-da">Vælg en start og gør sætningen færdig med et ord.</span></p>
+    <div class="dp-frases">
+      ${FRASES.map(fr => `
+      <div class="dp-frase">
+        <div class="dp-frase-head"><b>${esc(fr.es)}</b><span>${esc(fr.da)}</span></div>
+        <div class="dp-frase-words">${fr.words.map(w => `<span class="dp-chip">${esc(w)}</span>`).join('')}</div>
+        <div class="dp-frase-ej">👉 <i>${esc(fr.ej)}</i></div>
+      </div>`).join('')}
     </div>
   </div>
 
   <div class="dp-card dp-song">
-    <h3 class="dp-h3">🎵 Canción de despedida</h3>
-    <p class="dp-note">Sugerencia: <b>«Color Esperanza»</b> (Diego Torres) — habla de seguir adelante y tener esperanza. Alternativa más alegre: <b>«Vivir Mi Vida»</b> (Marc Anthony).</p>
+    <h3 class="dp-h3">🎵 Color Esperanza — Diego Torres</h3>
     <div class="dp-song-btns">
-      <a class="dp-yt" href="https://www.youtube.com/results?search_query=${ytQuery}" target="_blank" rel="noopener">▶ YouTube</a>
-      <button class="dp-yt dp-lyrics-btn" id="dp-lyrics-toggle" type="button">📜 Lyrics</button>
+      <a class="dp-yt" href="https://www.youtube.com/results?search_query=${ytListen}" target="_blank" rel="noopener">▶ Escuchar</a>
+      <a class="dp-yt" href="https://genius.com/Diego-torres-color-esperanza-lyrics" target="_blank" rel="noopener">📜 Letra completa</a>
     </div>
-    <div class="dp-lyrics" id="dp-lyrics" hidden>
-      <p class="dp-note" style="margin-bottom:.6rem">Nøglesætninger / frases clave (español → dansk), para cantar y entender:</p>
+    <div class="dp-lyrics-keys">
+      <p class="dp-note" style="margin:.7rem 0 .5rem">Frases clave de la canción (español → dansk):</p>
       <div class="dp-lyric-list">
         ${LYRIC_KEYS.map(l => `<div class="dp-lyric-row"><b>${esc(l[0])}</b><span>${esc(l[1])}</span></div>`).join('')}
       </div>
-      <a class="dp-yt" style="margin-top:.7rem" href="https://www.youtube.com/results?search_query=${lyricQuery}" target="_blank" rel="noopener">📜 Letra completa (oficial)</a>
     </div>
   </div>
-
-  <div class="dp-card dp-next">
-    <p>Cuando queráis, id a <b>🎓 Diplomas</b> para entregar el diploma a cada uno, y a <b>💬 Muro</b> para dejar mensajes todos juntos.</p>
-  </div>
 </div>`;
-    const lt = body.querySelector('#dp-lyrics-toggle');
-    if (lt) lt.addEventListener('click', () => { const p = body.querySelector('#dp-lyrics'); if (p) p.hidden = !p.hidden; });
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -522,4 +519,4 @@
   window.__despedidaTeardown = teardown;
   window.__despedidaCheck = checkMessage; // para tests
 })();
-// v3: Jonathan Ponce de León, contador ~300, me gusta/papi chulo, botón Lyrics, sin solapamientos
+// v4: página enfocada al alumno (ayudas para frases), canción Color Esperanza + letra (Genius)
