@@ -2462,6 +2462,8 @@ class Game {
     const score=this.wave*1000+power+this.kills*8+this.eliteKills*150+this.correctAnswers*30;
     this.finalScore=score;this.finalWave=this.wave;this.finalPower=power;
     document.getElementById('go-score').textContent=score.toLocaleString('da-DK');
+    // XP para 📈 Mit Fremskridt. Con tope, para que jugar no valga más que estudiar.
+    if(window.Fremskridt)window.Fremskridt.addXp(Math.min(150,Math.round(score/40)),'linguastrike');
     // Reset alias form
     const aliasSection=document.getElementById('go-alias-section');
     const aliasInput=document.getElementById('go-alias-input');

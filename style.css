@@ -80,11 +80,17 @@ body{overflow:hidden;overscroll-behavior:none}
 .logo-text{font-size:.9rem;font-weight:600;letter-spacing:.05em;color:var(--text);opacity:.8}
 
 /* ── HOME VIEW ────────────────────────────────────────────── */
-#view-home{align-items:center;justify-content:center;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+/* justify-content:center + overflow rompe el scroll: cuando el contenido es más
+   alto que la pantalla, se desborda por ARRIBA y esa mitad es inalcanzable
+   (no existe scrollTop negativo). flex-start + margin-block:auto en .home-inner
+   centra cuando cabe y permite scroll cuando desborda. Vale para todos los
+   anchos: el menú ya no cabe en una pantalla ni en escritorio. */
+#view-home{align-items:center;justify-content:flex-start;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .home-inner{
   display:flex;flex-direction:column;align-items:center;
   gap:2.8rem;padding:5rem 1.5rem 3rem;
   width:100%;max-width:920px;
+  margin-block:auto;   /* centra si sobra sitio; se resuelve a 0 si desborda */
 }
 .home-header{text-align:center;animation:fadeInUp .8s ease-out both}
 .subtitle{
@@ -1190,10 +1196,9 @@ body{overflow:hidden;overscroll-behavior:none}
 
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media(max-width:640px){
-  /* justify-content:center + overflow rompe el scroll; flex-start +
-     margin-block:auto centra cuando cabe y permite scroll cuando desborda */
-  #view-home{justify-content:flex-start}
-  .home-inner{gap:1.5rem;padding:4.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom,0px));margin-block:auto}
+  /* El arreglo del scroll (flex-start + margin-block:auto) vive ahora en la
+     regla base de #view-home / .home-inner: aplica a todos los anchos. */
+  .home-inner{gap:1.5rem;padding:4.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom,0px))}
   .cards-grid{grid-template-columns:1fr;gap:1rem}
   .card-inner{height:150px;padding:1.35rem}
 

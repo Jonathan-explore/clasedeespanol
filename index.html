@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="Din klasseværelsets hjørne – en interaktiv platform til spansk læring for danske elever." />
+  <meta name="description" content="Din klasseværelsets hjørne – interaktiv spanskundervisning for 8.–9. årgang, skoleåret 2026/27." />
   <title>Din Klasseværelsets Hjørne</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="pasapalabra.css" />
   <link rel="stylesheet" href="pinturillo.css" />
   <link rel="stylesheet" href="despedida.css" />
+  <link rel="stylesheet" href="forloeb.css" />
   <script>if(localStorage.getItem('theme')!=='dark')document.documentElement.dataset.theme='light';</script>
 </head>
 <body>
@@ -50,10 +51,14 @@
 
       <div class="home-inner">
         <header class="home-header">
+          <div class="course-badge">
+            <span class="cb-dot" aria-hidden="true"></span>
+            Nyt skoleår 2026/27 · 8.–9. årgang
+          </div>
           <div class="title-wrap" id="title-trigger" title="Triple-klik for admin-adgang">
             <p class="subtitle">Her kan du se og anmelde materiale på spansk</p>
             <h1 class="main-title">din <em>klasseværelsets</em> hjørne</h1>
-            <p class="tagline">Spansk læring — enkelt, smukt, effektivt</p>
+            <p class="tagline">Spansk for 8.–9. årgang — enkelt, smukt, effektivt</p>
           </div>
         </header>
 
@@ -68,7 +73,7 @@
               </div>
               <div class="card-bottom">
                 <h2 class="card-title">Temario de la Clase</h2>
-                <p class="card-desc">Pensum, mål og emneoversigt for dette forløb</p>
+                <p class="card-desc">Pensum og mål for skoleåret 2026/27</p>
               </div>
               <div class="temario-right">
                 <span id="temario-badge" class="temario-badge">···</span>
@@ -91,6 +96,24 @@
               <div class="card-bottom">
                 <h2 class="card-title">Tablón</h2>
                 <p class="card-desc">Dagens lektioner og ordforråd</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Mit Fremskridt -->
+          <button class="menu-card" id="card-fremskridt" data-view="fremskridt" aria-label="Gå til Mit Fremskridt">
+            <div class="card-bg-glow card-bg-glow-5"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">📈</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Mit Fremskridt</h2>
+                <p class="card-desc">Point, uger i træk og dine ord</p>
               </div>
               <div class="card-shine"></div>
             </div>
@@ -150,6 +173,42 @@
             </div>
           </button>
 
+          <!-- Prøve -->
+          <button class="menu-card" id="card-proeve" data-view="proeve" aria-label="Gå til Prøve">
+            <div class="card-bg-glow card-bg-glow-1"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">📝</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Prøve</h2>
+                <p class="card-desc">Test dig selv — karakter efter 7-trins-skalaen</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
+          <!-- Kultur -->
+          <button class="menu-card" id="card-kultur" data-view="kultur" aria-label="Gå til Kultur">
+            <div class="card-bg-glow card-bg-glow-2"></div>
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🌍</span>
+                </div>
+                <div class="card-arrow">→</div>
+              </div>
+              <div class="card-bottom">
+                <h2 class="card-title">Kultur</h2>
+                <p class="card-desc">Den spansktalende verden — tekst og quiz</p>
+              </div>
+              <div class="card-shine"></div>
+            </div>
+          </button>
+
           <!-- LinguaStrike spil -->
           <button class="menu-card" id="card-spil" data-view="spil" aria-label="Gå til LinguaStrike">
             <div class="card-bg-glow card-bg-glow-5"></div>
@@ -204,8 +263,13 @@
             </div>
           </button>
 
-          <!-- Despedida · Farvel -->
-          <button class="menu-card" id="card-despedida" data-view="despedida" aria-label="Gå til Despedida">
+          <!-- Despedida · Farvel
+               GUARDADA PARA EL FINAL DEL CURSO 2026/27.
+               Es la herramienta del último día (diplomas, muro de mensajes,
+               canción). El código sigue intacto en despedida.js/.css: para
+               reactivarla en junio, quita el atributo `hidden` de aquí abajo
+               y ya está. No hace falta tocar nada más. -->
+          <button class="menu-card" id="card-despedida" data-view="despedida" aria-label="Gå til Despedida" hidden>
             <div class="card-bg-glow card-bg-glow-2"></div>
             <div class="card-inner">
               <div class="card-top">
@@ -257,6 +321,10 @@
             <span>Spor dit fremskridt</span>
           </div>
           <div class="feature-badge">
+            <div class="fb-icon">📝</div>
+            <span>Prøver med karakter</span>
+          </div>
+          <div class="feature-badge">
             <div class="fb-icon">🌐</div>
             <span>ES ↔ DA oversættelse</span>
           </div>
@@ -265,7 +333,7 @@
         <!-- Footer -->
         <div class="home-footer">
           <div class="footer-line"></div>
-          <p>© 2026 din klasseværelsets hjørne · Lavet med 💚 til spanskelever</p>
+          <p>Skoleåret 2026/27 · 8.–9. årgang · Lavet med 💚 til spanskelever</p>
         </div>
 
       </div>
@@ -280,6 +348,9 @@
     <section id="view-pasapalabra"  class="view" aria-label="Pasapalabra"></section>
     <section id="view-pinturillo"   class="view" aria-label="Pinturillo"></section>
     <section id="view-despedida"    class="view" aria-label="Despedida"></section>
+    <section id="view-fremskridt"   class="view" aria-label="Mit Fremskridt"></section>
+    <section id="view-proeve"       class="view" aria-label="Prøve"></section>
+    <section id="view-kultur"       class="view" aria-label="Kultur"></section>
 
     <!-- LINGUASTRIKE GAME VIEW -->
     <section id="view-spil" class="view" aria-label="LinguaStrike">
@@ -568,5 +639,6 @@
   <script defer src="pasapalabra.js"></script>
   <script defer src="pinturillo.js"></script>
   <script defer src="despedida.js"></script>
+  <script defer src="forloeb.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
    DESPEDIDA · Farvel — último día de clase
    Tres herramientas:
      1) Adiós   → página emotiva proyectable (mensaje, lo aprendido, dinámica, canción).
-     2) Diplomas→ generador de diplomas A1 descargables (PNG), con nº de palabras.
+     2) Diplomas→ generador de diplomas A2 descargables (PNG), con nº de palabras.
      3) Muro    → muro de mensajes en vivo, MODERADO (profe aprueba) y SIN enlaces.
    Expone window.renderDespedida(), llamado por el router de script.js.
    ════════════════════════════════════════════════════════════════ */
@@ -150,8 +150,8 @@
 
   <div class="dp-card dp-statbox">
     <span class="dp-statbig">+80%</span>
-    <p>Mere end 80% giver op, før de når A1 i et nyt sprog — <b>men I nåede det!</b> Vær stolte. 🌟
-    <span class="dp-note-da">Más del 80% lo deja y no llega al A1. Vosotros sí lo conseguisteis. ¡Sentíos orgullosos!</span></p>
+    <p>Mere end 80% giver op, før de når A2 i et nyt sprog — <b>men I nåede det!</b> Vær stolte. 🌟
+    <span class="dp-note-da">Más del 80% lo deja y no llega al A2. Vosotros sí lo conseguisteis. ¡Sentíos orgullosos!</span></p>
   </div>
 
   <div class="dp-card">
@@ -292,7 +292,7 @@
     ctx.fillStyle = '#0b1220'; ctx.font = '700 italic 74px "Playfair Display", Georgia, serif';
     ctx.fillText('Diplom', W / 2, 178);
     ctx.fillStyle = '#ec4899'; ctx.font = '700 26px Inter, sans-serif';
-    ctx.fillText('Spansk · Niveau A1', W / 2, 216);
+    ctx.fillText('Spansk · Niveau A2', W / 2, 216);
     // Tildeles til (otorgado a)
     ctx.fillStyle = '#475569'; ctx.font = '400 22px Inter, sans-serif';
     ctx.fillText('Dette diplom tildeles / Para:', W / 2, 268);
@@ -306,7 +306,7 @@
     ctx.fillStyle = '#fff4e0'; ctx.fillRect(120, 368, W - 240, 46);
     ctx.strokeStyle = '#f6c177'; ctx.lineWidth = 2; ctx.strokeRect(120, 368, W - 240, 46);
     ctx.fillStyle = '#b45309'; ctx.font = '700 22px Inter, sans-serif';
-    ctx.fillText('Mere end 80% når aldrig A1 — men det gjorde DU! 🎉', W / 2, 398);
+    ctx.fillText('Mere end 80% når aldrig A2 — men det gjorde DU! 🎉', W / 2, 398);
     // Cuántas palabras saben (número del formulario)
     const count = d.count || (d.words ? d.words.length : 0);
     ctx.fillStyle = '#0f766e'; ctx.font = '700 26px Inter, sans-serif';
@@ -325,7 +325,7 @@
     ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(0, 0, 42, 0, 7); ctx.fill();
     ctx.fillStyle = '#fff7e6'; ctx.beginPath(); ctx.arc(0, 0, 33, 0, 7); ctx.fill();
     ctx.fillStyle = '#b45309'; ctx.textAlign = 'center';
-    ctx.font = '700 24px Inter, sans-serif'; ctx.fillText('A1', 0, -3);
+    ctx.font = '700 24px Inter, sans-serif'; ctx.fillText('A2', 0, -3);
     ctx.font = '700 13px Inter, sans-serif'; ctx.fillText('¡OLÉ!', 0, 16);
     ctx.restore();
     // Firma (abajo-izquierda)

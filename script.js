@@ -197,6 +197,11 @@ function parseVocab(text){
     .filter(l=>l.startsWith('-')&&l.length>1)
     .map(l=>parseVocabLine(l).es).filter(Boolean);
 }
+/* Puntos para 📈 Mit Fremskridt. forloeb.js se carga con defer, así que
+   comprobamos siempre: si aún no está, el ejercicio simplemente no puntúa. */
+function awardXp(word,xp){
+  if(window.Fremskridt)window.Fremskridt.award(word,xp);
+}
 function detectGender(word){
   const w=word.toLowerCase().replace(/[^a-záéíóúñü]/g,'');
   const fem=['ión','dad','tad','umbre','sis','itis','triz'];
@@ -357,6 +362,10 @@ function showView(name,fromCard){
   if(STATE.currentView==='despedida' && name!=='despedida' && window.__despedidaTeardown){
     window.__despedidaTeardown();
   }
+  // Parar el cronómetro de la Prøve al salir de su vista
+  if(STATE.currentView==='proeve' && name!=='proeve' && window.__proeveTeardown){
+    window.__proeveTeardown();
+  }
   _parallaxWake();
   const all=document.querySelectorAll('.view');
   all.forEach(v=>v.classList.remove('active'));
@@ -377,6 +386,9 @@ function renderView(name){
   if(name==='pasapalabra'&&window.renderPasapalabra)window.renderPasapalabra();
   if(name==='pinturillo'&&window.renderPinturillo)window.renderPinturillo();
   if(name==='despedida'&&window.renderDespedida)window.renderDespedida();
+  if(name==='fremskridt'&&window.renderFremskridt)window.renderFremskridt();
+  if(name==='proeve'&&window.renderProeve)window.renderProeve();
+  if(name==='kultur'&&window.renderKultur)window.renderKultur();
 }
 // game.js (~126KB) solo se parsea cuando el alumno entra al juego,
 // no en la carga inicial de la página.
@@ -1490,7 +1502,7 @@ function buildDragDrop(vocab){
           const card=document.getElementById('dd-oneup-card');
           card.classList.add(isOk?'dd-oneup-card--ok':'dd-oneup-card--err');
           panel.querySelectorAll('.dd-oneup-btn').forEach(b=>b.disabled=true);
-          if(isOk)score++;
+          if(isOk){score++;awardXp(words[idx].w,4);}
           setTimeout(()=>{idx++;renderCard();},420);
         });
       });
@@ -1523,7 +1535,7 @@ function buildDragDrop(vocab){
       dragging.style.cursor='default';dragging.setAttribute('draggable','false');
       bucket.appendChild(dragging);
       const isCorrect=(droppedGender===correctGender)||(correctGender==='neu'&&droppedGender==='masc');
-      if(isCorrect){score++;dragging.style.background='rgba(34,197,94,.2)';dragging.style.borderColor='#22c55e';}
+      if(isCorrect){score++;awardXp(wordText,4);dragging.style.background='rgba(34,197,94,.2)';dragging.style.borderColor='#22c55e';}
       else{dragging.style.background='rgba(239,68,68,.2)';dragging.style.borderColor='#ef4444';}
       const placed=panel.querySelectorAll('#bucket-fem .dd-word,#bucket-masc .dd-word').length;
       if(placed>=total)res.innerHTML=`<div class="dd-result ${score===total?'correct':'wrong'}">${score===total?'🎉 Perfekt! Alle ord er korrekt placeret!':score+'/'+total+' ord korrekt. Prøv igen!'}</div>`;
@@ -1619,6 +1631,7 @@ function buildMatchPairs(vocab){
           b.classList.replace('match-correct','matched');
         },600);
         matched++;
+        awardXp(a.dataset.es,5);
         const n=scoreEl.querySelector('.match-score-num');
         if(n)n.textContent=matched;
         if(matched===pairs.length){
@@ -1709,6 +1722,7 @@ function buildListening(vocab){
         if(this.textContent===ans){
           this.style.borderColor='#22c55e';this.style.background='rgba(34,197,94,.12)';this.style.color='#4ade80';
           res.textContent='✅ Korrekt!';res.style.color='#4ade80';
+          awardXp(playBtn.dataset.w,5);
         }else{
           this.style.borderColor='#f87171';this.style.background='rgba(248,113,113,.12)';this.style.color='#f87171';
           res.textContent='❌ Svaret var: '+ans;res.style.color='#fca5a5';
@@ -1794,7 +1808,7 @@ function buildWordScramble(vocab){
         if(inp.value.toLowerCase()===ans.toLowerCase()){
           card.dataset.done='true';
           inp.disabled=true;
-          score++; updateScore();
+          score++; updateScore(); awardXp(ans,6);
           const bravo=bravos[Math.floor(Math.random()*bravos.length)];
           res.innerHTML=`<span style="color:#4ade80">✅ ${bravo} «${ans}»</span>`;
           inp.style.borderColor='#22c55e';
