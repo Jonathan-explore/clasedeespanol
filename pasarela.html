@@ -1,0 +1,1846 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Juego de vestir para aprender vocabulario de espanol. Nivel A1, con pistas en danes.">
+<meta name="theme-color" content="#170B1E">
+<title>Pasarela Española</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;600;800&family=DM+Mono:wght@500&display=swap">
+<style>
+/* ── Pasarela Española · un solo mundo visual: escenario de noche ── */
+:root{
+  --escena:#170B1E;
+  --panel-1:#2A1634;
+  --panel-2:#381F45;
+  --borde:#4A2A58;
+  --magenta:#FF3D8B;
+  --oro:#FFC24A;
+  --menta:#4FE0C0;
+  --coral:#FF6B5A;
+  --crema:#FDF3E7;
+  --tenue:#B79FC4;
+  --tenue-2:#7C6689;
+  --r:16px;
+  --sombra:0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--escena);
+  color:var(--crema);
+  height:100dvh;
+  display:flex;justify-content:center;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--oro);outline-offset:2px;border-radius:8px}
+
+/* ── armazón ── */
+.telefono{
+  width:100%;max-width:460px;position:relative;
+  height:100dvh;display:flex;flex-direction:column;
+  background:
+    radial-gradient(120% 55% at 50% 0%, #3A1B47 0%, transparent 60%),
+    radial-gradient(90% 40% at 50% 100%, #2B1236 0%, transparent 70%),
+    var(--escena);
+  overflow:hidden;
+}
+body.pizarra .telefono{max-width:none}
+.pantalla{display:none;flex-direction:column;flex:1;min-height:0}
+.pantalla.activa{display:flex}
+
+/* ── tipografía ── */
+.display{font-family:'Anton',Impact,sans-serif;font-weight:400;letter-spacing:.01em;line-height:.95;text-wrap:balance}
+.etiqueta{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tenue);font-weight:600}
+.da{color:var(--tenue);font-size:13px;font-weight:300;font-style:italic}
+.num{font-family:'DM Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ── botones ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:15px 22px;border-radius:999px;font-weight:800;font-size:16px;
+  background:var(--magenta);color:#fff;box-shadow:0 6px 0 #B71F5C;
+  transition:transform .1s ease, box-shadow .1s ease;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #B71F5C}
+.btn.oro{background:var(--oro);color:#3A1F00;box-shadow:0 6px 0 #C98D18}
+.btn.oro:active{box-shadow:0 2px 0 #C98D18}
+.btn.fantasma{background:transparent;border:2px solid var(--borde);color:var(--crema);box-shadow:none;font-weight:600}
+.btn.fantasma:active{transform:translateY(2px);background:#ffffff10}
+.btn.ancho{width:100%}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.chico{padding:10px 15px;font-size:14px;box-shadow:none;border-radius:12px}
+
+/* ── inicio ── */
+.inicio{padding:20px 22px;gap:14px;justify-content:center;align-items:center;text-align:center;overflow-y:auto}
+.logo{position:relative;padding:4px 0 0}
+.logo h1{font-size:clamp(40px,13vw,58px);color:var(--crema)}
+.logo h1 em{font-style:normal;color:var(--magenta);display:block}
+.destello{position:absolute;inset:-40px -30px auto;height:170px;
+  background:radial-gradient(50% 60% at 50% 40%, #FF3D8B33, transparent 70%);pointer-events:none}
+.lema{max-width:31ch;color:var(--tenue);font-size:14px;line-height:1.5}
+.marca-nivel{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
+  background:var(--panel-1);border:1px solid var(--borde);font-size:13px;font-weight:600}
+.chip b{color:var(--oro);font-family:'DM Mono',monospace}
+input[type=text]{
+  width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--borde);
+  background:var(--panel-1);color:var(--crema);font:inherit;font-size:16px;text-align:center;
+}
+input[type=text]::placeholder{color:var(--tenue-2)}
+input[type=text]:focus{outline:none;border-color:var(--magenta)}
+.codigo-in{font-family:'DM Mono',monospace;font-size:30px;letter-spacing:.3em;text-transform:uppercase}
+.dos{display:flex;gap:10px;width:100%}
+.dos>*{flex:1}
+
+/* ── crear personaje ── */
+.crear{padding:16px 18px 20px;gap:12px;overflow-y:auto}
+.fila-op{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.op{width:44px;height:44px;border-radius:50%;border:3px solid transparent;
+  box-shadow:0 0 0 1px var(--borde) inset;transition:transform .12s}
+.op[aria-pressed="true"]{border-color:var(--oro);transform:scale(1.08)}
+
+/* ── escenario ── */
+.escenario{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.fondo{position:absolute;inset:0;pointer-events:none}
+.fondo svg{position:absolute;inset:0;width:100%;height:100%}
+.foco{position:absolute;left:50%;top:-8%;transform:translateX(-50%);width:150%;height:116%;
+  background:conic-gradient(from 180deg at 50% 0%, transparent 0deg, #FFC24A14 20deg, #FF3D8B1C 32deg, transparent 52deg);
+  pointer-events:none}
+.suelo{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);width:76%;height:64px;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%, #FF3D8B3D, transparent 72%);pointer-events:none}
+.portada .foco{display:none}
+.av{position:relative;width:100%;height:100%;display:block;filter:drop-shadow(0 14px 18px rgba(0,0,0,.5));transform-origin:50% 88%}
+
+/* poses */
+.pose-posar   .av{animation:balanceo 3.4s ease-in-out infinite alternate}
+.pose-caminar .av{animation:pasos .62s ease-in-out infinite alternate}
+.pose-saltar  .av{animation:brinco .9s cubic-bezier(.3,0,.4,1) infinite}
+.pose-girar   .av{animation:vuelta 2.4s linear infinite}
+.pose-bailar  .av{animation:baile .5s ease-in-out infinite alternate}
+@keyframes balanceo{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
+@keyframes pasos{from{transform:translateY(0) rotate(-1.2deg)}to{transform:translateY(-9px) rotate(1.2deg)}}
+@keyframes brinco{0%,100%{transform:translateY(0) scaleY(1)}20%{transform:translateY(4px) scaleY(.93)}55%{transform:translateY(-38px) scaleY(1.05)}}
+@keyframes vuelta{0%{transform:scaleX(1)}25%{transform:scaleX(.08)}50%{transform:scaleX(-1)}75%{transform:scaleX(.08)}100%{transform:scaleX(1)}}
+@keyframes baile{from{transform:rotate(-8deg) translateY(0)}to{transform:rotate(8deg) translateY(-12px)}}
+/* la cámara se acerca al empezar el desfile */
+.acercando{animation:acercar 3.2s cubic-bezier(.25,.6,.3,1) forwards}
+@keyframes acercar{from{transform:scale(.42) translateY(28px);opacity:.35}to{transform:none;opacity:1}}
+
+/* ── barra ── */
+.barra{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--borde)}
+.barra .tema-mini{flex:1;min-width:0}
+.barra .tema-mini strong{display:block;font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reloj{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--oro);
+  padding:5px 12px;border-radius:12px;background:var(--panel-1);border:1px solid var(--borde)}
+.reloj.urgente{color:var(--coral);border-color:var(--coral);animation:pulso .6s ease-in-out infinite alternate}
+@keyframes pulso{from{opacity:1}to{opacity:.45}}
+.monedas{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;
+  font-size:15px;color:var(--oro);background:var(--panel-1);border:1px solid var(--borde);
+  padding:6px 11px;border-radius:999px}
+
+/* ── carta de tema ── */
+.tema-carta{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:26px;text-align:center}
+.tema-carta .sobre{font-size:60px;line-height:1}
+.tema-carta h2{font-size:clamp(30px,9vw,44px);color:var(--oro)}
+.tema-carta .da{font-size:16px}
+.pistas{background:var(--panel-1);border:1px solid var(--borde);border-radius:var(--r);
+  padding:13px 15px;font-size:14px;color:var(--tenue);line-height:1.6;max-width:34ch}
+.pistas b{color:var(--crema);font-weight:600}
+
+/* ── armario ── */
+.cajon{background:var(--panel-1);border-top:1px solid var(--borde);border-radius:22px 22px 0 0;padding:9px 0 12px}
+.pestanas{display:flex;gap:6px;overflow-x:auto;padding:2px 14px 9px;scrollbar-width:none}
+.pestanas::-webkit-scrollbar{display:none}
+.pest{flex:0 0 auto;padding:8px 13px;border-radius:999px;background:#ffffff0d;border:1px solid var(--borde);
+  font-size:13px;font-weight:600;color:var(--tenue);white-space:nowrap}
+.pest[aria-selected="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.rejilla{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 14px;max-height:30vh;overflow-y:auto}
+.prenda{position:relative;aspect-ratio:1;border-radius:14px;background:var(--panel-2);border:1px solid var(--borde);
+  display:grid;place-items:center;padding:4px;transition:transform .1s;font-size:26px}
+.prenda:active{transform:scale(.94)}
+.prenda svg{width:100%;height:100%}
+.prenda.puesta{border-color:var(--menta);box-shadow:0 0 0 2px #4FE0C055}
+.prenda.puesta::after{content:"✓";position:absolute;top:2px;right:5px;color:var(--menta);font-size:13px;font-weight:800}
+.prenda.bloqueada{opacity:.34}
+.prenda .precio{position:absolute;inset:auto 0 0;padding:2px 0 3px;font-size:11px;font-weight:700;
+  color:var(--oro);background:#170B1EC0;border-radius:0 0 13px 13px}
+.acciones{display:flex;gap:9px;padding:11px 14px 0}
+
+/* ── velo / reto ── */
+.velo{position:absolute;inset:0;background:#0F0714E6;backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
+.velo.abierto{display:flex}
+.reto{width:100%;max-width:380px;max-height:92%;overflow-y:auto;background:var(--panel-1);border:1px solid var(--borde);
+  border-radius:22px;padding:18px;box-shadow:var(--sombra);text-align:center;
+  display:flex;flex-direction:column;gap:13px;animation:entra .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes entra{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.reto .vista{height:112px;display:grid;place-items:center;font-size:56px}
+.reto .vista svg{height:100%;width:auto}
+.reto h3{font-size:19px;font-weight:800;text-wrap:balance}
+.opciones{display:grid;gap:9px}
+.opcion{padding:14px 12px;border-radius:14px;background:var(--panel-2);border:2px solid var(--borde);
+  font-size:17px;font-weight:600;transition:transform .1s}
+.opcion:active{transform:scale(.97)}
+.opcion.bien{background:#4FE0C022;border-color:var(--menta);color:var(--menta)}
+.opcion.mal{background:#FF6B5A1F;border-color:var(--coral);color:var(--coral);animation:tiembla .3s}
+@keyframes tiembla{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pie-reto{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mini{font-size:13px;color:var(--tenue);font-weight:600;padding:8px 12px;border-radius:999px;border:1px solid var(--borde)}
+.pista-caja{background:#FFC24A16;border:1px dashed var(--oro);border-radius:12px;padding:9px 12px;font-size:14px;color:var(--oro)}
+
+/* ── colores ── */
+.colores{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.color{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 2px;border-radius:12px;
+  border:2px solid transparent;background:var(--panel-2)}
+.color:active{transform:scale(.95)}
+.color i{width:30px;height:30px;border-radius:50%;box-shadow:0 0 0 1px #ffffff22 inset}
+.color span{font-size:11px;font-weight:600;color:var(--tenue);line-height:1.1;text-align:center}
+
+/* ── pasarela ── */
+.frase{background:var(--panel-1);border:1px solid var(--borde);border-radius:var(--r);
+  padding:14px;font-size:18px;line-height:1.5;text-align:center}
+.hueco{display:inline-block;min-width:74px;border-bottom:3px solid var(--oro);color:var(--oro);font-weight:800}
+.jueces{display:grid;gap:8px}
+.juez{display:flex;gap:10px;align-items:center;background:var(--panel-1);border:1px solid var(--borde);
+  border-radius:14px;padding:10px 12px;opacity:0;transform:translateX(-10px);animation:aparece .35s ease forwards}
+@keyframes aparece{to{opacity:1;transform:none}}
+.juez .cara{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:var(--panel-2);flex:0 0 auto}
+.juez .dice{flex:1;min-width:0}
+.juez .dice strong{font-size:14px;display:block}
+.juez .dice span{font-size:12px;color:var(--tenue)}
+.juez .pts{font-size:13px;color:var(--oro);letter-spacing:1px;white-space:nowrap}
+
+/* ── resultados ── */
+.tabla{display:grid;gap:6px}
+.fila{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;
+  background:var(--panel-1);border:1px solid var(--borde)}
+.fila.yo{border-color:var(--magenta);background:#FF3D8B14}
+.fila .pos{font-family:'DM Mono',monospace;color:var(--tenue);width:22px}
+.fila .quien{flex:1;font-weight:600}
+.fila .pt{font-family:'DM Mono',monospace;color:var(--oro);font-size:16px}
+.desglose{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.caja{background:var(--panel-1);border:1px solid var(--borde);border-radius:13px;padding:10px 6px;text-align:center}
+.caja b{display:block;font-family:'DM Mono',monospace;font-size:19px;color:var(--crema)}
+.caja span{font-size:10px;color:var(--tenue);letter-spacing:.05em;text-transform:uppercase}
+.codigo-look{display:flex;gap:8px;align-items:center;background:var(--panel-1);border:1px dashed var(--oro);
+  border-radius:13px;padding:10px 12px}
+.codigo-look code{flex:1;font-family:'DM Mono',monospace;font-size:12px;color:var(--oro);
+  word-break:break-all;line-height:1.35;text-align:left}
+
+/* ── tienda ── */
+.estante{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.articulo{background:var(--panel-1);border:1px solid var(--borde);border-radius:15px;padding:9px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.articulo .marco{width:100%;aspect-ratio:1;display:grid;place-items:center;background:var(--panel-2);border-radius:11px;font-size:26px}
+.articulo .marco svg{width:100%;height:100%}
+.articulo b{font-size:12px;font-weight:700;line-height:1.15}
+.articulo .cuesta{font-size:11px;color:var(--oro);font-family:'DM Mono',monospace}
+.articulo.tengo{border-color:var(--menta)}
+.articulo.tengo .cuesta{color:var(--menta);font-family:inherit;font-weight:700}
+.articulo.caro{opacity:.45}
+
+/* ── diccionario ── */
+.lista{display:grid;gap:6px;overflow-y:auto;padding-bottom:10px}
+.palabra{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;
+  background:var(--panel-1);border:1px solid var(--borde);text-align:left;width:100%}
+.palabra .ic{width:32px;height:32px;flex:0 0 auto;overflow:hidden;display:grid;place-items:center;font-size:18px}
+.palabra .ic svg{width:100%;height:100%;display:block}
+.palabra .tx{flex:1;min-width:0}
+.palabra .tx strong{display:block;font-size:15px}
+.palabra .tx span{font-size:12px;color:var(--tenue)}
+.palabra .son{font-size:15px;color:var(--tenue)}
+.palabra.usada{border-color:#4FE0C055}
+.palabra.usada .tx strong::after{content:" ★";color:var(--menta);font-size:11px}
+
+/* ── genéricos ── */
+.cuerpo{padding:15px;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0;overflow-y:auto}
+.cabecera{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--borde)}
+.cabecera h2{font-size:18px;font-weight:800;flex:1}
+.volver{font-size:22px;color:var(--tenue);padding:2px 8px}
+.aviso{font-size:13px;color:var(--tenue);line-height:1.55}
+.conmutador{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel-1);
+  border:1px solid var(--borde);border-radius:13px;padding:11px 14px}
+.conmutador span{font-size:14px;font-weight:600}
+.pastilla{width:52px;height:30px;border-radius:999px;background:var(--panel-2);border:1px solid var(--borde);position:relative;flex:0 0 auto}
+.pastilla::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--tenue-2);transition:.16s}
+.pastilla[aria-pressed="true"]{background:#4FE0C033;border-color:var(--menta)}
+.pastilla[aria-pressed="true"]::after{left:25px;background:var(--menta)}
+.segmentos{display:flex;gap:6px;flex-wrap:wrap}
+.segmentos button{flex:1;min-width:70px;padding:10px 4px;border-radius:11px;background:var(--panel-1);
+  border:1px solid var(--borde);font-weight:600;font-size:14px;color:var(--tenue)}
+.segmentos button[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff}
+
+.brillo{animation:brillo .5s ease}
+@keyframes brillo{0%{filter:brightness(2.2)}100%{filter:none}}
+.subeypunto{position:absolute;left:50%;top:36%;transform:translateX(-50%);font-family:'DM Mono',monospace;
+  font-size:25px;color:var(--menta);font-weight:600;pointer-events:none;animation:sube 1s ease forwards;z-index:30;text-shadow:0 2px 10px #000}
+@keyframes sube{to{transform:translate(-50%,-70px);opacity:0}}
+#confeti{position:absolute;inset:0;pointer-events:none;z-index:35}
+
+/* ═══ MODO PIZARRA ═══ */
+.pizarra-cuerpo{padding:20px;gap:16px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto}
+.pz-cabecera{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--borde)}
+.pz-cabecera h2{font-size:clamp(18px,2.4vw,26px);font-weight:800;flex:1}
+.pz-codigo{font-family:'DM Mono',monospace;font-size:clamp(30px,6vw,60px);letter-spacing:.16em;color:var(--oro);
+  background:var(--panel-1);border:2px dashed var(--oro);border-radius:18px;padding:12px 26px;text-align:center}
+.pz-reloj{font-family:'DM Mono',monospace;font-size:clamp(46px,13vw,140px);color:var(--oro);text-align:center;line-height:1}
+.pz-reloj.urgente{color:var(--coral);animation:pulso .6s ease-in-out infinite alternate}
+.pz-tema{text-align:center}
+.pz-tema .sobre{font-size:clamp(48px,10vw,110px);line-height:1}
+.pz-tema h1{font-size:clamp(30px,6.5vw,76px);color:var(--oro)}
+.pz-tema p{font-size:clamp(15px,2.2vw,26px);color:var(--tenue);font-style:italic}
+.pasarela-fila{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;align-items:flex-end}
+.modelo{flex:0 0 auto;width:clamp(120px,17vw,190px);background:var(--panel-1);border:2px solid var(--borde);
+  border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.modelo .marco{width:100%;aspect-ratio:.55;position:relative;overflow:hidden;border-radius:12px}
+.modelo .marco svg.av{position:absolute;inset:0}
+.modelo b{font-size:clamp(13px,1.6vw,17px);text-align:center;line-height:1.15}
+.modelo .votos{font-family:'DM Mono',monospace;color:var(--oro);font-size:16px}
+.modelo.gana{border-color:var(--oro);box-shadow:0 0 0 3px #FFC24A44}
+.modelo .votar{width:100%;padding:8px;border-radius:10px;background:var(--panel-2);border:1px solid var(--borde);font-weight:700;font-size:14px}
+.pz-vacio{border:2px dashed var(--borde);border-radius:18px;padding:26px;text-align:center;color:var(--tenue);font-size:15px}
+.pegar{display:flex;gap:8px}
+.pegar input{flex:1;text-align:left;font-family:'DM Mono',monospace;font-size:13px}
+.podio{display:flex;gap:12px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.escalon{background:var(--panel-1);border:2px solid var(--borde);border-radius:16px;padding:12px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(130px,19vw,210px)}
+.escalon .marco{width:100%;aspect-ratio:.6;position:relative;overflow:hidden;border-radius:12px}
+.escalon.p1{border-color:var(--oro);box-shadow:0 0 30px #FFC24A33}
+.escalon .medalla{font-size:30px}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+
+</head>
+<body>
+<div class="telefono">
+
+  <!-- ═══ INICIO ═══ -->
+  <section class="pantalla activa inicio" id="p-inicio">
+    <div class="logo"><div class="destello"></div><h1 class="display">Pasarela<em>Española</em></h1></div>
+    <div class="escenario portada" style="flex:0 0 150px;width:100%"><div class="suelo"></div><svg class="av" id="av-inicio" viewBox="0 0 220 400"></svg></div>
+    <p class="lema">Vístete según el tema. Cada prenda se abre si sabes su nombre en español.</p>
+    <div class="marca-nivel" id="marca-nivel"></div>
+    <input type="text" id="nombre" maxlength="14" placeholder="Tu nombre / Dit navn" autocomplete="off">
+    <button class="btn ancho oro" id="b-jugar">Jugar solo</button>
+    <button class="btn ancho" id="b-sala">Entrar con código de clase</button>
+    <div class="dos">
+      <button class="btn fantasma chico" id="b-tienda">Tienda</button>
+      <button class="btn fantasma chico" id="b-dicc">Palabras</button>
+      <button class="btn fantasma chico" id="b-prof">Profesora</button>
+    </div>
+    <p class="da">Klæd dig på efter temaet — og lær spansk imens.</p>
+  </section>
+
+  <!-- ═══ CÓDIGO DE CLASE ═══ -->
+  <section class="pantalla" id="p-codigo">
+    <div class="cabecera"><button class="volver" data-ir="p-inicio" aria-label="Volver">←</button><h2>Código de clase</h2></div>
+    <div class="cuerpo" style="justify-content:center;text-align:center;align-items:center">
+      <p class="etiqueta">Escribe el código de la pizarra</p>
+      <input type="text" id="entrada-codigo" class="codigo-in" maxlength="5" placeholder="ABCD" autocomplete="off" autocapitalize="characters">
+      <p class="aviso" id="codigo-aviso">Todos los que escriban el mismo código juegan el mismo tema y el mismo tiempo.<br><span class="da">Alle med samme kode får samme tema og samme tid.</span></p>
+      <button class="btn ancho oro" id="b-entrar-sala">Entrar</button>
+    </div>
+  </section>
+
+  <!-- ═══ CREAR PERSONAJE ═══ -->
+  <section class="pantalla crear" id="p-crear">
+    <div class="cabecera" style="padding-left:0;padding-right:0"><h2>Tu personaje</h2></div>
+    <div class="escenario portada" style="min-height:180px"><div class="suelo"></div><svg class="av" id="av-crear" viewBox="0 0 220 400"></svg></div>
+    <p class="etiqueta">Piel · Hud</p>
+    <div class="fila-op" id="op-piel"></div>
+    <p class="etiqueta">Color de pelo · Hårfarve</p>
+    <div class="fila-op" id="op-pelo"></div>
+    <p class="aviso">El peinado, el maquillaje y la pose se eligen luego en el armario.</p>
+    <button class="btn ancho" id="b-listo">¡Listo!</button>
+  </section>
+
+  <!-- ═══ TEMA ═══ -->
+  <section class="pantalla" id="p-tema">
+    <div class="tema-carta">
+      <p class="etiqueta">Ronda <span id="t-ronda" class="num">1</span> · El tema es</p>
+      <div class="sobre" id="t-emoji">✨</div>
+      <h2 class="display" id="t-es">—</h2>
+      <p class="da" id="t-da">—</p>
+      <div class="pistas" id="t-pistas"></div>
+      <button class="btn oro" id="b-vestir">Abrir el armario</button>
+    </div>
+  </section>
+
+  <!-- ═══ ARMARIO ═══ -->
+  <section class="pantalla" id="p-armario">
+    <div class="barra">
+      <div class="tema-mini"><p class="etiqueta">Tema</p><strong id="a-tema">—</strong></div>
+      <span class="monedas">🪙 <b id="a-monedas" class="num">0</b></span>
+      <div class="reloj num" id="reloj">1:30</div>
+    </div>
+    <div class="escenario pose-posar" id="esc-armario">
+      <div class="fondo" id="fondo-armario"></div><div class="foco"></div><div class="suelo"></div>
+      <svg class="av" id="av-armario" viewBox="0 0 220 400"></svg>
+    </div>
+    <div class="cajon">
+      <div class="pestanas" id="pestanas" role="tablist"></div>
+      <div class="rejilla" id="rejilla"></div>
+      <div class="acciones">
+        <button class="btn fantasma chico" id="b-quitar">Quitar</button>
+        <button class="btn oro" id="b-desfilar" style="flex:1">A la pasarela</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PASARELA ═══ -->
+  <section class="pantalla" id="p-pasarela">
+    <div class="barra"><div class="tema-mini"><p class="etiqueta">Pasarela</p><strong id="d-tema">—</strong></div></div>
+    <div class="escenario" id="esc-pasarela">
+      <div class="fondo" id="fondo-pasarela"></div><div class="foco"></div><div class="suelo"></div>
+      <svg class="av" id="av-pasarela" viewBox="0 0 220 400"></svg>
+    </div>
+    <div class="cuerpo" style="flex:0 0 auto">
+      <div class="frase" id="frase"></div>
+      <div class="opciones" id="frase-op"></div>
+      <button class="btn ancho oro" id="b-jueces" style="display:none">Ver a los jueces</button>
+    </div>
+  </section>
+
+  <!-- ═══ RESULTADO ═══ -->
+  <section class="pantalla" id="p-resultado">
+    <div class="cuerpo">
+      <p class="etiqueta">Ronda <span id="r-ronda" class="num">1</span> · <span id="r-tema"></span></p>
+      <div class="escenario portada" style="flex:0 0 140px"><div class="suelo"></div><svg class="av" id="av-resultado" viewBox="0 0 220 400"></svg></div>
+      <div class="jueces" id="jueces"></div>
+      <div class="desglose">
+        <div class="caja"><b class="num" id="r-estilo">0</b><span>Estilo</span></div>
+        <div class="caja"><b class="num" id="r-espanol">0</b><span>Español</span></div>
+        <div class="caja"><b class="num" id="r-total">0</b><span>Total</span></div>
+        <div class="caja"><b class="num" id="r-monedas">0</b><span>🪙</span></div>
+      </div>
+      <p class="etiqueta">Clasificación</p>
+      <div class="tabla" id="tabla"></div>
+      <div id="r-premio"></div>
+      <div id="r-zona-codigo" style="display:none">
+        <p class="etiqueta" style="margin-bottom:6px">Tu código de look — pásaselo a la profesora</p>
+        <div class="codigo-look"><code id="r-codigo">—</code><button class="btn chico oro" id="b-copiar">Copiar</button></div>
+      </div>
+      <button class="btn ancho oro" id="b-otra">Siguiente ronda</button>
+      <div class="dos">
+        <button class="btn fantasma chico" id="b-ir-tienda">Ir a la tienda</button>
+        <button class="btn fantasma chico" id="b-salir">Inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TIENDA ═══ -->
+  <section class="pantalla" id="p-tienda">
+    <div class="cabecera">
+      <button class="volver" data-ir="p-inicio" aria-label="Volver">←</button>
+      <h2>La tienda</h2>
+      <span class="monedas">🪙 <b id="t-monedas" class="num">0</b></span>
+    </div>
+    <div class="cuerpo">
+      <p class="aviso">Ganas monedas en cada ronda. Toca una prenda para comprarla — pero antes tienes que saber leer su precio.</p>
+      <div class="segmentos" id="filtros-tienda"></div>
+      <div class="estante" id="estante"></div>
+    </div>
+  </section>
+
+  <!-- ═══ DICCIONARIO ═══ -->
+  <section class="pantalla" id="p-dicc">
+    <div class="cabecera"><button class="volver" data-ir="p-inicio" aria-label="Volver">←</button><h2>Mis palabras</h2></div>
+    <div class="cuerpo">
+      <p class="aviso">Toca una palabra para escucharla. La estrella ★ marca las que ya has usado en la pasarela.</p>
+      <div class="segmentos" id="filtros"></div>
+      <div class="lista" id="lista-palabras"></div>
+    </div>
+  </section>
+
+  <!-- ═══ PROFESORA ═══ -->
+  <section class="pantalla" id="p-prof">
+    <div class="cabecera"><button class="volver" data-ir="p-inicio" aria-label="Volver">←</button><h2>Modo profesora</h2></div>
+    <div class="cuerpo">
+      <button class="btn ancho oro" id="b-pizarra">Abrir modo pizarra</button>
+      <p class="aviso">Para el proyector: pones un tema, sale un código de clase, todos juegan lo mismo y luego desfilan sus looks.</p>
+      <p class="etiqueta">Tiempo por ronda</p>
+      <div class="segmentos" id="seg-tiempo"></div>
+      <div class="conmutador"><span>Pistas en danés</span><button class="pastilla" id="sw-danes" aria-pressed="true" aria-label="Pistas en danés"></button></div>
+      <div class="conmutador"><span>Preguntas de <i>el / la</i></span><button class="pastilla" id="sw-articulos" aria-pressed="true" aria-label="Preguntas de artículos"></button></div>
+      <div class="conmutador"><span>Voz en español</span><button class="pastilla" id="sw-voz" aria-pressed="true" aria-label="Voz en español"></button></div>
+      <div class="conmutador"><span>Armario completo (sin tienda)</span><button class="pastilla" id="sw-todo" aria-pressed="false" aria-label="Armario completo"></button></div>
+      <p class="etiqueta">Vocabulario del juego</p>
+      <p class="aviso" id="prof-resumen"></p>
+      <button class="btn ancho fantasma" id="b-lista">Ver la lista completa</button>
+      <button class="btn ancho fantasma" id="b-borrar">Borrar progreso de este móvil</button>
+      <p class="aviso">El progreso se guarda solo en el móvil del alumno.</p>
+    </div>
+  </section>
+
+  <!-- ═══ MODO PIZARRA ═══ -->
+  <section class="pantalla" id="p-pizarra">
+    <div class="pz-cabecera">
+      <button class="volver" id="pz-salir" aria-label="Salir">←</button>
+      <h2 id="pz-titulo">Modo pizarra</h2>
+      <span class="chip" id="pz-paso">Preparar</span>
+    </div>
+    <div class="pizarra-cuerpo" id="pz-cuerpo"></div>
+  </section>
+
+  <!-- ═══ VELO / RETO ═══ -->
+  <div class="velo" id="velo"><div class="reto" id="reto"></div></div>
+  <canvas id="confeti"></canvas>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PASARELA ESPAÑOLA · v2 — vocabulario base
+   Español A1 para jóvenes daneses
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── COLORES DE ROPA ── formas: [masc sg, fem sg, masc pl, fem pl] ── */
+const COLORES = [
+  {id:'rojo',     hex:'#E23B3B', da:'rød',      f:['rojo','roja','rojos','rojas']},
+  {id:'azul',     hex:'#3070E0', da:'blå',      f:['azul','azul','azules','azules']},
+  {id:'verde',    hex:'#2FA84F', da:'grøn',     f:['verde','verde','verdes','verdes']},
+  {id:'amarillo', hex:'#F2C230', da:'gul',      f:['amarillo','amarilla','amarillos','amarillas']},
+  {id:'naranja',  hex:'#F0803A', da:'orange',   f:['naranja','naranja','naranjas','naranjas']},
+  {id:'morado',   hex:'#8B4FD6', da:'lilla',    f:['morado','morada','morados','moradas']},
+  {id:'rosa',     hex:'#FF7FB6', da:'lyserød',  f:['rosa','rosa','rosas','rosas']},
+  {id:'negro',    hex:'#241E2B', da:'sort',     f:['negro','negra','negros','negras']},
+  {id:'blanco',   hex:'#F3EEE6', da:'hvid',     f:['blanco','blanca','blancos','blancas']},
+  {id:'gris',     hex:'#9A93A5', da:'grå',      f:['gris','gris','grises','grises']},
+  {id:'marron',   hex:'#8A5A34', da:'brun',     f:['marrón','marrón','marrones','marrones']},
+  {id:'dorado',   hex:'#D9A521', da:'guld',     f:['dorado','dorada','dorados','doradas']}
+];
+
+/* ── COLORES DE PELO ── */
+const PELOS = [
+  {id:'negro',      hex:'#2B1B17', da:'sort',       f:['negro','negra','negros','negras']},
+  {id:'castano',    hex:'#7B4B2A', da:'brun',       f:['castaño','castaña','castaños','castañas']},
+  {id:'rubio',      hex:'#DCA93A', da:'blond',      f:['rubio','rubia','rubios','rubias']},
+  {id:'pelirrojo',  hex:'#B8412E', da:'rødhåret',   f:['pelirrojo','pelirroja','pelirrojos','pelirrojas']},
+  {id:'rosa',       hex:'#FF7FB6', da:'lyserød',    f:['rosa','rosa','rosas','rosas']},
+  {id:'azul',       hex:'#3B7BE8', da:'blå',        f:['azul','azul','azules','azules']}
+];
+
+const PALETAS = {ropa:COLORES, pelo:PELOS};
+const COL = {}; COLORES.forEach(c => COL[c.id] = c);
+const PELCOL = {}; PELOS.forEach(c => PELCOL[c.id] = c);
+function paletaDe(p){ return p.paleta === 'pelo' ? PELOS : COLORES }
+function colorDe(p, id){
+  const pal = paletaDe(p);
+  return pal.find(c => c.id === id) || pal[0];
+}
+
+/* ── TONOS DE PIEL ── */
+const PIELES = ['#F2C9A0','#DCA772','#A9713F','#6E4527'];
+
+/* ── NÚMEROS 0-100 en español y danés (para la tienda) ── */
+const UNI_ES = ['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez',
+  'once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte',
+  'veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+const DEC_ES = {30:'treinta',40:'cuarenta',50:'cincuenta',60:'sesenta',70:'setenta',80:'ochenta',90:'noventa',100:'cien'};
+function numeroEs(n){
+  if(n <= 29) return UNI_ES[n];
+  if(n === 100) return 'cien';
+  const d = Math.floor(n/10)*10, u = n%10;
+  return u === 0 ? DEC_ES[d] : DEC_ES[d]+' y '+UNI_ES[u];
+}
+const UNI_DA = ['nul','en','to','tre','fire','fem','seks','syv','otte','ni','ti',
+  'elleve','tolv','tretten','fjorten','femten','seksten','sytten','atten','nitten'];
+const DEC_DA = {20:'tyve',30:'tredive',40:'fyrre',50:'halvtreds',60:'tres',70:'halvfjerds',80:'firs',90:'halvfems',100:'hundrede'};
+function numeroDa(n){
+  if(n <= 19) return UNI_DA[n];
+  if(n === 100) return 'hundrede';
+  const d = Math.floor(n/10)*10, u = n%10;
+  return u === 0 ? DEC_DA[d] : UNI_DA[u]+'og'+DEC_DA[d];
+}
+
+/* ── RANURAS DEL ARMARIO ── */
+const RANURAS = [
+  {id:'cuerpo',    es:'Cuerpo',     da:'krop'},
+  {id:'piernas',   es:'Piernas',    da:'ben'},
+  {id:'pies',      es:'Pies',       da:'fødder'},
+  {id:'cabeza',    es:'Cabeza',     da:'hoved'},
+  {id:'ojos',      es:'Ojos',       da:'øjne'},
+  {id:'cuello',    es:'Cuello',     da:'hals'},
+  {id:'mano',      es:'Mano',       da:'hånd'},
+  {id:'pelo',      es:'Pelo',       da:'hår'},
+  {id:'cara',      es:'Cara',       da:'ansigt'},
+  {id:'mascota',   es:'Mascota',    da:'kæledyr'},
+  {id:'pose',      es:'Pose',       da:'positur'}
+];
+/* ranuras que entran en la frase «Llevo…» */
+const RANURAS_LLEVO = ['cuerpo','piernas','pies','cabeza','ojos','cuello','mano','cara'];
+
+/* ── ESCENARIOS DE PASARELA ── */
+const ESCENARIOS = {
+  playa:   {es:'la playa',   da:'stranden',  cielo:['#FF9E5E','#FFD79A'], suelo:'#E8C88A', mar:true},
+  ciudad:  {es:'la ciudad',  da:'byen',      cielo:['#2C1B4A','#5B3A7E'], suelo:'#2A2036', torres:true},
+  bosque:  {es:'el bosque',  da:'skoven',    cielo:['#1E3A2E','#3E6B4C'], suelo:'#2E4A34', arboles:true},
+  nieve:   {es:'la nieve',   da:'sneen',     cielo:['#3E5C86','#9EC4E8'], suelo:'#E8F0FA', copos:true},
+  castillo:{es:'el castillo',da:'slottet',   cielo:['#3A2154','#7A4E96'], suelo:'#4A3358', castillo:true},
+  noche:   {es:'la noche',   da:'natten',    cielo:['#120A22','#331B4E'], suelo:'#1E1230', estrellas:true}
+};
+
+/* ── TEMAS DE RONDA ── */
+const TEMAS = [
+  {emoji:'🏖️', es:'Un día en la playa', da:'En dag på stranden', esc:'playa',
+   ropa:['banador','sandalias','gafassol','sombrero','cortos','camiseta','chanclas'], colores:['amarillo','azul','naranja','blanco']},
+  {emoji:'🌧️', es:'Un día de lluvia', da:'En regnvejrsdag', esc:'ciudad',
+   ropa:['abrigo','botasagua','paraguas','jersey','pantalones','panuelo'], colores:['gris','azul','verde','amarillo']},
+  {emoji:'❄️', es:'Invierno en Dinamarca', da:'Vinter i Danmark', esc:'nieve',
+   ropa:['abrigo','gorro','bufanda','guantes','botas','jersey'], colores:['blanco','azul','rojo','gris']},
+  {emoji:'🎂', es:'Una fiesta de cumpleaños', da:'En fødselsdagsfest', esc:'ciudad',
+   ropa:['vestido','corona','zapatos','collar','camisa','purpurina'], colores:['rosa','morado','amarillo','rojo']},
+  {emoji:'🎒', es:'El primer día de clase', da:'Første skoledag', esc:'ciudad',
+   ropa:['camisa','vaqueros','zapatillas','mochila','gafas'], colores:['azul','blanco','rojo','verde']},
+  {emoji:'🎸', es:'Un concierto de rock', da:'En rockkoncert', esc:'noche',
+   ropa:['camiseta','vaqueros','botas','gafassol','chaqueta','antifaz'], colores:['negro','rojo','morado','gris']},
+  {emoji:'⚽', es:'Deporte en el parque', da:'Sport i parken', esc:'bosque',
+   ropa:['camiseta','cortos','zapatillas','gorra','sudadera','deporte','coleta'], colores:['verde','naranja','blanco','azul']},
+  {emoji:'🌙', es:'Una fiesta de pijamas', da:'En pyjamasfest', esc:'noche',
+   ropa:['pijama','gato','conejo','perro','zapatillas','mono'], colores:['rosa','morado','azul','blanco']},
+  {emoji:'💍', es:'Una boda elegante', da:'Et elegant bryllup', esc:'castillo',
+   ropa:['vestidolargo','camisa','tacones','collar','corbata','pajarita','sombrero'], colores:['blanco','negro','gris','dorado']},
+  {emoji:'🐕', es:'Un paseo con la mascota', da:'En tur med kæledyret', esc:'bosque',
+   ropa:['perro','gato','chaqueta','zapatillas','pantalones','tortuga'], colores:['marron','verde','amarillo','naranja']},
+  {emoji:'☀️', es:'Verano en España', da:'Sommer i Spanien', esc:'playa',
+   ropa:['camiseta','falda','sandalias','gafassol','cortos','abanico','blusa'], colores:['amarillo','rojo','naranja','blanco']},
+  {emoji:'🎃', es:'La noche de Halloween', da:'Halloween-nat', esc:'noche',
+   ropa:['abrigo','sombrero','gato','botas','antifaz','raton'], colores:['negro','morado','naranja','marron']},
+  {emoji:'🌲', es:'Una excursión al bosque', da:'En tur i skoven', esc:'bosque',
+   ropa:['sudadera','pantalones','botas','mochila','gorra','chaleco'], colores:['verde','marron','gris','naranja']},
+  {emoji:'💃', es:'Una noche de baile', da:'En danseaften', esc:'noche',
+   ropa:['vestido','tacones','collar','falda','labios','purpurina'], colores:['rojo','negro','morado','dorado']},
+  {emoji:'🏰', es:'Un baile en el castillo', da:'Et bal på slottet', esc:'castillo',
+   ropa:['vestidolargo','corona','diadema','tacones','pajarita','abanico'], colores:['dorado','morado','blanco','rosa']},
+  {emoji:'🛹', es:'Tarde con los amigos', da:'Eftermiddag med vennerne', esc:'ciudad',
+   ropa:['sudadera','vaqueros','zapatillas','gorra','mochila','mallas'], colores:['negro','azul','naranja','verde']}
+];
+
+/* ── JUECES ── */
+const JUECES = [
+  {nom:'Doña Rosa', cara:'👵', mira:'estilo'},
+  {nom:'El Profe',  cara:'🧑‍🏫', mira:'espanol'},
+  {nom:'Chispa',    cara:'🦩', mira:'color'}
+];
+const COMENTARIOS = {
+  estilo: {
+    alto:  [['¡Perfecto para el tema!','Perfekt til temaet!'],['Ese look es el de hoy.','Det look passer til i dag.'],['¡Qué elegante!','Hvor elegant!']],
+    medio: [['Casi, pero falta algo.','Tæt på, men der mangler noget.'],['La mitad funciona.','Halvdelen virker.']],
+    bajo:  [['Eso no es para hoy.','Det passer ikke til i dag.'],['Mmm… ¿tienes frío?','Mmm… fryser du?']]
+  },
+  espanol: {
+    alto:  [['¡Qué bien hablas español!','Hvor godt du taler spansk!'],['Ni un error. ¡Bravo!','Ikke én fejl. Bravo!']],
+    medio: [['Bien, pero repasa las palabras.','Godt, men repetér ordene.'],['Vas por buen camino.','Du er på rette vej.']],
+    bajo:  [['Estudia el vocabulario.','Læs ordforrådet igen.'],['Otra vez, más despacio.','Prøv igen, langsommere.']]
+  },
+  color: {
+    alto:  [['¡Los colores son perfectos!','Farverne er perfekte!'],['¡Qué combinación!','Sikke en kombination!']],
+    medio: [['Los colores están bien.','Farverne er fine.'],['Un color más y perfecto.','Én farve mere, så er det perfekt.']],
+    bajo:  [['Otra vez, con más color.','Prøv igen med mere farve.'],['Esos colores no van juntos.','De farver passer ikke sammen.']]
+  }
+};
+const RIVALES = ['Lucía','Mateo','Nora','Iker','Sofía','Óliver','Elena','Diego','Marta','Bruno','Vera','Hugo'];
+
+/* ═══════════════════════════════════════════════════════════
+   PASARELA ESPAÑOLA · v2 — el armario dibujado
+   Cada prenda: ranura · género · número · nombre · danés ·
+   precio en monedas · paleta · dibujo · recorte de vista
+   ═══════════════════════════════════════════════════════════ */
+
+const S_ = 'stroke="rgba(0,0,0,.3)" stroke-width="2.5" stroke-linejoin="round"';
+function rect(x,y,w,h,r,f,extra=''){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}" ${S_} ${extra}/>`}
+function path(d,f,extra=''){return `<path d="${d}" fill="${f}" ${S_} ${extra}/>`}
+function circ(cx,cy,r,f,extra=''){return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${S_} ${extra}/>`}
+function elip(cx,cy,rx,ry,f,extra=''){return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" ${S_} ${extra}/>`}
+function tono(hex,d){
+  const n = parseInt(hex.slice(1),16);
+  const c = v => Math.max(0, Math.min(255, v));
+  return '#'+((1<<24)+(c((n>>16)+d)<<16)+(c(((n>>8)&255)+d)<<8)+c((n&255)+d)).toString(16).slice(1);
+}
+
+const PRENDAS = [
+/* ═══ CUERPO ═══ */
+{id:'camiseta', ranura:'cuerpo', gen:'f', num:'sg', nom:'camiseta', da:'T-shirt', precio:0, vb:'40 126 140 132',
+ dib:c=>path('M72 142 L92 132 Q110 144 128 132 L148 142 L164 176 L146 186 L146 244 Q110 254 74 244 L74 186 L56 176 Z',c)},
+{id:'camisa', ranura:'cuerpo', gen:'f', num:'sg', nom:'camisa', da:'skjorte', precio:0, vb:'40 122 140 140',
+ dib:c=>path('M72 142 L92 130 L110 150 L128 130 L148 142 L166 200 L148 208 L146 248 Q110 258 74 248 L72 208 L54 200 Z',c)
+   +path('M92 130 L110 150 L128 130 L118 126 L110 136 L102 126 Z',tono(c,-38))
+   +`<g fill="${tono(c,-52)}"><circle cx="110" cy="170" r="3.2"/><circle cx="110" cy="190" r="3.2"/><circle cx="110" cy="210" r="3.2"/></g>`},
+{id:'blusa', ranura:'cuerpo', gen:'f', num:'sg', nom:'blusa', da:'bluse', precio:14, vb:'40 118 140 145',
+ dib:c=>path('M74 142 Q92 126 110 140 Q128 126 146 142 L162 178 Q152 190 144 180 L146 248 Q110 258 74 248 L76 180 Q68 190 58 178 Z',c)
+   +path('M88 128 Q110 150 132 128 Q126 120 110 134 Q94 120 88 128 Z',tono(c,55))
+   +`<path d="M74 248 Q110 258 146 248" fill="none" stroke="${tono(c,45)}" stroke-width="4"/>`},
+{id:'jersey', ranura:'cuerpo', gen:'m', num:'sg', nom:'jersey', da:'trøje', precio:0, vb:'40 122 140 142',
+ dib:c=>path('M70 142 Q110 128 150 142 L168 236 L146 244 L146 250 Q110 260 74 250 L74 244 L52 236 Z',c)
+   +path('M92 132 Q110 146 128 132 Q110 124 92 132 Z',tono(c,-40))
+   +rect(50,232,24,14,6,tono(c,-30))+rect(146,232,24,14,6,tono(c,-30))},
+{id:'sudadera', ranura:'cuerpo', gen:'f', num:'sg', nom:'sudadera', da:'hættetrøje', precio:12, vb:'40 72 140 190',
+ dib:c=>path('M74 108 Q110 78 146 108 Q150 132 110 140 Q70 132 74 108 Z',tono(c,-25))
+   +path('M70 142 Q110 130 150 142 L168 238 L146 246 L146 252 Q110 262 74 252 L74 246 L52 238 Z',c)
+   +path('M96 200 Q110 210 124 200 L124 218 Q110 224 96 218 Z',tono(c,-32))},
+{id:'chaqueta', ranura:'cuerpo', gen:'f', num:'sg', nom:'chaqueta', da:'jakke', precio:0, vb:'40 122 140 142',
+ dib:c=>path('M72 140 Q90 130 104 136 L104 252 Q86 254 74 248 L74 244 L52 236 Z',c)
+   +path('M148 140 Q130 130 116 136 L116 252 Q134 254 146 248 L146 244 L168 236 Z',c)
+   +path('M104 136 L110 148 L116 136 L110 132 Z',tono(c,-40))},
+{id:'chaleco', ranura:'cuerpo', gen:'m', num:'sg', nom:'chaleco', da:'vest', precio:16, vb:'55 128 110 132',
+ dib:c=>path('M76 140 Q92 132 104 140 L104 250 Q88 252 78 246 Z',c)
+   +path('M144 140 Q128 132 116 140 L116 250 Q132 252 142 246 Z',c)
+   +`<g fill="${tono(c,-45)}"><circle cx="110" cy="196" r="3.2"/><circle cx="110" cy="218" r="3.2"/></g>`},
+{id:'abrigo', ranura:'cuerpo', gen:'m', num:'sg', nom:'abrigo', da:'frakke', precio:22, vb:'40 120 140 175',
+ dib:c=>path('M70 140 Q110 126 150 140 L170 240 L150 248 L152 288 Q110 298 68 288 L70 248 L50 240 Z',c)
+   +path('M86 132 L110 156 L134 132 L124 126 L110 140 L96 126 Z',tono(c,-35))
+   +`<g fill="${tono(c,-55)}"><circle cx="110" cy="180" r="3.4"/><circle cx="110" cy="204" r="3.4"/><circle cx="110" cy="228" r="3.4"/></g>`},
+{id:'vestido', ranura:'cuerpo', gen:'m', num:'sg', nom:'vestido', da:'kjole', precio:0, entero:true, vb:'30 125 160 180',
+ dib:c=>path('M78 140 Q110 128 142 140 L146 200 L176 292 Q110 306 44 292 L74 200 Z',c)
+   +path('M92 134 Q110 148 128 134',tono(c,-30))
+   +path('M44 292 Q110 306 176 292 L174 282 Q110 296 46 282 Z',tono(c,-28))},
+{id:'vestidolargo', ranura:'cuerpo', gen:'m', num:'sg', nom:'vestido largo', da:'lang kjole', precio:34, entero:true, vb:'22 125 176 240',
+ dib:c=>path('M78 140 Q110 128 142 140 L146 210 L188 352 Q110 368 32 352 L74 210 Z',c)
+   +path('M92 134 Q110 148 128 134',tono(c,-30))
+   +`<g fill="none" stroke="${tono(c,38)}" stroke-width="3"><path d="M96 220 Q92 290 74 348"/><path d="M124 220 Q128 290 146 348"/></g>`
+   +path('M32 352 Q110 368 188 352 L186 340 Q110 356 34 340 Z',tono(c,-26))},
+{id:'banador', ranura:'cuerpo', gen:'m', num:'sg', nom:'bañador', da:'badedragt', precio:18, entero:true, vb:'55 135 110 145',
+ dib:c=>path('M80 142 Q110 132 140 142 L142 210 Q136 260 110 262 Q84 260 78 210 Z',c)
+   +path('M78 200 Q110 212 142 200 L142 190 Q110 202 78 190 Z',tono(c,-30))},
+{id:'pijama', ranura:'cuerpo', gen:'m', num:'sg', nom:'pijama', da:'pyjamas', precio:24, entero:true, vb:'40 125 140 250',
+ dib:c=>path('M70 142 Q110 128 150 142 L168 236 L146 244 L146 250 Q110 260 74 250 L74 244 L52 236 Z',c)
+   +path('M78 226 Q110 236 142 226 L138 366 L114 366 L110 280 L106 366 L82 366 Z',tono(c,10))
+   +`<g fill="${tono(c,-45)}"><circle cx="94" cy="176" r="4"/><circle cx="126" cy="196" r="4"/><circle cx="98" cy="216" r="4"/><circle cx="100" cy="300" r="4"/><circle cx="124" cy="330" r="4"/></g>`},
+
+/* ═══ PIERNAS ═══ */
+{id:'pantalones', ranura:'piernas', gen:'m', num:'pl', nom:'pantalones', da:'bukser', precio:0, vb:'65 240 90 140',
+ dib:c=>path('M78 246 Q110 256 142 246 L138 368 L114 368 L110 288 L106 368 L82 368 Z',c)},
+{id:'vaqueros', ranura:'piernas', gen:'m', num:'pl', nom:'vaqueros', da:'cowboybukser', precio:0, vb:'65 240 90 140',
+ dib:c=>path('M78 246 Q110 256 142 246 L138 368 L114 368 L110 288 L106 368 L82 368 Z',c)
+   +`<g stroke="${tono(c,45)}" stroke-width="2" fill="none" stroke-dasharray="5 4"><path d="M86 262 L88 360"/><path d="M134 262 L132 360"/></g>`
+   +rect(76,250,68,12,4,tono(c,-28))},
+{id:'deporte', ranura:'piernas', gen:'m', num:'pl', nom:'pantalones de deporte', da:'joggingbukser', precio:13, vb:'65 240 90 140',
+ dib:c=>path('M78 246 Q110 256 142 246 L140 368 L112 368 L110 288 L108 368 L80 368 Z',c)
+   +`<g fill="${tono(c,60)}"><rect x="82" y="264" width="5" height="94" rx="2"/><rect x="133" y="264" width="5" height="94" rx="2"/></g>`},
+{id:'mallas', ranura:'piernas', gen:'f', num:'pl', nom:'mallas', da:'leggings', precio:15, vb:'70 240 80 135',
+ dib:c=>path('M80 246 Q110 254 140 246 L134 366 L116 366 L110 290 L104 366 L86 366 Z',c)},
+{id:'falda', ranura:'piernas', gen:'f', num:'sg', nom:'falda', da:'nederdel', precio:0, vb:'50 240 120 80',
+ dib:c=>path('M78 246 Q110 256 142 246 L166 308 Q110 320 54 308 Z',c)
+   +path('M54 308 Q110 320 166 308 L164 298 Q110 310 56 298 Z',tono(c,-28))},
+{id:'faldalarga', ranura:'piernas', gen:'f', num:'sg', nom:'falda larga', da:'lang nederdel', precio:20, vb:'34 240 152 122',
+ dib:c=>path('M78 246 Q110 256 142 246 L182 348 Q110 362 38 348 Z',c)
+   +`<g fill="none" stroke="${tono(c,36)}" stroke-width="3"><path d="M98 258 Q92 306 74 344"/><path d="M122 258 Q128 306 146 344"/></g>`
+   +path('M38 348 Q110 362 182 348 L180 338 Q110 352 40 338 Z',tono(c,-26))},
+{id:'cortos', ranura:'piernas', gen:'m', num:'pl', nom:'pantalones cortos', da:'shorts', precio:0, vb:'65 240 90 85',
+ dib:c=>path('M78 246 Q110 256 142 246 L144 306 L114 308 L110 282 L106 308 L76 306 Z',c)},
+
+/* ═══ PIES ═══ */
+{id:'zapatos', ranura:'pies', gen:'m', num:'pl', nom:'zapatos', da:'sko', precio:0, vb:'70 352 80 34',
+ dib:c=>path('M84 360 L104 360 L106 374 L78 374 Q76 364 84 360 Z',c)+path('M116 360 L136 360 Q144 364 142 374 L114 374 Z',c)},
+{id:'zapatillas', ranura:'pies', gen:'f', num:'pl', nom:'zapatillas', da:'sneakers', precio:0, vb:'70 350 80 36',
+ dib:c=>path('M84 358 L104 358 L106 372 L76 372 Q74 362 84 358 Z',c)+path('M116 358 L136 358 Q146 362 144 372 L114 372 Z',c)
+   +`<g fill="${tono(c,60)}"><rect x="76" y="370" width="30" height="6" rx="3"/><rect x="114" y="370" width="30" height="6" rx="3"/><rect x="86" y="362" width="16" height="4" rx="2"/><rect x="118" y="362" width="16" height="4" rx="2"/></g>`},
+{id:'botas', ranura:'pies', gen:'f', num:'pl', nom:'botas', da:'støvler', precio:0, vb:'70 320 80 66',
+ dib:c=>rect(84,326,22,48,5,c)+rect(114,326,22,48,5,c)
+   +path('M82 366 L108 366 L110 378 L76 378 Q74 370 82 366 Z',tono(c,-40))
+   +path('M112 366 L138 366 Q146 370 144 378 L110 378 Z',tono(c,-40))},
+{id:'botines', ranura:'pies', gen:'m', num:'pl', nom:'botines', da:'ankelstøvler', precio:14, vb:'70 340 80 46',
+ dib:c=>rect(84,346,22,28,5,c)+rect(114,346,22,28,5,c)
+   +path('M82 366 L108 366 L110 378 L76 378 Q74 370 82 366 Z',tono(c,-40))
+   +path('M112 366 L138 366 Q146 370 144 378 L110 378 Z',tono(c,-40))
+   +`<g fill="${tono(c,50)}"><rect x="84" y="352" width="22" height="4"/><rect x="114" y="352" width="22" height="4"/></g>`},
+{id:'sandalias', ranura:'pies', gen:'f', num:'pl', nom:'sandalias', da:'sandaler', precio:10, vb:'70 352 80 32',
+ dib:c=>rect(78,368,28,8,4,c)+rect(114,368,28,8,4,c)
+   +`<g stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"><path d="M84 368 L96 358"/><path d="M100 368 L92 358"/><path d="M120 368 L132 358"/><path d="M136 368 L128 358"/></g>`},
+{id:'chanclas', ranura:'pies', gen:'f', num:'pl', nom:'chanclas', da:'klipklappere', precio:8, vb:'70 356 80 28',
+ dib:c=>rect(78,370,28,7,4,c)+rect(114,370,28,7,4,c)
+   +`<g stroke="${tono(c,50)}" stroke-width="4" fill="none" stroke-linecap="round"><path d="M92 370 L84 362 M92 370 L100 362"/><path d="M128 370 L120 362 M128 370 L136 362"/></g>`},
+{id:'tacones', ranura:'pies', gen:'m', num:'pl', nom:'zapatos de tacón', da:'højhælede sko', precio:26, vb:'70 348 80 40',
+ dib:c=>path('M82 358 L104 358 L106 372 L80 372 Q76 364 82 358 Z',c)+rect(80,371,7,12,2,c)
+   +path('M116 358 L138 358 Q144 364 140 372 L114 372 Z',c)+rect(133,371,7,12,2,c)},
+{id:'botasagua', ranura:'pies', gen:'f', num:'pl', nom:'botas de agua', da:'gummistøvler', precio:12, vb:'70 305 80 82',
+ dib:c=>rect(83,310,24,64,7,c)+rect(113,310,24,64,7,c)
+   +path('M81 364 L109 364 L110 378 L75 378 Q73 368 81 364 Z',c)
+   +path('M111 364 L139 364 Q147 368 145 378 L110 378 Z',c)
+   +`<g fill="${tono(c,55)}"><rect x="83" y="332" width="24" height="6"/><rect x="113" y="332" width="24" height="6"/></g>`},
+
+/* ═══ CABEZA ═══ */
+{id:'gorra', ranura:'cabeza', gen:'f', num:'sg', nom:'gorra', da:'kasket', precio:0, vb:'55 32 120 45',
+ dib:c=>path('M76 66 Q76 34 110 34 Q144 34 144 66 Z',c)+elip(148,66,26,8,tono(c,-25))+circ(110,36,5,tono(c,-40))},
+{id:'sombrero', ranura:'cabeza', gen:'m', num:'sg', nom:'sombrero', da:'hat', precio:14, vb:'40 30 140 55',
+ dib:c=>elip(110,68,58,12,c)+path('M84 68 Q84 36 110 34 Q136 36 136 68 Z',c)+rect(82,60,56,9,4,tono(c,-40))},
+{id:'gorro', ranura:'cabeza', gen:'m', num:'sg', nom:'gorro', da:'hue', precio:11, vb:'55 18 120 60',
+ dib:c=>path('M76 64 Q76 30 110 30 Q144 30 144 64 Z',c)+rect(72,60,76,14,7,tono(c,45))+circ(110,26,10,tono(c,45))},
+{id:'panuelo', ranura:'cabeza', gen:'m', num:'sg', nom:'pañuelo', da:'tørklæde', precio:12, vb:'62 40 96 60',
+ dib:c=>path('M74 78 Q74 42 110 42 Q146 42 146 78 Q110 88 74 78 Z',c)
+   +path('M144 74 L162 92 L150 94 L140 82 Z',tono(c,-25))},
+{id:'diadema', ranura:'cabeza', gen:'f', num:'sg', nom:'diadema', da:'diadem', precio:18, vb:'64 44 92 34',
+ dib:c=>`<path d="M76 74 Q76 48 110 48 Q144 48 144 74" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"/>`
+   +circ(110,48,7,tono(c,45))},
+{id:'corona', ranura:'cabeza', gen:'f', num:'sg', nom:'corona', da:'krone', precio:40, vb:'62 26 96 46',
+ dib:c=>path('M76 66 L76 36 L92 50 L110 30 L128 50 L144 36 L144 66 Z',c)+rect(74,60,72,9,4,tono(c,-35))
+   +`<g fill="${tono(c,70)}"><circle cx="92" cy="52" r="3"/><circle cx="110" cy="42" r="3.4"/><circle cx="128" cy="52" r="3"/></g>`},
+
+/* ═══ OJOS ═══ */
+{id:'gafassol', ranura:'ojos', gen:'f', num:'pl', nom:'gafas de sol', da:'solbriller', precio:0, vb:'62 76 96 30',
+ dib:c=>rect(78,84,28,18,7,c)+rect(114,84,28,18,7,c)+rect(104,90,12,4,2,c)},
+{id:'gafas', ranura:'ojos', gen:'f', num:'pl', nom:'gafas', da:'briller', precio:9, vb:'62 76 96 30',
+ dib:c=>`<g fill="none" stroke="${c}" stroke-width="4"><circle cx="92" cy="93" r="13"/><circle cx="128" cy="93" r="13"/><path d="M105 93 L115 93"/></g>`},
+{id:'antifaz', ranura:'ojos', gen:'m', num:'sg', nom:'antifaz', da:'maske', precio:20, vb:'60 74 100 34',
+ dib:c=>path('M74 84 Q110 76 146 84 Q148 102 128 104 Q118 104 110 96 Q102 104 92 104 Q72 102 74 84 Z',c)
+   +`<g fill="#170B1E"><ellipse cx="93" cy="91" rx="8" ry="6"/><ellipse cx="127" cy="91" rx="8" ry="6"/></g>`},
+
+/* ═══ CUELLO ═══ */
+{id:'bufanda', ranura:'cuello', gen:'f', num:'sg', nom:'bufanda', da:'halstørklæde', precio:11, vb:'70 116 90 100',
+ dib:c=>path('M84 126 Q110 142 136 126 L140 142 Q110 158 80 142 Z',c)+path('M118 146 L136 148 L132 208 L112 204 Z',tono(c,-18))},
+{id:'collar', ranura:'cuello', gen:'m', num:'sg', nom:'collar', da:'halskæde', precio:16, vb:'78 122 66 46',
+ dib:c=>`<path d="M92 128 Q110 156 128 128" fill="none" stroke="${c}" stroke-width="4"/>`+circ(110,154,7,c)},
+{id:'corbata', ranura:'cuello', gen:'f', num:'sg', nom:'corbata', da:'slips', precio:15, vb:'92 124 36 92',
+ dib:c=>path('M102 130 L118 130 L122 142 L110 150 L98 142 Z',c)
+   +path('M104 150 L116 150 L120 196 L110 210 L100 196 Z',c)},
+{id:'pajarita', ranura:'cuello', gen:'f', num:'sg', nom:'pajarita', da:'butterfly', precio:19, vb:'82 128 56 32',
+ dib:c=>path('M88 136 L104 144 L88 152 Z',c)+path('M132 136 L116 144 L132 152 Z',c)+rect(104,138,12,12,3,tono(c,-30))},
+
+/* ═══ MANO ═══ */
+{id:'bolso', ranura:'mano', gen:'m', num:'sg', nom:'bolso', da:'taske', precio:0, vb:'60 140 110 110',
+ dib:c=>`<path d="M84 148 Q110 176 148 200" fill="none" stroke="${tono(c,-35)}" stroke-width="6"/>`
+   +rect(140,198,34,30,7,c)+`<path d="M148 198 Q157 188 166 198" fill="none" stroke="${tono(c,-35)}" stroke-width="4"/>`},
+{id:'mochila', ranura:'mano', gen:'f', num:'sg', nom:'mochila', da:'rygsæk', precio:13, vb:'55 140 115 115',
+ dib:c=>`<g fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"><path d="M88 146 L94 232"/><path d="M132 146 L126 232"/></g>`
+   +rect(148,182,26,54,10,c)+rect(150,206,22,12,4,tono(c,-32))},
+{id:'paraguas', ranura:'mano', gen:'m', num:'sg', nom:'paraguas', da:'paraply', precio:17, vb:'132 66 92 194',
+ dib:c=>path('M148 116 Q152 70 196 70 Q216 78 214 116 Z',c)
+   +`<path d="M181 116 L181 236 Q181 250 168 250" fill="none" stroke="${tono(c,-45)}" stroke-width="5" stroke-linecap="round"/>`
+   +`<g fill="none" stroke="${tono(c,-40)}" stroke-width="2"><path d="M164 116 Q168 82 181 70"/><path d="M198 116 Q194 82 181 70"/></g>`},
+{id:'guantes', ranura:'mano', gen:'m', num:'pl', nom:'guantes', da:'handsker', precio:10, vb:'40 226 140 40',
+ dib:c=>rect(50,232,25,26,10,c)+rect(145,232,25,26,10,c)},
+{id:'abanico', ranura:'mano', gen:'m', num:'sg', nom:'abanico', da:'vifte', precio:21, vb:'140 196 82 76',
+ dib:c=>path('M158 262 Q152 210 200 202 Q216 226 206 262 Z',c)
+   +`<g fill="none" stroke="${tono(c,-40)}" stroke-width="2"><path d="M158 262 L186 204"/><path d="M158 262 L202 214"/></g>`
+   +circ(158,262,6,tono(c,-40))},
+
+/* ═══ PELO ═══ (usa la paleta de pelo) */
+{id:'pelocorto', ranura:'pelo', gen:'m', num:'sg', nom:'pelo corto', da:'kort hår', precio:0, paleta:'pelo', vb:'62 40 96 66',
+ dib:c=>path('M73 94 Q73 50 110 50 Q147 50 147 94 Q142 72 110 72 Q78 72 73 94 Z',c)},
+{id:'pelolargo', ranura:'pelo', gen:'m', num:'sg', nom:'pelo largo', da:'langt hår', precio:0, paleta:'pelo', vb:'58 40 104 150',
+ atras:c=>path('M73 92 Q64 142 71 180 L93 180 Q83 132 86 94 Z',c)+path('M147 92 Q156 142 149 180 L127 180 Q137 132 134 94 Z',c),
+ dib:c=>path('M73 94 Q73 50 110 50 Q147 50 147 94 Q142 72 110 72 Q78 72 73 94 Z',c)},
+{id:'pelorizado', ranura:'pelo', gen:'m', num:'sg', nom:'pelo rizado', da:'krøllet hår', precio:0, paleta:'pelo', vb:'40 16 140 96',
+ atras:c=>`<g fill="${c}">`+[[110,46,28],[80,62,21],[140,62,21],[70,88,17],[150,88,17]]
+   .map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="${a[2]}"/>`).join('')+`</g>`,
+ dib:c=>path('M77 92 Q80 60 110 60 Q140 60 143 92 Q137 76 110 76 Q83 76 77 92 Z',c)},
+{id:'coleta', ranura:'pelo', gen:'f', num:'sg', nom:'coleta', da:'hestehale', precio:12, paleta:'pelo', vb:'58 34 120 130',
+ atras:c=>path('M146 76 Q182 90 176 136 Q170 162 152 158 Q166 130 150 96 Z',c),
+ dib:c=>path('M73 94 Q73 46 110 46 Q147 46 147 94 Q142 68 110 68 Q78 68 73 94 Z',c)
+   +circ(150,80,10,tono(c,-30))},
+{id:'trenzas', ranura:'pelo', gen:'f', num:'pl', nom:'trenzas', da:'fletninger', precio:16, paleta:'pelo', vb:'52 40 116 150',
+ atras:c=>`<g fill="${c}">`+[0,1].map(i=>{const x=i?150:70;return [96,120,144,166].map((y,k)=>
+   `<ellipse cx="${x+(k%2?3:-3)}" cy="${y}" rx="11" ry="13"/>`).join('')}).join('')+`</g>`,
+ dib:c=>path('M73 94 Q73 46 110 46 Q147 46 147 94 Q142 68 110 68 Q78 68 73 94 Z',c)},
+{id:'mono', ranura:'pelo', gen:'m', num:'sg', nom:'moño', da:'knold', precio:14, paleta:'pelo', vb:'62 16 96 90',
+ atras:c=>circ(110,36,20,c),
+ dib:c=>path('M73 94 Q73 48 110 48 Q147 48 147 94 Q142 70 110 70 Q78 70 73 94 Z',c)},
+
+/* ═══ CARA / MAQUILLAJE ═══ */
+{id:'labios', ranura:'cara', gen:'m', num:'sg', nom:'pintalabios', da:'læbestift', precio:9, vb:'86 96 48 26',
+ dib:c=>path('M96 105 Q104 97 110 103 Q116 97 124 105 Q118 119 110 119 Q102 119 96 105 Z',c)+`<path d="M99 106 Q110 110 121 106" fill="none" stroke="${tono(c,-55)}" stroke-width="2"/>`},
+{id:'mejillas', ranura:'cara', gen:'m', num:'sg', nom:'colorete', da:'rouge', precio:9, vb:'70 88 80 26',
+ dib:c=>`<g fill="${c}" opacity=".55"><ellipse cx="84" cy="102" rx="10" ry="7"/><ellipse cx="136" cy="102" rx="10" ry="7"/></g>`},
+{id:'purpurina', ranura:'cara', gen:'f', num:'sg', nom:'purpurina', da:'glimmer', precio:22, sinArt:true, vb:'62 60 96 56',
+ dib:c=>`<g fill="${c}">`+[[86,78],[96,70],[132,76],[124,68],[80,96],[140,94],[110,66],[100,104],[120,104]]
+   .map(a=>`<path d="M${a[0]} ${a[1]-5} L${a[0]+2.4} ${a[1]-2} L${a[0]+5.5} ${a[1]} L${a[0]+2.4} ${a[1]+2} L${a[0]} ${a[1]+5.5} L${a[0]-2.4} ${a[1]+2} L${a[0]-5.5} ${a[1]} L${a[0]-2.4} ${a[1]-2} Z"/>`).join('')+`</g>`},
+
+/* ═══ MASCOTA ═══ */
+{id:'gato', ranura:'mascota', gen:'m', num:'sg', nom:'gato', da:'kat', precio:0, vb:'160 296 62 84',
+ dib:c=>elip(186,352,22,20,c)+circ(186,320,15,c)
+   +path('M174 310 L172 296 L184 306 Z',c)+path('M198 310 L200 296 L188 306 Z',c)
+   +`<path d="M206 350 Q222 340 214 322" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"/>`
+   +`<g fill="#1A0E22"><circle cx="180" cy="320" r="2.6"/><circle cx="192" cy="320" r="2.6"/></g>`},
+{id:'perro', ranura:'mascota', gen:'m', num:'sg', nom:'perro', da:'hund', precio:0, vb:'158 296 66 84',
+ dib:c=>elip(186,352,24,20,c)+circ(186,320,15,c)
+   +elip(170,320,7,13,tono(c,-30))+elip(202,320,7,13,tono(c,-30))
+   +`<path d="M208 344 Q220 332 214 320" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"/>`
+   +`<g fill="#1A0E22"><circle cx="180" cy="318" r="2.6"/><circle cx="192" cy="318" r="2.6"/><ellipse cx="186" cy="328" rx="4" ry="3"/></g>`},
+{id:'conejo', ranura:'mascota', gen:'m', num:'sg', nom:'conejo', da:'kanin', precio:12, vb:'160 288 58 92',
+ dib:c=>elip(186,354,20,20,c)+circ(186,324,14,c)
+   +elip(178,300,6,17,c)+elip(194,300,6,17,c)
+   +elip(178,300,3,11,tono(c,55))+elip(194,300,3,11,tono(c,55))
+   +circ(206,356,7,tono(c,55))
+   +`<g fill="#1A0E22"><circle cx="181" cy="324" r="2.6"/><circle cx="192" cy="324" r="2.6"/></g>`},
+{id:'pajaro', ranura:'mascota', gen:'m', num:'sg', nom:'pájaro', da:'fugl', precio:14, vb:'160 300 60 80',
+ dib:c=>elip(186,344,20,18,c)+circ(184,320,13,c)
+   +path('M197 318 L212 322 L197 326 Z','#F2C230')
+   +elip(190,344,11,9,tono(c,45))
+   +path('M204 336 Q220 344 208 358 Z',c)
+   +`<g stroke="#F2C230" stroke-width="3" stroke-linecap="round"><path d="M180 360 L180 372"/><path d="M192 360 L192 372"/></g>`
+   +`<circle cx="180" cy="318" r="2.8" fill="#1A0E22"/>`},
+{id:'tortuga', ranura:'mascota', gen:'f', num:'sg', nom:'tortuga', da:'skildpadde', precio:18, vb:'156 320 72 60',
+ dib:c=>path('M164 360 Q166 328 194 328 Q222 328 224 360 Z',tono(c,-25))
+   +`<g fill="${tono(c,35)}"><circle cx="182" cy="346" r="6"/><circle cx="196" cy="340" r="6"/><circle cx="210" cy="348" r="6"/></g>`
+   +elip(160,362,11,8,c)+rect(172,358,10,12,4,c)+rect(206,358,10,12,4,c)
+   +`<circle cx="156" cy="360" r="2.4" fill="#1A0E22"/>`},
+{id:'raton', ranura:'mascota', gen:'m', num:'sg', nom:'ratón', da:'mus', precio:11, vb:'162 330 58 50',
+ dib:c=>elip(190,362,20,15,c)+circ(174,352,11,c)
+   +circ(172,340,8,tono(c,40))+circ(186,340,8,tono(c,40))
+   +`<path d="M209 366 Q224 366 220 352" fill="none" stroke="${tono(c,30)}" stroke-width="3" stroke-linecap="round"/>`
+   +`<circle cx="167" cy="352" r="2.2" fill="#1A0E22"/>`},
+
+/* ═══ POSE ═══ (sin color; añaden un verbo a la frase) */
+{id:'posar',   ranura:'pose', gen:'f', num:'sg', nom:'pose', da:'positur', yo:'poso',  verbo:'posar',  precio:0, sinColor:true, icono:'🧍', anim:'posar', vb:'0 0 220 400', dib:()=>''},
+{id:'caminar', ranura:'pose', gen:'m', num:'sg', nom:'paseo', da:'gang', yo:'camino', verbo:'caminar', precio:0, sinColor:true, icono:'🚶', anim:'caminar', vb:'0 0 220 400', dib:()=>''},
+{id:'saltar',  ranura:'pose', gen:'m', num:'sg', nom:'salto', da:'hop', yo:'salto',  verbo:'saltar',  precio:10, sinColor:true, icono:'🤸', anim:'saltar', vb:'0 0 220 400', dib:()=>''},
+{id:'girar',   ranura:'pose', gen:'f', num:'sg', nom:'vuelta', da:'drejning', yo:'giro', verbo:'girar', precio:12, sinColor:true, icono:'🔄', anim:'girar', vb:'0 0 220 400', dib:()=>''},
+{id:'bailar',  ranura:'pose', gen:'m', num:'sg', nom:'baile', da:'dans', yo:'bailo', verbo:'bailar',  precio:15, sinColor:true, icono:'💃', anim:'bailar', vb:'0 0 220 400', dib:()=>''}
+];
+
+const PR = {}; PRENDAS.forEach(p => PR[p.id] = p);
+const GRATIS = PRENDAS.filter(p => !p.precio).map(p => p.id);
+
+/* ── ropa base: el personaje nunca aparece desnudo ── */
+const BASE_TELA = '#E8DFEC';
+function ropaBase(){
+  return rect(76,150,68,38,10,BASE_TELA)
+    + path('M78 244 Q110 252 142 244 L140 292 L114 294 L110 272 L106 294 L80 292 Z',BASE_TELA);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PASARELA ESPAÑOLA · v2 — lógica
+   ═══════════════════════════════════════════════════════════ */
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const azar = a => a[Math.floor(Math.random()*a.length)];
+const mezcla = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+const esc = t => String(t).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const TIEMPOS = [60, 90, 120, 0];
+
+/* ── ESTADO ── */
+const S = {
+  nombre:'', piel:0, colorPelo:'castano',
+  monedas:40, comprado:[], estrellas:0, ronda:0,
+  puesto:{}, tema:null, escenario:'noche',
+  puntosEs:0, aciertos:0, fallos:0,
+  segundos:90, restante:90, reloj:null,
+  aprendidas:{}, sala:'',
+  danes:true, articulos:true, voz:true, todo:false,
+  ranura:'cuerpo'
+};
+
+/* ── GUARDADO ── */
+const CLAVE = 'pasarela-espanola-v2';
+function guardar(){
+  try{
+    localStorage.setItem(CLAVE, JSON.stringify({
+      nombre:S.nombre, piel:S.piel, colorPelo:S.colorPelo,
+      monedas:S.monedas, comprado:S.comprado, estrellas:S.estrellas,
+      aprendidas:S.aprendidas, danes:S.danes, articulos:S.articulos,
+      voz:S.voz, todo:S.todo, segundos:S.segundos
+    }));
+  }catch(e){}
+}
+function cargar(){
+  try{
+    const d = JSON.parse(localStorage.getItem(CLAVE) || '{}');
+    Object.assign(S, {
+      nombre:d.nombre||'', piel:d.piel||0, colorPelo:d.colorPelo||'castano',
+      monedas:(d.monedas==null?40:d.monedas), comprado:d.comprado||[], estrellas:d.estrellas||0,
+      aprendidas:d.aprendidas||{}, danes:d.danes!==false, articulos:d.articulos!==false,
+      voz:d.voz!==false, todo:!!d.todo, segundos:(d.segundos===0||d.segundos)?d.segundos:90
+    });
+  }catch(e){}
+}
+function tengo(p){ return S.todo || !p.precio || S.comprado.includes(p.id) }
+
+/* ── GRAMÁTICA ── */
+function det(p){ return p.num==='pl' ? (p.gen==='f'?'las':'los') : (p.gen==='f'?'la':'el') }
+function indet(p){ return p.num==='pl' ? (p.gen==='f'?'unas':'unos') : (p.gen==='f'?'una':'un') }
+function conDet(p){ return det(p)+' '+p.nom }
+function formaColor(p, colId){
+  const c = colorDe(p, colId);
+  const i = p.num==='pl' ? (p.gen==='f'?3:2) : (p.gen==='f'?1:0);
+  return c.f[i];
+}
+function trozoLook(id, colId){
+  const p = PR[id];
+  return (p.sinArt ? '' : indet(p)+' ') + p.nom + (p.sinColor ? '' : ' '+formaColor(p, colId));
+}
+function fraseLlevo(puesto){
+  const trozos = RANURAS_LLEVO.filter(r => puesto[r]).map(r => trozoLook(puesto[r].id, puesto[r].color));
+  if(!trozos.length) return '';
+  return 'Llevo ' + (trozos.length===1 ? trozos[0]
+    : trozos.slice(0,-1).join(', ')+' y '+trozos[trozos.length-1]) + '.';
+}
+function frasePelo(puesto){
+  if(!puesto.pelo) return '';
+  const p = PR[puesto.pelo.id];
+  const col = formaColor(p, puesto.pelo.color);
+  return p.id.startsWith('pelo')
+    ? 'Tengo '+det(p)+' '+p.nom+' y '+col+'.'
+    : 'Tengo '+indet(p)+' '+p.nom+' '+col+'.';
+}
+function frasePose(puesto){
+  if(!puesto.pose) return '';
+  return '¡Y ahora '+PR[puesto.pose.id].yo+'!';
+}
+function fraseCompleta(nombre, puesto){
+  return [nombre?('Me llamo '+nombre+'.'):'', frasePelo(puesto), fraseLlevo(puesto), frasePose(puesto)]
+    .filter(Boolean).join(' ');
+}
+
+/* ── VOZ ── */
+function hablar(t){
+  if(!S.voz || !t) return;
+  try{
+    if(!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = 'es-ES'; u.rate = 0.9;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ── ESCENARIOS ── */
+function fondoHTML(id){
+  const e = ESCENARIOS[id] || ESCENARIOS.noche;
+  let f = '';
+  if(e.mar) f += `<path d="M0 300 Q55 292 110 300 T220 300 L220 340 L0 340 Z" fill="#2E8FB8" opacity=".75"/>
+    <g stroke="#BFE6F2" stroke-width="2" fill="none" opacity=".5"><path d="M10 312 q12 -6 24 0"/><path d="M60 322 q12 -6 24 0"/><path d="M150 312 q12 -6 24 0"/></g>
+    <circle cx="176" cy="72" r="26" fill="#FFE9A8" opacity=".85"/>`;
+  if(e.torres) f += `<g fill="#1B1428" opacity=".85">
+    <rect x="4" y="212" width="34" height="130"/><rect x="44" y="252" width="26" height="90"/>
+    <rect x="78" y="188" width="30" height="154"/><rect x="116" y="240" width="24" height="102"/>
+    <rect x="148" y="204" width="36" height="138"/><rect x="190" y="248" width="26" height="94"/></g>
+    <g fill="#FFD98A" opacity=".7">${[[10,226],[24,246],[86,204],[96,244],[156,220],[170,258],[52,268],[124,258],[198,264]]
+      .map(p=>`<rect x="${p[0]}" y="${p[1]}" width="7" height="9"/>`).join('')}</g>`;
+  if(e.arboles) f += `<g fill="#16301F" opacity=".9">${[[16,300,34],[52,286,28],[186,296,32],[152,282,26]]
+    .map(t=>`<path d="M${t[0]} ${t[1]} l${t[2]/2} -${t[2]*1.7} l${t[2]/2} ${t[2]} l-${t[2]} 0 Z"/><rect x="${t[0]+t[2]/2-3}" y="${t[1]-6}" width="6" height="46" fill="#3A2A1C"/>`).join('')}</g>`;
+  if(e.copos) f += `<g fill="#FFFFFF" opacity=".8">${Array.from({length:26},(_,i)=>
+    `<circle cx="${(i*47)%216+3}" cy="${(i*71)%300+12}" r="${i%3===0?2.6:1.7}"/>`).join('')}</g>`;
+  if(e.castillo) f += `<g fill="#2A1B3C" opacity=".9">
+    <rect x="24" y="216" width="34" height="126"/><rect x="92" y="184" width="40" height="158"/><rect x="164" y="224" width="32" height="118"/>
+    <path d="M20 216 l6 -16 l6 16 l6 -16 l6 16 l6 -16 l6 16 Z"/><path d="M88 184 l7 -18 l7 18 l7 -18 l7 18 l7 -18 l7 18 Z"/>
+    <path d="M160 224 l6 -16 l6 16 l6 -16 l6 16 l6 -16 l6 16 Z"/></g>
+    <g fill="#FFD98A" opacity=".65"><rect x="36" y="244" width="10" height="14" rx="5"/><rect x="106" y="212" width="12" height="16" rx="6"/><rect x="174" y="252" width="10" height="14" rx="5"/></g>`;
+  if(e.estrellas) f += `<g fill="#FFF3D0">${Array.from({length:34},(_,i)=>
+    `<circle cx="${(i*53)%214+3}" cy="${(i*97)%250+8}" r="${i%4===0?1.9:1.1}" opacity="${.35+((i*13)%50)/100}"/>`).join('')}
+    </g><circle cx="42" cy="66" r="20" fill="#FFF6DC" opacity=".9"/><circle cx="34" cy="60" r="18" fill="#2A1440" opacity=".95"/>`;
+  return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,${e.cielo[0]},${e.cielo[1]})"></div>
+    <svg viewBox="0 0 220 400" preserveAspectRatio="xMidYMax slice">${f}
+      <rect x="0" y="336" width="220" height="64" fill="${e.suelo}"/>
+      <rect x="0" y="336" width="220" height="7" fill="#00000030"/></svg>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#170B1E55,#170B1E10 40%,#170B1E77)"></div>`;
+}
+function pintarFondos(){
+  const h = fondoHTML(S.escenario);
+  ['#fondo-armario','#fondo-pasarela'].forEach(s => { const e=$(s); if(e) e.innerHTML = h; });
+}
+
+/* ── AVATAR ── */
+function avatarSVG(est){
+  const piel = PIELES[est.piel] || PIELES[0];
+  const P = est.puesto || {};
+  const entero = P.cuerpo && PR[P.cuerpo.id].entero;
+  const dib = r => {
+    if(!P[r]) return '';
+    const p = PR[P[r].id];
+    return p.dib ? p.dib(colorDe(p, P[r].color).hex) : '';
+  };
+  const peloAtras = P.pelo && PR[P.pelo.id].atras ? PR[P.pelo.id].atras(colorDe(PR[P.pelo.id], P.pelo.color).hex) : '';
+
+  return [
+    peloAtras,
+    rect(86,248,21,124,10,piel) + rect(113,248,21,124,10,piel),
+    elip(96,374,15,8,piel) + elip(124,374,15,8,piel),
+    path('M74 144 Q110 133 146 144 L142 254 Q110 262 78 254 Z',piel),
+    rect(55,145,19,102,9,piel) + rect(146,145,19,102,9,piel),
+    circ(64,250,11,piel) + circ(156,250,11,piel),
+    ropaBase(),
+    entero ? '' : dib('piernas'),
+    dib('cuerpo'),
+    dib('pies'),
+    rect(99,110,22,36,9,piel),
+    circ(75,96,8,piel) + circ(145,96,8,piel),
+    circ(110,92,37,piel),
+    `<g fill="#33223B"><circle cx="98" cy="90" r="3.6"/><circle cx="122" cy="90" r="3.6"/></g>`,
+    (P.cara && P.cara.id === 'labios') ? '' :
+     `<path d="M100 107 Q110 115 120 107" fill="none" stroke="#33223B" stroke-width="3" stroke-linecap="round"/>`,
+    dib('cara'),
+    dib('pelo'),
+    dib('cuello'),
+    dib('mano'),
+    dib('cabeza'),
+    dib('ojos'),
+    dib('mascota')
+  ].join('');
+}
+function estadoActual(){ return {piel:S.piel, puesto:S.puesto} }
+function pintarAvatares(){
+  const m = avatarSVG(estadoActual());
+  ['#av-inicio','#av-crear','#av-armario','#av-pasarela','#av-resultado'].forEach(s => { const e=$(s); if(e) e.innerHTML = m; });
+  const esc = $('#esc-armario');
+  if(esc) esc.className = 'escenario pose-' + (S.puesto.pose ? PR[S.puesto.pose.id].anim : 'posar');
+}
+function vistaPrenda(p, colId){
+  if(p.icono) return `<span aria-hidden="true">${p.icono}</span>`;
+  const hex = colorDe(p, colId).hex;
+  const atras = p.atras ? p.atras(hex) : '';
+  return `<svg viewBox="${p.vb}" aria-hidden="true">${atras}${p.dib(hex)}</svg>`;
+}
+function colorPorDefecto(p){ return p.paleta==='pelo' ? S.colorPelo : 'azul' }
+
+/* ── NAVEGACIÓN ── */
+function pantalla(id){
+  $$('.pantalla').forEach(s => s.classList.toggle('activa', s.id===id));
+  document.body.classList.toggle('pizarra', id==='p-pizarra');
+  const t = $('#'+id); if(t) t.scrollTop = 0;
+}
+
+/* ── INICIO ── */
+function pintarInicio(){
+  $('#marca-nivel').innerHTML =
+    `<span class="chip">🪙 <b>${S.monedas}</b></span>
+     <span class="chip">★ <b>${S.estrellas}</b></span>
+     <span class="chip">Palabras <b>${Object.keys(S.aprendidas).length}</b>/${PRENDAS.length}</span>`;
+  $('#nombre').value = S.nombre;
+}
+
+/* ── CREAR PERSONAJE ── */
+function pintarCreador(){
+  $('#op-piel').innerHTML = PIELES.map((c,i)=>
+    `<button class="op" data-piel="${i}" style="background:${c}" aria-pressed="${S.piel===i}" aria-label="Piel ${i+1}"></button>`).join('');
+  $('#op-pelo').innerHTML = PELOS.map(c=>
+    `<button class="op" data-pelo="${c.id}" style="background:${c.hex}" aria-pressed="${S.colorPelo===c.id}" aria-label="${c.f[0]}"></button>`).join('');
+  pintarAvatares();
+}
+$('#op-piel').addEventListener('click', e => {
+  const b = e.target.closest('[data-piel]'); if(!b) return;
+  S.piel = +b.dataset.piel; guardar(); pintarCreador();
+});
+$('#op-pelo').addEventListener('click', e => {
+  const b = e.target.closest('[data-pelo]'); if(!b) return;
+  S.colorPelo = b.dataset.pelo;
+  if(S.puesto.pelo) S.puesto.pelo.color = S.colorPelo;
+  guardar(); pintarCreador();
+});
+
+/* ── CÓDIGOS DE CLASE ── */
+const AL = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+function crearCodigoSala(iTema, iTiempo){
+  return iTema.toString(36).toUpperCase() + iTiempo.toString(36).toUpperCase()
+    + azar(AL.split('')) + azar(AL.split(''));
+}
+function leerCodigoSala(txt){
+  const c = (txt||'').trim().toUpperCase();
+  if(c.length !== 4) return null;
+  const t = parseInt(c[0], 36), s = parseInt(c[1], 36);
+  if(isNaN(t) || isNaN(s) || t >= TEMAS.length || s >= TIEMPOS.length) return null;
+  return {tema:t, segundos:TIEMPOS[s], codigo:c};
+}
+
+/* ── CÓDIGO DE LOOK ── */
+function crearCodigoLook(nombre, piel, puesto, puntos){
+  const trozos = RANURAS.map(r => {
+    const v = puesto[r.id]; if(!v) return '';
+    const i = PRENDAS.findIndex(p => p.id === v.id);
+    const p = PRENDAS[i];
+    const pal = paletaDe(p);
+    const ci = Math.max(0, pal.findIndex(c => c.id === v.color));
+    return i.toString(36).padStart(2,'0') + ci.toString(36);
+  }).filter(Boolean).join('');
+  const n = (nombre||'Alumno').replace(/[^\wÀ-ÿ ]/g,'').slice(0,14) || 'Alumno';
+  return 'PE-' + n.replace(/ /g,'_') + '-' + piel + '-' + trozos + '-' + puntos;
+}
+function leerCodigoLook(txt){
+  const c = (txt||'').trim();
+  const m = c.match(/PE-([\wÀ-ÿ_]{1,16})-(\d)-([0-9a-z]*)-(\d{1,4})/i);
+  if(!m) return null;
+  const puesto = {};
+  const cuerpo = m[3].toLowerCase();
+  for(let k=0; k+2 < cuerpo.length+1; k+=3){
+    const trozo = cuerpo.slice(k, k+3);
+    if(trozo.length < 3) break;
+    const i = parseInt(trozo.slice(0,2), 36);
+    const p = PRENDAS[i]; if(!p) continue;
+    const pal = paletaDe(p);
+    const col = pal[parseInt(trozo[2], 36)] || pal[0];
+    puesto[p.ranura] = {id:p.id, color:col.id};
+  }
+  return {nombre:m[1].replace(/_/g,' '), piel:Math.min(3, +m[2]), puesto, puntos:+m[4]};
+}
+
+/* ── RONDA ── */
+function nuevaRonda(iTema){
+  S.ronda++;
+  S.puesto = {}; S.puntosEs = 0; S.aciertos = 0; S.fallos = 0;
+  S.tema = iTema != null ? TEMAS[iTema] : azar(TEMAS.filter(t => t !== S.tema));
+  S.escenario = S.tema.esc;
+  const t = S.tema;
+  $('#t-ronda').textContent = S.ronda;
+  $('#t-emoji').textContent = t.emoji;
+  $('#t-es').textContent = t.es;
+  $('#t-da').textContent = S.danes ? t.da : '';
+  const pistas = t.ropa.filter(id => PR[id] && tengo(PR[id])).slice(0,3);
+  $('#t-pistas').innerHTML = `<p style="margin-bottom:8px">Palabras de esta ronda</p>` +
+    (pistas.length ? pistas.map(id => `<div><b>${conDet(PR[id])}</b>${S.danes?' — '+PR[id].da:''}</div>`).join('')
+      : '<div>¡Sorpréndenos con lo que tengas!</div>');
+  pintarFondos();
+  pantalla('p-tema');
+  hablar(t.es);
+}
+
+/* ── ARMARIO ── */
+function abrirArmario(){
+  $('#a-tema').textContent = S.tema.emoji+' '+S.tema.es;
+  $('#a-monedas').textContent = S.monedas;
+  S.ranura = 'cuerpo';
+  pintarFondos(); pintarPestanas(); pintarRejilla(); pintarAvatares();
+  pantalla('p-armario');
+  arrancarReloj();
+}
+function pintarPestanas(){
+  $('#pestanas').innerHTML = RANURAS.map(r =>
+    `<button class="pest" role="tab" data-ranura="${r.id}" aria-selected="${S.ranura===r.id}">${r.es}${S.puesto[r.id]?' ✓':''}</button>`).join('');
+}
+function pintarRejilla(){
+  const lista = PRENDAS.filter(p => p.ranura === S.ranura);
+  $('#rejilla').innerHTML = lista.map(p => {
+    const puesta = S.puesto[p.ranura] && S.puesto[p.ranura].id === p.id;
+    const bloq = !tengo(p);
+    const col = puesta ? S.puesto[p.ranura].color : colorPorDefecto(p);
+    return `<button class="prenda ${puesta?'puesta':''} ${bloq?'bloqueada':''}" data-id="${p.id}" aria-label="${esc(p.nom)}">
+      ${vistaPrenda(p, col)}${bloq?`<span class="precio">🪙 ${p.precio}</span>`:''}</button>`;
+  }).join('');
+}
+$('#pestanas').addEventListener('click', e => {
+  const b = e.target.closest('.pest'); if(!b) return;
+  S.ranura = b.dataset.ranura; pintarPestanas(); pintarRejilla();
+});
+$('#rejilla').addEventListener('click', e => {
+  const b = e.target.closest('.prenda'); if(!b) return;
+  const p = PR[b.dataset.id];
+  if(!tengo(p)){ retoCompra(p, 'armario'); return; }
+  if(S.puesto[p.ranura] && S.puesto[p.ranura].id === p.id && !p.sinColor){ pasoColor(p); return; }
+  abrirReto(p);
+});
+$('#b-quitar').addEventListener('click', () => {
+  delete S.puesto[S.ranura];
+  pintarPestanas(); pintarRejilla(); pintarAvatares();
+});
+
+function arrancarReloj(){
+  pararReloj();
+  if(!S.segundos){ $('#reloj').textContent = '∞'; return; }
+  S.restante = S.segundos; pintarReloj();
+  S.reloj = setInterval(() => {
+    S.restante--; pintarReloj();
+    if(S.restante <= 0){ pararReloj(); desfilar(); }
+  }, 1000);
+}
+function pararReloj(){ if(S.reloj){ clearInterval(S.reloj); S.reloj = null } }
+function pintarReloj(){
+  const r = $('#reloj');
+  r.textContent = Math.floor(S.restante/60)+':'+String(Math.max(0,S.restante%60)).padStart(2,'0');
+  r.classList.toggle('urgente', S.restante <= 15);
+}
+
+/* ── RETO DE VOCABULARIO ── */
+let retoActual = null;
+function cerrarVelo(){ $('#velo').classList.remove('abierto'); retoActual = null; }
+function abrirVelo(html){ $('#reto').innerHTML = html; $('#velo').classList.add('abierto'); }
+
+function abrirReto(p){
+  const tipos = ['nombre','danes'];
+  if(S.articulos) tipos.push('articulo');
+  retoActual = {p, tipo:azar(tipos), fallos:0, pista:false};
+  pintarReto();
+  $('#velo').classList.add('abierto');
+}
+function pintarReto(){
+  const {p, tipo} = retoActual;
+  let titulo, opciones, correcta;
+  if(tipo === 'articulo'){
+    titulo = `¿<em>el</em>, <em>la</em>, <em>los</em> o <em>las</em>… ${esc(p.nom)}?`;
+    opciones = ['el','la','los','las'];
+    correcta = det(p);
+  } else {
+    const otros = mezcla(PRENDAS.filter(q => q.ranura===p.ranura && q.id!==p.id))
+      .concat(mezcla(PRENDAS.filter(q => q.ranura!==p.ranura))).slice(0,2);
+    opciones = mezcla([p, ...otros].map(conDet));
+    correcta = conDet(p);
+    titulo = tipo === 'danes'
+      ? `¿Cómo se dice <b style="color:var(--oro)">${esc(p.da)}</b> en español?`
+      : '¿Qué es esto?';
+  }
+  retoActual.correcta = correcta;
+  $('#reto').innerHTML = `
+    ${tipo === 'danes' ? '' : `<div class="vista">${vistaPrenda(p, colorPorDefecto(p))}</div>`}
+    <h3>${titulo}</h3>
+    <div class="opciones">${opciones.map(o => `<button class="opcion" data-op="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+    <div id="zona-pista"></div>
+    <div class="pie-reto">
+      <button class="mini" data-cerrar>Cancelar</button>
+      ${S.danes ? '<button class="mini" data-pista>💡 Hjælp (-3)</button>' : ''}
+    </div>`;
+}
+
+/* ── PASO 2: COLOR ── */
+function pasoColor(p){
+  if(p.sinColor){ ponerPrenda(p, null); return; }
+  const paleta = mezcla(paletaDe(p)).slice(0, 8);
+  const reto = Math.random() < 0.35;
+  const pedido = reto ? azar(paleta) : null;
+  retoActual = {p, tipo:'color', pedido};
+  abrirVelo(`
+    <div class="vista">${vistaPrenda(p, colorPorDefecto(p))}</div>
+    <h3>${reto ? `Toca el color <b style="color:var(--oro)">${esc(pedido.f[0].toUpperCase())}</b>`
+                : `¿De qué color quieres ${esc(conDet(p))}?`}</h3>
+    <div class="colores">${paleta.map(c =>
+      `<button class="color" data-color="${c.id}"><i style="background:${c.hex}"></i><span>${reto?'':esc(c.f[0])}</span></button>`).join('')}</div>
+    <div id="zona-pista"></div>
+    <div class="pie-reto"><button class="mini" data-cerrar>Saltar</button></div>`);
+}
+function ponerPrenda(p, colorId){
+  if(p.entero) delete S.puesto.piernas;
+  if(p.ranura==='piernas' && S.puesto.cuerpo && PR[S.puesto.cuerpo.id].entero) delete S.puesto.cuerpo;
+  S.puesto[p.ranura] = {id:p.id, color:colorId || colorPorDefecto(p)};
+  if(p.ranura === 'pelo') S.colorPelo = S.puesto.pelo.color;
+  hablar(p.sinColor ? PR[p.id].yo : trozoLook(p.id, S.puesto[p.ranura].color));
+  cerrarVelo();
+  pintarPestanas(); pintarRejilla(); pintarAvatares();
+}
+function chispa(txt){
+  const e = document.createElement('div');
+  e.className = 'subeypunto'; e.textContent = txt;
+  $('#p-armario').appendChild(e);
+  setTimeout(() => e.remove(), 1000);
+}
+
+/* ── LA TIENDA ── */
+function retoCompra(p, vuelta){
+  if(S.monedas < p.precio){
+    abrirVelo(`<div class="vista">${vistaPrenda(p, colorPorDefecto(p))}</div>
+      <h3>Te faltan monedas</h3>
+      <p class="aviso">${esc(conDet(p)[0].toUpperCase()+conDet(p).slice(1))} cuesta <b style="color:var(--oro)">${numeroEs(p.precio)}</b> monedas
+      y tienes ${numeroEs(S.monedas)}. Juega otra ronda para ganar más.</p>
+      <button class="btn ancho fantasma" data-cerrar>Vale</button>`);
+    return;
+  }
+  const otros = mezcla([p.precio+ (p.precio>9?7:3), Math.max(1,p.precio-4), p.precio+11, Math.max(2,p.precio-9)])
+    .filter(n => n !== p.precio).slice(0,2);
+  const ops = mezcla([p.precio, ...otros]);
+  retoActual = {p, tipo:'compra', vuelta};
+  abrirVelo(`
+    <div class="vista">${vistaPrenda(p, colorPorDefecto(p))}</div>
+    <h3>${esc(conDet(p)[0].toUpperCase()+conDet(p).slice(1))} cuesta<br><b style="color:var(--oro)">${numeroEs(p.precio)}</b> monedas</h3>
+    <p class="etiqueta">¿Qué número es?</p>
+    <div class="opciones">${ops.map(n => `<button class="opcion num" data-precio="${n}">${n}</button>`).join('')}</div>
+    <div id="zona-pista"></div>
+    <div class="pie-reto">
+      <button class="mini" data-cerrar>Ahora no</button>
+      ${S.danes ? `<button class="mini" data-numda>💡 ${esc(numeroDa(p.precio))}</button>` : ''}
+    </div>`);
+}
+function pintarTienda(){
+  $('#t-monedas').textContent = S.monedas;
+  const grupos = [['ropa','Ropa',['cuerpo','piernas','pies']],['extra','Complementos',['cabeza','ojos','cuello','mano']],
+    ['estilo','Pelo y cara',['pelo','cara']],['mascota','Mascotas',['mascota']],['pose','Poses',['pose']]];
+  $('#filtros-tienda').innerHTML = grupos.map(g =>
+    `<button data-g="${g[0]}" aria-pressed="${filtroTienda===g[0]}">${g[1]}</button>`).join('');
+  const g = grupos.find(x => x[0]===filtroTienda) || grupos[0];
+  const lista = PRENDAS.filter(p => g[2].includes(p.ranura) && p.precio);
+  $('#estante').innerHTML = lista.map(p => {
+    const mio = tengo(p), caro = !mio && S.monedas < p.precio;
+    return `<button class="articulo ${mio?'tengo':''} ${caro?'caro':''}" data-id="${p.id}">
+      <span class="marco">${vistaPrenda(p, colorPorDefecto(p))}</span>
+      <b>${esc(conDet(p))}</b>
+      <span class="cuesta">${mio ? '✓ Tuyo' : '🪙 '+p.precio}</span></button>`;
+  }).join('') || '<p class="aviso">Aquí ya lo tienes todo.</p>';
+}
+let filtroTienda = 'ropa';
+$('#filtros-tienda').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  filtroTienda = b.dataset.g; pintarTienda();
+});
+$('#estante').addEventListener('click', e => {
+  const b = e.target.closest('.articulo'); if(!b) return;
+  const p = PR[b.dataset.id];
+  if(tengo(p)){ hablar(conDet(p)); return; }
+  retoCompra(p, 'tienda');
+});
+
+/* ── CLICS DENTRO DEL RETO ── */
+$('#reto').addEventListener('click', e => {
+  if(e.target.closest('[data-cerrar]')){ cerrarVelo(); return; }
+  if(e.target.closest('[data-pista]') && retoActual){
+    if(retoActual.pista) return;
+    retoActual.pista = true; S.puntosEs = Math.max(0, S.puntosEs - 3);
+    $('#zona-pista').innerHTML = `<div class="pista-caja">På dansk: <b>${esc(retoActual.p.da)}</b></div>`;
+    return;
+  }
+  if(e.target.closest('[data-numda]') && retoActual){
+    $('#zona-pista').innerHTML = `<div class="pista-caja">På dansk: <b>${esc(numeroDa(retoActual.p.precio))}</b></div>`;
+    return;
+  }
+  if(!retoActual) return;
+
+  /* compra */
+  const nb = e.target.closest('[data-precio]');
+  if(nb && retoActual.tipo === 'compra'){
+    const p = retoActual.p;
+    if(+nb.dataset.precio === p.precio){
+      nb.classList.add('bien');
+      S.monedas -= p.precio;
+      if(!S.comprado.includes(p.id)) S.comprado.push(p.id);
+      S.aprendidas[p.id] = (S.aprendidas[p.id]||0) + 1;
+      guardar(); hablar(conDet(p));
+      const vuelta = retoActual.vuelta;
+      setTimeout(() => {
+        cerrarVelo();
+        if(vuelta === 'tienda') pintarTienda();
+        else { $('#a-monedas').textContent = S.monedas; pintarRejilla(); abrirReto(p); }
+      }, 420);
+    } else { nb.classList.add('mal'); nb.disabled = true; }
+    return;
+  }
+
+  /* color */
+  const cb = e.target.closest('.color');
+  if(cb && retoActual.tipo === 'color'){
+    const {p, pedido} = retoActual;
+    const cid = cb.dataset.color;
+    if(pedido && cid !== pedido.id){
+      cb.style.borderColor = 'var(--coral)';
+      $('#zona-pista').innerHTML = `<div class="pista-caja">${esc(pedido.f[0])} = <b>${esc(pedido.da)}</b></div>`;
+      S.puntosEs = Math.max(0, S.puntosEs - 2);
+      return;
+    }
+    if(pedido) S.puntosEs += 6;
+    ponerPrenda(p, cid);
+    chispa('+'+(pedido?18:12));
+    return;
+  }
+
+  /* vocabulario */
+  const op = e.target.closest('.opcion[data-op]');
+  if(op && retoActual.correcta){
+    const p = retoActual.p;
+    if(op.dataset.op === retoActual.correcta){
+      op.classList.add('bien');
+      S.puntosEs += retoActual.fallos ? 6 : 12;
+      S.aciertos++;
+      S.aprendidas[p.id] = (S.aprendidas[p.id]||0) + 1;
+      hablar(conDet(p));
+      setTimeout(() => pasoColor(p), 400);
+    } else {
+      op.classList.add('mal'); op.disabled = true;
+      retoActual.fallos++; S.fallos++;
+      S.puntosEs = Math.max(0, S.puntosEs - 2);
+      if(S.danes) $('#zona-pista').innerHTML = `<div class="pista-caja">På dansk: <b>${esc(p.da)}</b></div>`;
+    }
+  }
+});
+$('#velo').addEventListener('click', e => { if(e.target.id === 'velo') cerrarVelo() });
+
+/* ── PASARELA ── */
+function desfilar(){
+  pararReloj(); cerrarVelo();
+  $('#d-tema').textContent = S.tema.emoji+' '+S.tema.es;
+  pintarFondos(); pintarAvatares();
+  const e = $('#esc-pasarela');
+  e.className = 'escenario pose-' + (S.puesto.pose ? PR[S.puesto.pose.id].anim : 'caminar');
+  const av = $('#av-pasarela');
+  av.classList.remove('acercando'); void av.offsetWidth; av.classList.add('acercando');
+  pantalla('p-pasarela');
+  montarFrase();
+}
+function montarFrase(){
+  const ranuras = RANURAS_LLEVO.filter(r => S.puesto[r]);
+  $('#b-jueces').style.display = 'none';
+  const pelo = frasePelo(S.puesto), pose = frasePose(S.puesto);
+  if(!ranuras.length){
+    $('#frase').innerHTML = [pelo, pose].filter(Boolean).join(' ')
+      || '<span style="color:var(--tenue)">No has cogido nada del armario. Los jueces te esperan igualmente…</span>';
+    $('#frase-op').innerHTML = '';
+    $('#b-jueces').style.display = '';
+    return;
+  }
+  const objetivo = azar(ranuras);
+  const {id, color} = S.puesto[objetivo];
+  const p = PR[id];
+  const buena = formaColor(p, color);
+  const trozos = ranuras.map(r => {
+    const q = PR[S.puesto[r].id];
+    if(r === objetivo) return (q.sinArt?'':indet(q)+' ')+q.nom+' <span class="hueco">____</span>';
+    return trozoLook(S.puesto[r].id, S.puesto[r].color);
+  });
+  const llevo = 'Llevo ' + (trozos.length===1 ? trozos[0]
+    : trozos.slice(0,-1).join(', ')+' y '+trozos[trozos.length-1]) + '.';
+  $('#frase').innerHTML = [pelo, llevo, pose].filter(Boolean).join(' ');
+
+  const pal = paletaDe(p);
+  const malaForma = pal.find(c => c.id === color).f.filter(x => x !== buena)[0] || 'x';
+  const otro = azar(pal.filter(c => c.id !== color));
+  const ops = mezcla([buena, malaForma, formaColor(p, otro.id)].filter((v,i,a) => a.indexOf(v)===i));
+  $('#frase-op').innerHTML = `<p class="etiqueta" style="text-align:center;margin-bottom:2px">Completa la frase</p>`
+    + ops.map(o => `<button class="opcion" data-f="${esc(o)}">${esc(o)}</button>`).join('');
+  $('#frase-op').dataset.buena = buena;
+}
+$('#frase-op').addEventListener('click', e => {
+  const b = e.target.closest('.opcion'); if(!b) return;
+  if(b.dataset.f === $('#frase-op').dataset.buena){
+    b.classList.add('bien');
+    S.puntosEs += 15;
+    const h = $('#frase .hueco');
+    if(h){ h.textContent = b.dataset.f; h.classList.add('brillo') }
+    $('#frase-op').querySelectorAll('.opcion').forEach(x => x.disabled = true);
+    hablar($('#frase').textContent);
+    $('#b-jueces').style.display = '';
+  } else { b.classList.add('mal'); b.disabled = true; S.puntosEs = Math.max(0, S.puntosEs - 3); }
+});
+
+/* ── JUECES Y RESULTADO ── */
+function calcular(){
+  let estilo = 0, colorOk = 0, aciertoTema = 0, n = 0;
+  Object.keys(S.puesto).forEach(r => {
+    const {id, color} = S.puesto[r]; n++;
+    if(S.tema.ropa.includes(id)){ estilo += 15; aciertoTema++ } else estilo += 4;
+    if(color && S.tema.colores.includes(color)){ estilo += 6; colorOk++ }
+  });
+  if(n >= 5) estilo += 12;
+  if(n >= 8) estilo += 10;
+  return {estilo, espanol:S.puntosEs, total:estilo + S.puntosEs, aciertoTema, colorOk, n:Math.max(1,n)};
+}
+function verJueces(){
+  pintarAvatares();
+  const r = calcular();
+  $('#r-ronda').textContent = S.ronda;
+  $('#r-tema').textContent = S.tema.es;
+  $('#r-estilo').textContent = r.estilo;
+  $('#r-espanol').textContent = r.espanol;
+  $('#r-total').textContent = r.total;
+
+  const banda = v => v >= .7 ? 'alto' : v >= .35 ? 'medio' : 'bajo';
+  const notas = {
+    estilo: banda(r.aciertoTema / r.n),
+    espanol: banda(S.aciertos ? S.aciertos/(S.aciertos+S.fallos) : 0),
+    color: banda(r.colorOk / r.n)
+  };
+  $('#jueces').innerHTML = JUECES.map((j,i) => {
+    const b = notas[j.mira], c = azar(COMENTARIOS[j.mira][b]);
+    const n = b==='alto' ? 5 : b==='medio' ? 3 : 1;
+    return `<div class="juez" style="animation-delay:${i*.13}s">
+      <div class="cara">${j.cara}</div>
+      <div class="dice"><strong>${j.nom}: «${c[0]}»</strong>${S.danes?`<span>${c[1]}</span>`:''}</div>
+      <div class="pts" aria-label="${n} de 5">${'★'.repeat(n)}<span style="opacity:.28">${'★'.repeat(5-n)}</span></div></div>`;
+  }).join('');
+
+  const rivales = mezcla(RIVALES).slice(0,3).map(nm => ({n:nm, p:Math.max(20, Math.round(r.total + (Math.random()*56 - 32)))}));
+  const todos = mezcla([{n:S.nombre||'Tú', p:r.total, yo:true}, ...rivales]).sort((a,b) => b.p - a.p);
+  $('#tabla').innerHTML = todos.map((t,i) =>
+    `<div class="fila ${t.yo?'yo':''}"><span class="pos">${i+1}º</span>
+     <span class="quien">${esc(t.n)}${t.yo?' 👗':''}</span><span class="pt">${t.p}</span></div>`).join('');
+
+  const pos = todos.findIndex(t => t.yo);
+  const gana = pos===0 ? 3 : pos===1 ? 2 : 1;
+  const oro = 10 + gana*5 + S.aciertos*2;
+  S.estrellas += gana; S.monedas += oro;
+  $('#r-monedas').textContent = '+'+oro;
+  $('#r-premio').innerHTML = `<div class="caja" style="padding:13px">
+    <b style="color:var(--oro);font-size:24px">+${gana} ★ · +${oro} 🪙</b>
+    <span>${pos===0?'¡Has ganado la ronda!':'Buen trabajo'}</span></div>`;
+
+  if(S.sala){
+    $('#r-zona-codigo').style.display = '';
+    $('#r-codigo').textContent = crearCodigoLook(S.nombre, S.piel, S.puesto, r.total);
+  } else $('#r-zona-codigo').style.display = 'none';
+
+  if(pos === 0) confeti(90);
+  guardar();
+  pantalla('p-resultado');
+}
+$('#b-copiar').addEventListener('click', async () => {
+  const t = $('#r-codigo').textContent;
+  try{ await navigator.clipboard.writeText(t); $('#b-copiar').textContent = '¡Copiado!'; }
+  catch(e){
+    const r = document.createRange(); r.selectNode($('#r-codigo'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    $('#b-copiar').textContent = 'Selecciónalo';
+  }
+  setTimeout(() => $('#b-copiar').textContent = 'Copiar', 2200);
+});
+
+/* ── CONFETI ── */
+const cv = $('#confeti'), ctx = cv.getContext('2d');
+let trozos = [], animando = false;
+function confeti(n){
+  const R = cv.parentElement.getBoundingClientRect();
+  cv.width = R.width; cv.height = R.height;
+  const cols = ['#FF3D8B','#FFC24A','#4FE0C0','#FDF3E7','#8B4FD6'];
+  for(let i=0;i<n;i++) trozos.push({
+    x:Math.random()*R.width, y:-20-Math.random()*R.height*.5,
+    vx:(Math.random()-.5)*2.2, vy:2+Math.random()*3.4,
+    g:Math.random()*Math.PI, vg:(Math.random()-.5)*.3,
+    w:5+Math.random()*7, h:8+Math.random()*8, c:azar(cols)
+  });
+  if(!animando){ animando = true; requestAnimationFrame(pasoConfeti) }
+}
+function pasoConfeti(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  trozos = trozos.filter(t => t.y < cv.height + 30);
+  trozos.forEach(t => {
+    t.x += t.vx; t.y += t.vy; t.g += t.vg;
+    ctx.save(); ctx.translate(t.x, t.y); ctx.rotate(t.g);
+    ctx.fillStyle = t.c; ctx.fillRect(-t.w/2, -t.h/2, t.w, t.h * Math.abs(Math.cos(t.g)));
+    ctx.restore();
+  });
+  if(trozos.length) requestAnimationFrame(pasoConfeti);
+  else { animando = false; ctx.clearRect(0,0,cv.width,cv.height) }
+}
+
+/* ── DICCIONARIO ── */
+let filtro = 'todo';
+function pintarDicc(){
+  $('#filtros').innerHTML = [['todo','Todo'],['ropa','Ropa'],['estilo','Pelo y cara'],['animales','Animales'],['colores','Colores'],['numeros','Números']]
+    .map(f => `<button data-f="${f[0]}" aria-pressed="${filtro===f[0]}">${f[1]}</button>`).join('');
+  let html = '';
+  if(filtro === 'colores'){
+    html = COLORES.concat(PELOS.filter(p => !COLORES.some(c => c.id===p.id)))
+      .map(c => `<button class="palabra" data-decir="${esc(c.f[0])}">
+        <i class="ic" style="display:block;border-radius:50%;background:${c.hex}"></i>
+        <span class="tx"><strong>${esc(c.f[0])}</strong><span>${esc(c.da)}</span></span><span class="son">🔊</span></button>`).join('');
+  } else if(filtro === 'numeros'){
+    html = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,25,30,40,50,60,70,80,90,100]
+      .map(n => `<button class="palabra" data-decir="${esc(numeroEs(n))}">
+        <span class="ic num" style="font-size:15px;color:var(--oro)">${n}</span>
+        <span class="tx"><strong>${esc(numeroEs(n))}</strong><span>${esc(numeroDa(n))}</span></span><span class="son">🔊</span></button>`).join('');
+  } else {
+    const lista = PRENDAS.filter(p =>
+      filtro==='todo' ? true :
+      filtro==='animales' ? p.ranura==='mascota' :
+      filtro==='estilo' ? (p.ranura==='pelo'||p.ranura==='cara'||p.ranura==='pose') :
+      !['mascota','pelo','cara','pose'].includes(p.ranura));
+    html = lista.map(p => `<button class="palabra ${S.aprendidas[p.id]?'usada':''}" data-decir="${esc(p.verbo?p.verbo:conDet(p))}">
+      <span class="ic">${vistaPrenda(p, p.paleta==='pelo'?'castano':'blanco')}</span>
+      <span class="tx"><strong>${esc(conDet(p))}${p.verbo?' · '+esc(p.verbo):''}</strong><span>${esc(p.da)}</span></span>
+      <span class="son">🔊</span></button>`).join('');
+  }
+  $('#lista-palabras').innerHTML = html;
+}
+$('#filtros').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  filtro = b.dataset.f; pintarDicc();
+});
+$('#lista-palabras').addEventListener('click', e => {
+  const b = e.target.closest('.palabra'); if(!b) return;
+  hablar(b.dataset.decir);
+});
+
+/* ── MODO PROFESORA ── */
+function pintarProf(){
+  $('#seg-tiempo').innerHTML = [[60,'60 s'],[90,'90 s'],[120,'2 min'],[0,'Sin reloj']]
+    .map(t => `<button data-s="${t[0]}" aria-pressed="${S.segundos===t[0]}">${t[1]}</button>`).join('');
+  $('#sw-danes').setAttribute('aria-pressed', S.danes);
+  $('#sw-articulos').setAttribute('aria-pressed', S.articulos);
+  $('#sw-voz').setAttribute('aria-pressed', S.voz);
+  $('#sw-todo').setAttribute('aria-pressed', S.todo);
+  $('#prof-resumen').innerHTML =
+    `<b>${PRENDAS.length} palabras</b> de ropa, pelo, cara, animales y poses, <b>${COLORES.length+2} colores</b>,
+     los <b>números</b> en la tienda y <b>${TEMAS.length} temas</b> de ronda.`;
+}
+$('#seg-tiempo').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  S.segundos = +b.dataset.s; guardar(); pintarProf();
+});
+[['#sw-danes','danes'],['#sw-articulos','articulos'],['#sw-voz','voz'],['#sw-todo','todo']].forEach(([sel,k]) => {
+  $(sel).addEventListener('click', () => { S[k] = !S[k]; guardar(); pintarProf(); });
+});
+$('#b-lista').addEventListener('click', () => { filtro='todo'; pintarDicc(); pantalla('p-dicc'); });
+$('#b-borrar').addEventListener('click', () => {
+  try{ localStorage.removeItem(CLAVE) }catch(e){}
+  S.monedas = 40; S.comprado = []; S.estrellas = 0; S.aprendidas = {}; S.nombre = '';
+  pintarInicio(); pantalla('p-inicio');
+});
+
+/* ═══════════ MODO PIZARRA ═══════════ */
+const PZ = {paso:'preparar', tema:0, iTiempo:1, codigo:'', restante:0, reloj:null, modelos:[]};
+function irPizarra(){
+  PZ.paso = 'preparar'; PZ.tema = Math.floor(Math.random()*TEMAS.length);
+  PZ.iTiempo = Math.max(0, TIEMPOS.indexOf(S.segundos));
+  PZ.modelos = []; pararPz();
+  pintarPizarra(); pantalla('p-pizarra');
+}
+function pararPz(){ if(PZ.reloj){ clearInterval(PZ.reloj); PZ.reloj = null } }
+function pintarPizarra(){
+  const c = $('#pz-cuerpo'), t = TEMAS[PZ.tema];
+  $('#pz-paso').textContent = {preparar:'Preparar', jugando:'Jugando', desfile:'Desfile', podio:'Podio'}[PZ.paso];
+  $('#pz-titulo').textContent = PZ.paso==='preparar' ? 'Prepara la ronda' : t.emoji+' '+t.es;
+
+  if(PZ.paso === 'preparar'){
+    PZ.codigo = crearCodigoSala(PZ.tema, PZ.iTiempo);
+    c.innerHTML = `
+      <div class="pz-tema"><div class="sobre">${t.emoji}</div><h1 class="display">${esc(t.es)}</h1><p>${esc(t.da)}</p></div>
+      <div class="segmentos" id="pz-tiempos">${[[0,'60 s'],[1,'90 s'],[2,'2 min'],[3,'Sin reloj']]
+        .map(x => `<button data-i="${x[0]}" aria-pressed="${PZ.iTiempo===x[0]}">${x[1]}</button>`).join('')}</div>
+      <p class="etiqueta" style="text-align:center">Código de clase — que lo escriban en su móvil</p>
+      <div class="pz-codigo">${PZ.codigo}</div>
+      <div class="dos">
+        <button class="btn fantasma" id="pz-otro-tema">Otro tema</button>
+        <button class="btn oro" id="pz-empezar">¡Que empiece!</button>
+      </div>
+      <p class="aviso" style="text-align:center">Los alumnos entran en <b>Entrar con código de clase</b>, escriben ${PZ.codigo}
+      y juegan este mismo tema con el mismo tiempo.</p>`;
+  }
+
+  if(PZ.paso === 'jugando'){
+    c.innerHTML = `
+      <div class="pz-tema"><div class="sobre">${t.emoji}</div><h1 class="display">${esc(t.es)}</h1><p>${esc(t.da)}</p></div>
+      <div class="pz-reloj num ${PZ.restante<=15?'urgente':''}" id="pz-reloj">${
+        TIEMPOS[PZ.iTiempo] ? Math.floor(PZ.restante/60)+':'+String(Math.max(0,PZ.restante%60)).padStart(2,'0') : '∞'}</div>
+      <div class="pz-codigo" style="font-size:clamp(20px,3vw,34px)">Código ${PZ.codigo}</div>
+      <button class="btn ancho oro" id="pz-al-desfile">Al desfile</button>`;
+  }
+
+  if(PZ.paso === 'desfile'){
+    c.innerHTML = `
+      <p class="etiqueta">Pega aquí el código de look de cada alumno</p>
+      <div class="pegar">
+        <input type="text" id="pz-entrada" placeholder="PE-Freja-1-…" autocomplete="off">
+        <button class="btn oro chico" id="pz-anadir">Añadir</button>
+      </div>
+      <p class="aviso" id="pz-error"></p>
+      <div class="pasarela-fila" id="pz-fila"></div>
+      <div class="dos">
+        <button class="btn fantasma" id="pz-volver-jugar">Otra ronda</button>
+        <button class="btn oro" id="pz-podio">Ver el podio</button>
+      </div>`;
+    pintarFila();
+  }
+
+  if(PZ.paso === 'podio'){
+    const top = PZ.modelos.slice().sort((a,b) => (b.votos*100+b.puntos) - (a.votos*100+a.puntos)).slice(0,3);
+    const med = ['🥇','🥈','🥉'];
+    c.innerHTML = `
+      <h1 class="display" style="text-align:center;font-size:clamp(28px,6vw,60px);color:var(--oro)">¡El podio!</h1>
+      <div class="podio">${top.map((m,i) => `
+        <div class="escalon ${i===0?'p1':''}">
+          <span class="medalla">${med[i]}</span>
+          <div class="marco"><div class="fondo">${fondoHTML(t.esc)}</div><svg class="av" viewBox="0 0 220 400">${avatarSVG(m)}</svg></div>
+          <b>${esc(m.nombre)}</b>
+          <span class="votos num">${m.votos} 👏 · ${m.puntos} pts</span>
+        </div>`).join('') || '<p class="pz-vacio">Todavía no hay looks.</p>'}</div>
+      ${top[0] ? `<div class="frase">${esc(fraseCompleta(top[0].nombre, top[0].puesto))}</div>` : ''}
+      <div class="dos">
+        <button class="btn fantasma" id="pz-volver-desfile">Volver al desfile</button>
+        <button class="btn oro" id="pz-nueva">Nueva ronda</button>
+      </div>`;
+    if(top.length) confeti(140);
+  }
+}
+function pintarFila(){
+  const f = $('#pz-fila'); if(!f) return;
+  const t = TEMAS[PZ.tema];
+  f.innerHTML = PZ.modelos.length ? PZ.modelos.map((m,i) => `
+    <div class="modelo ${m.votos && m.votos===Math.max(...PZ.modelos.map(x=>x.votos))?'gana':''}">
+      <div class="marco"><div class="fondo">${fondoHTML(t.esc)}</div><svg class="av" viewBox="0 0 220 400">${avatarSVG(m)}</svg></div>
+      <b>${esc(m.nombre)}</b>
+      <span class="votos">${m.votos} 👏 · ${m.puntos} pts</span>
+      <button class="votar" data-voto="${i}">👏 Votar</button>
+    </div>`).join('')
+    : `<div class="pz-vacio">Aún no hay ningún look.<br>Pega el código que sale en el móvil de cada alumno.</div>`;
+}
+$('#pz-cuerpo').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.id === 'pz-otro-tema'){ PZ.tema = (PZ.tema + 1 + Math.floor(Math.random()*3)) % TEMAS.length; pintarPizarra(); return; }
+  if(b.dataset.i != null && b.closest('#pz-tiempos')){ PZ.iTiempo = +b.dataset.i; pintarPizarra(); return; }
+  if(b.id === 'pz-empezar'){
+    PZ.paso = 'jugando'; PZ.restante = TIEMPOS[PZ.iTiempo] || 0;
+    pintarPizarra(); pararPz();
+    if(TIEMPOS[PZ.iTiempo]) PZ.reloj = setInterval(() => {
+      PZ.restante--;
+      const r = $('#pz-reloj');
+      if(r){ r.textContent = Math.floor(PZ.restante/60)+':'+String(Math.max(0,PZ.restante%60)).padStart(2,'0');
+             r.classList.toggle('urgente', PZ.restante<=15) }
+      if(PZ.restante <= 0){ pararPz(); PZ.paso='desfile'; pintarPizarra() }
+    }, 1000);
+    return;
+  }
+  if(b.id === 'pz-al-desfile'){ pararPz(); PZ.paso='desfile'; pintarPizarra(); return; }
+  if(b.id === 'pz-anadir'){
+    const v = $('#pz-entrada').value;
+    const m = leerCodigoLook(v);
+    if(!m){ $('#pz-error').textContent = 'Ese código no vale. Tiene que empezar por PE- y venir entero.'; return; }
+    m.votos = 0; PZ.modelos.push(m);
+    $('#pz-entrada').value = ''; $('#pz-error').textContent = '';
+    pintarFila();
+    return;
+  }
+  if(b.dataset.voto != null){ PZ.modelos[+b.dataset.voto].votos++; pintarFila(); return; }
+  if(b.id === 'pz-podio'){ PZ.paso='podio'; pintarPizarra(); return; }
+  if(b.id === 'pz-volver-desfile'){ PZ.paso='desfile'; pintarPizarra(); return; }
+  if(b.id === 'pz-volver-jugar'){ PZ.paso='jugando'; PZ.restante = TIEMPOS[PZ.iTiempo]||0; pintarPizarra(); return; }
+  if(b.id === 'pz-nueva'){ irPizarra(); return; }
+});
+$('#pz-cuerpo').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && e.target.id === 'pz-entrada'){ e.preventDefault(); $('#pz-anadir').click() }
+});
+$('#pz-salir').addEventListener('click', () => { pararPz(); pintarProf(); pantalla('p-prof') });
+
+/* ── BOTONES ── */
+function empezar(iTema){
+  S.nombre = $('#nombre').value.trim().slice(0,14);
+  guardar();
+  if(!S.puesto.pelo) S.puesto = {};
+  if(S.ronda === 0){ pendiente = iTema; pintarCreador(); pantalla('p-crear'); }
+  else nuevaRonda(iTema);
+}
+let pendiente = null;
+$('#b-jugar').addEventListener('click', () => { S.sala = ''; empezar(null) });
+$('#b-sala').addEventListener('click', () => { $('#entrada-codigo').value = ''; pantalla('p-codigo') });
+$('#b-entrar-sala').addEventListener('click', () => {
+  const r = leerCodigoSala($('#entrada-codigo').value);
+  if(!r){ $('#codigo-aviso').innerHTML = '<b style="color:var(--coral)">Ese código no existe. Son cuatro letras o números.</b>'; return; }
+  S.sala = r.codigo; S.segundos = r.segundos;
+  S.nombre = S.nombre || $('#nombre').value.trim().slice(0,14);
+  empezar(r.tema);
+});
+$('#b-listo').addEventListener('click', () => { guardar(); nuevaRonda(pendiente); pendiente = null });
+$('#b-vestir').addEventListener('click', abrirArmario);
+$('#b-desfilar').addEventListener('click', desfilar);
+$('#b-jueces').addEventListener('click', verJueces);
+$('#b-otra').addEventListener('click', () => nuevaRonda(S.sala ? TEMAS.indexOf(S.tema) : null));
+$('#b-salir').addEventListener('click', () => { S.sala=''; pintarInicio(); pantalla('p-inicio') });
+$('#b-tienda').addEventListener('click', () => { pintarTienda(); pantalla('p-tienda') });
+$('#b-ir-tienda').addEventListener('click', () => { pintarTienda(); pantalla('p-tienda') });
+$('#b-dicc').addEventListener('click', () => { pintarDicc(); pantalla('p-dicc') });
+$('#b-prof').addEventListener('click', () => { pintarProf(); pantalla('p-prof') });
+$('#b-pizarra').addEventListener('click', irPizarra);
+$$('[data-ir]').forEach(b => b.addEventListener('click', () => {
+  if(b.dataset.ir === 'p-inicio') pintarInicio();
+  pantalla(b.dataset.ir);
+}));
+
+/* ── ARRANQUE ── */
+function lookDemo(){
+  const look = {};
+  ['cuerpo','piernas','pies','cabeza','pelo','pose'].forEach(r => {
+    const posibles = PRENDAS.filter(q => q.ranura===r && !q.precio);
+    if(!posibles.length) return;
+    if(r !== 'pelo' && r !== 'pose' && Math.random() < 0.22) return;
+    const q = azar(posibles);
+    look[r] = {id:q.id, color: q.paleta==='pelo' ? S.colorPelo : azar(COLORES).id};
+  });
+  if(look.cuerpo && PR[look.cuerpo.id].entero) delete look.piernas;
+  return look;
+}
+cargar();
+S.puesto = lookDemo();
+pintarInicio();
+pintarAvatares();
+try{ if('speechSynthesis' in window) speechSynthesis.getVoices() }catch(e){}
+
+</script>
+
+</body>
+</html>
