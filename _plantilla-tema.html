@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tema N</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active" id="tema-root"></div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+<!-- ============================================================
+     PLANTILLA DE TEMA  ·  cómo usarla cada semana
+
+     1. Copia este archivo y renómbralo:  tema3.html
+     2. Cambia el <title> de arriba.
+     3. Rellena lo de abajo. Todo es texto.
+     4. Abre index.html, copia una tarjeta de tema y cambia
+        el href a "tema3.html".
+
+     Ya está. No hay que tocar ningún .js ni ningún .css.
+
+     ------------------------------------------------------------
+     TIPOS DE BLOQUE (todos opcionales, puedes mezclar varios
+     en un mismo bloque):
+
+       frases: [['español','dansk'], ...]
+               → tabla con botón de audio en cada línea
+
+       chips:  [{es:'el libro', da:'bogen', gen:'masc'}, ...]
+               → palabras con su el/la, se oyen al tocarlas
+
+       nums:   [['1','uno','en'], ...]
+               → rejilla de números
+
+       html:   '<p>lo que quieras</p>'
+               → texto libre, para gramática
+
+     Los ejercicios del final se generan SOLOS con "vocab" y
+     "frases". Si dejas "vocab" vacío desaparecen los ejercicios
+     que necesitan palabras — no se rompe nada.
+     ============================================================ -->
+<script>
+window.TEMA = {
+
+num: 3,
+es:  'Título en español',        /* puedes usar <em>cursiva</em> */
+da:  'Titel på dansk',
+intro: 'Dos líneas explicando de qué va la semana.',
+hoja: '',   /* nombre del .docx para imprimir, o '' si no hay */
+
+bloques: [
+
+  { letra:'A', es:'Título del bloque', da:'Titel på dansk',
+    nota:'Una línea de explicación (opcional).',
+    frases:[
+      ['Frase en español','Sætning på dansk'],
+      ['Otra frase','En anden sætning']
+    ] },
+
+  { letra:'B', es:'Palabras nuevas', da:'Nye ord',
+    chips:[
+      {es:'el ejemplo',  da:'eksemplet', gen:'masc'},
+      {es:'la palabra',  da:'ordet',     gen:'fem'},
+      {es:'el cuaderno', da:'hæftet',    gen:'masc'},
+      {es:'la puerta',   da:'døren',     gen:'fem'}
+    ] },
+
+  { letra:'C', es:'Gramática', da:'Grammatik',
+    html:
+      '<ul>'+
+        '<li>Punto uno.</li>'+
+        '<li>Punto dos.</li>'+
+      '</ul>'+
+      '<div class="ojo">⚠️ <b>¡OJO!</b> El aviso importante de la semana.</div>' }
+
+],
+
+/* Borra este bloque entero si esta semana no hay tarjeta */
+tarjeta: {
+  es:'Mi tarjeta',
+  da:'Mit kort',
+  nota:'Rellena y léelo en voz alta.',
+  lineas:[
+    ['Yo ', 'algo', '.'],
+    ['¡Gracias!', null, '']
+  ]
+},
+
+checklist: [
+  ['Puedo hacer esto.','Jeg kan det her.'],
+  ['Puedo hacer esto otro.','Jeg kan også det her.']
+],
+
+/* Palabras que alimentan los ejercicios (gen: 'masc' o 'fem') */
+vocab: [
+  {es:'el ejemplo',  da:'eksemplet', gen:'masc'},
+  {es:'la palabra',  da:'ordet',     gen:'fem'},
+  {es:'el cuaderno', da:'hæftet',    gen:'masc'},
+  {es:'la puerta',   da:'døren',     gen:'fem'}
+],
+
+/* Frases que alimentan el ejercicio de parejas */
+frases: [
+  {es:'Frase en español', da:'Sætning på dansk'},
+  {es:'Otra frase',       da:'En anden sætning'},
+  {es:'Buenos días',      da:'Godmorgen'},
+  {es:'Hasta luego',      da:'Vi ses'}
+]
+
+};
+</script>
+
+  <script src="mini.js"></script>
+  <script src="tema.js"></script>
+</body>
+</html>

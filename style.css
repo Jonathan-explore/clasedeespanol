@@ -139,9 +139,12 @@ body{overflow:hidden;overscroll-behavior:none}
 .menu-card:nth-child(4){animation-delay:.38s}
 .menu-card:nth-child(5){animation-delay:.48s}
 .menu-card:nth-child(6){animation-delay:.58s}
-/* Temario (1er hijo) ocupa todo el ancho; LinguaStrike (6º, último) también */
+.menu-card:nth-child(n+7){animation-delay:.68s}
+/* Tarjeta ancha opcional (la usaba el Temario) */
 .menu-card-temario{grid-column:1 / -1}
-.cards-grid > .menu-card:not(.menu-card-temario):nth-child(6):last-child{grid-column:1 / -1}
+/* La última tarjeta ocupa toda la fila cuando se queda sola
+   (2 columnas: sola = índice impar). Vale para cualquier número de temas. */
+.cards-grid > .menu-card:nth-child(odd):last-child{grid-column:1 / -1}
 .card-inner{
   position:relative;
   border-radius:var(--r-lg);

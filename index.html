@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all';this.onload=null" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" /></noscript>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
   <link rel="stylesheet" href="game.css" />
   <link rel="stylesheet" href="pasapalabra.css" />
   <link rel="stylesheet" href="pinturillo.css" />
@@ -56,89 +57,77 @@
             Nyt skoleår 2026/27 · 8.–9. årgang
           </div>
           <div class="title-wrap" id="title-trigger" title="Triple-klik for admin-adgang">
-            <p class="subtitle">Her kan du se og anmelde materiale på spansk</p>
+            <p class="subtitle">Spansk · ét tema om ugen</p>
             <h1 class="main-title">din <em>klasseværelsets</em> hjørne</h1>
-            <p class="tagline">Spansk for 8.–9. årgang — enkelt, smukt, effektivt</p>
+            <p class="tagline">Vælg ugens tema — præsentation, ord og øvelser samlet ét sted</p>
           </div>
         </header>
 
-        <nav class="cards-grid" id="main-nav" role="navigation" aria-label="Hovedmenu">
+        <nav class="cards-grid" id="main-nav" role="navigation" aria-label="Ugens temaer">
 
-          <!-- Temario — posición prioritaria, ancho completo -->
-          <button class="menu-card menu-card-temario" id="card-temario" aria-label="Åbn Temario de la Clase">
-            <div class="card-bg-glow card-bg-glow-temario"></div>
-            <div class="card-inner">
-              <div class="card-icon-wrap">
-                <span class="card-icon">📚</span>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Temario de la Clase</h2>
-                <p class="card-desc">Pensum og mål for skoleåret 2026/27</p>
-              </div>
-              <div class="temario-right">
-                <span id="temario-badge" class="temario-badge">···</span>
-                <div class="card-arrow">↗</div>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
+          <!-- =====================================================
+               UGENS TEMAER
+               Para añadir un tema nuevo cada semana:
+                 1. Copia _plantilla-tema.html  →  tema3.html
+                 2. Copia UNA tarjeta de aquí abajo y cambia
+                    data-href, número, título y descripción.
+               ===================================================== -->
 
-          <!-- Tablón -->
-          <button class="menu-card" id="card-tablon" data-view="tablon" aria-label="Gå til Tablón">
+          <button class="menu-card" id="card-tema1" data-href="tema1.html" aria-label="¡Hola! Me presento">
             <div class="card-bg-glow card-bg-glow-1"></div>
             <div class="card-inner">
               <div class="card-top">
                 <div class="card-icon-wrap">
-                  <span class="card-icon">📋</span>
+                  <span class="card-icon">👋</span>
                 </div>
                 <div class="card-arrow">→</div>
               </div>
               <div class="card-bottom">
-                <h2 class="card-title">Tablón</h2>
-                <p class="card-desc">Dagens lektioner og ordforråd</p>
+                <span class="card-num">Tema 1</span>
+                <h2 class="card-title">¡Hola! Me presento</h2>
+                <p class="card-desc">Hilse, sige sit navn, alder og hvor man bor</p>
               </div>
               <div class="card-shine"></div>
             </div>
           </button>
 
-          <!-- Mit Fremskridt -->
-          <button class="menu-card" id="card-fremskridt" data-view="fremskridt" aria-label="Gå til Mit Fremskridt">
-            <div class="card-bg-glow card-bg-glow-5"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">📈</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Mit Fremskridt</h2>
-                <p class="card-desc">Point, uger i træk og dine ord</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Lignende Ord -->
-          <button class="menu-card" id="card-fremlaeggelse" data-view="fremlaeggelse" aria-label="Gå til Lignende Ord">
+          <button class="menu-card" id="card-tema2" data-href="tema2.html" aria-label="Mi clase y mi material">
             <div class="card-bg-glow card-bg-glow-2"></div>
             <div class="card-inner">
               <div class="card-top">
                 <div class="card-icon-wrap">
-                  <span class="card-icon">🌍</span>
+                  <span class="card-icon">🎒</span>
                 </div>
                 <div class="card-arrow">→</div>
               </div>
               <div class="card-bottom">
-                <h2 class="card-title">Lignende Ord</h2>
-                <p class="card-desc">100 ord du allerede kender!</p>
+                <span class="card-num">Tema 2</span>
+                <h2 class="card-title">Mi clase y mi material</h2>
+                <p class="card-desc">Skoletingene, klasseværelset, el/la og hay</p>
               </div>
               <div class="card-shine"></div>
             </div>
           </button>
 
-          <!-- Ordbog -->
-          <button class="menu-card" id="card-ordbog" data-view="ordbog" aria-label="Gå til Ordbog">
+          <!-- Próximo tema: copia el bloque de arriba y cambia el data-href -->
+          <div class="menu-card card-soon" aria-hidden="true">
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="card-icon-wrap">
+                  <span class="card-icon">🔒</span>
+                </div>
+              </div>
+              <div class="card-bottom">
+                <span class="card-num">Tema 3</span>
+                <h2 class="card-title">Snart…</h2>
+                <p class="card-desc">Næste uge</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== EXTRA: ordbog og de to spil ===== -->
+
+          <button class="menu-card" id="card-ordbog" data-view="ordbog" aria-label="Ordbog">
             <div class="card-bg-glow card-bg-glow-3"></div>
             <div class="card-inner">
               <div class="card-top">
@@ -155,62 +144,7 @@
             </div>
           </button>
 
-          <!-- Yderligere materiale -->
-          <button class="menu-card" id="card-yderligere" data-view="yderligere" aria-label="Gå til Yderligere materiale">
-            <div class="card-bg-glow card-bg-glow-4"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">🧩</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Øvelser</h2>
-                <p class="card-desc">Interaktive øvelser og spil</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Prøve -->
-          <button class="menu-card" id="card-proeve" data-view="proeve" aria-label="Gå til Prøve">
-            <div class="card-bg-glow card-bg-glow-1"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">📝</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Prøve</h2>
-                <p class="card-desc">Test dig selv — karakter efter 7-trins-skalaen</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Kultur -->
-          <button class="menu-card" id="card-kultur" data-view="kultur" aria-label="Gå til Kultur">
-            <div class="card-bg-glow card-bg-glow-2"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">🌍</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Kultur</h2>
-                <p class="card-desc">Den spansktalende verden — tekst og quiz</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- LinguaStrike spil -->
-          <button class="menu-card" id="card-spil" data-view="spil" aria-label="Gå til LinguaStrike">
+          <button class="menu-card" id="card-spil" data-view="spil" aria-label="LinguaStrike">
             <div class="card-bg-glow card-bg-glow-5"></div>
             <div class="card-inner">
               <div class="card-top">
@@ -227,96 +161,18 @@
             </div>
           </button>
 
-          <!-- Pasapalabra · El Rosco -->
-          <button class="menu-card" id="card-pasapalabra" data-view="pasapalabra" aria-label="Gå til Pasapalabra">
-            <div class="card-bg-glow card-bg-glow-4"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">🎡</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Pasapalabra</h2>
-                <p class="card-desc">El Rosco — quiz for hele klassen</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Pasarela Española · juego de vestir -->
-          <button class="menu-card" id="card-pasarela" data-href="pasarela.html" aria-label="Åbn Pasarela Española">
+          <button class="menu-card" id="card-pasarela" data-href="pasarela.html" aria-label="Pasarela Española">
             <div class="card-bg-glow card-bg-glow-2"></div>
             <div class="card-inner">
               <div class="card-top">
                 <div class="card-icon-wrap">
                   <span class="card-icon">👗</span>
                 </div>
-                <div class="card-arrow">↗</div>
+                <div class="card-arrow">→</div>
               </div>
               <div class="card-bottom">
                 <h2 class="card-title">Pasarela Española</h2>
-                <p class="card-desc">Klæd modellen på efter temaet — tøj, farver og tal</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Pinturillo · Tegn og gæt -->
-          <button class="menu-card" id="card-pinturillo" data-view="pinturillo" aria-label="Gå til Pinturillo">
-            <div class="card-bg-glow card-bg-glow-3"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">🎨</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Pinturillo</h2>
-                <p class="card-desc">Tegn og gæt — i grupper</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Despedida · Farvel
-               GUARDADA PARA EL FINAL DEL CURSO 2026/27.
-               Es la herramienta del último día (diplomas, muro de mensajes,
-               canción). El código sigue intacto en despedida.js/.css: para
-               reactivarla en junio, quita el atributo `hidden` de aquí abajo
-               y ya está. No hace falta tocar nada más. -->
-          <button class="menu-card" id="card-despedida" data-view="despedida" aria-label="Gå til Despedida" hidden>
-            <div class="card-bg-glow card-bg-glow-2"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">👋</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Despedida</h2>
-                <p class="card-desc">Sidste dag — diplomer & beskeder</p>
-              </div>
-              <div class="card-shine"></div>
-            </div>
-          </button>
-
-          <!-- Stile -->
-          <button class="menu-card" id="card-stile" data-view="stile" aria-label="Gå til Stile">
-            <div class="card-bg-glow card-bg-glow-stile"></div>
-            <div class="card-inner">
-              <div class="card-top">
-                <div class="card-icon-wrap">
-                  <span class="card-icon">✍️</span>
-                </div>
-                <div class="card-arrow">→</div>
-              </div>
-              <div class="card-bottom">
-                <h2 class="card-title">Stile</h2>
-                <p class="card-desc">Redacciones en danés</p>
+                <p class="card-desc">Klæd modellen på efter temaet</p>
               </div>
               <div class="card-shine"></div>
             </div>
@@ -335,12 +191,8 @@
             <span>Udtalehjælp</span>
           </div>
           <div class="feature-badge">
-            <div class="fb-icon">📊</div>
-            <span>Spor dit fremskridt</span>
-          </div>
-          <div class="feature-badge">
-            <div class="fb-icon">📝</div>
-            <span>Prøver med karakter</span>
+            <div class="fb-icon">🎮</div>
+            <span>Spil på spansk</span>
           </div>
           <div class="feature-badge">
             <div class="fb-icon">🌐</div>

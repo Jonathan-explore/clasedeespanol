@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tema 1 · ¡Hola! Me presento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active" id="tema-root"></div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+<!-- ============================================================
+     CONTENIDO DEL TEMA 1
+     Todo lo de aquí abajo es texto: cámbialo y ya está.
+     ============================================================ -->
+<script>
+window.TEMA = {
+
+num: 1,
+es:  '¡Hola! <em>Me presento</em>',
+da:  'Hej! Jeg præsenterer mig selv',
+intro: 'Alt hvad du skal bruge for at præsentere dig selv på spansk. Lyt til sætningerne, øv dem, og udfyld dit eget præsentationskort nederst. Du må gerne kigge med — det er ikke en prøve.',
+hoja: 'Hoja_del_alumno_Tema1.docx',
+
+bloques: [
+
+  { letra:'A', es:'Para saludar', da:'At hilse',
+    frases:[
+      ['Hola','Hej'],
+      ['Buenos días','Godmorgen'],
+      ['Buenas tardes','God eftermiddag'],
+      ['Buenas noches','Godaften / Godnat'],
+      ['¿Qué tal?','Hvordan går det?'],
+      ['Estoy bien','Jeg har det godt'],
+      ['Estoy regular','Jeg har det sådan da'],
+      ['Estoy mal','Jeg har det dårligt'],
+      ['Mucho gusto','Rart at møde dig'],
+      ['Gracias','Tak'],
+      ['Adiós / Hasta luego','Farvel / Vi ses']
+    ] },
+
+  { letra:'B', es:'Mis datos', da:'Mine oplysninger',
+    nota:'Udfyld hullerne én gang — så behøver du ikke tænke over det igen.',
+    frases:[
+      ['Me llamo ______.','Jeg hedder…'],
+      ['Tengo ___ años.','Jeg er … år gammel'],
+      ['Soy de ______.','Jeg er fra…'],
+      ['Vivo en ______.','Jeg bor i…'],
+      ['Mi color favorito es ______.','Min yndlingsfarve er…'],
+      ['Me gusta ______.','Jeg kan lide…'],
+      ['No me gusta ______.','Jeg kan ikke lide…'],
+      ['Tengo un perro / un gato / no tengo animales.','Jeg har en hund / en kat / ingen dyr']
+    ] },
+
+  { letra:'C', es:'Para preguntar a otro', da:'At spørge en anden',
+    frases:[
+      ['¿Cómo te llamas?','Hvad hedder du?'],
+      ['¿Cuántos años tienes?','Hvor gammel er du?'],
+      ['¿De dónde eres?','Hvor er du fra?'],
+      ['¿Dónde vives?','Hvor bor du?'],
+      ['¿Qué te gusta?','Hvad kan du lide?'],
+      ['¿Y tú?','Og dig?']
+    ] },
+
+  { letra:'D', es:'Para sobrevivir en clase', da:'Overlevelsessætninger',
+    nota:'Disse syv sætninger siger man <b>altid</b> på spansk. Selvom du ikke kan andet, går du ikke i stå med dem.',
+    frases:[
+      ['No entiendo.','Jeg forstår det ikke.'],
+      ['¿Puedes repetir, por favor?','Kan du gentage det?'],
+      ['Más despacio, por favor.','Lidt langsommere, tak.'],
+      ['¿Cómo se dice «hund» en español?','Hvordan siger man «hund» på spansk?'],
+      ['¿Cómo se escribe?','Hvordan staves det?'],
+      ['No lo sé.','Det ved jeg ikke.'],
+      ['¿Puedo ir al baño?','Må jeg gå på toilettet?']
+    ] },
+
+  { letra:'E', es:'Los cuatro verbos que necesitas', da:'De fire ord',
+    html:
+      '<table class="mini-tabla">'+
+        '<tr><th>Español</th><th>Dansk</th></tr>'+
+        '<tr><td><b>me llamo</b></td><td>jeg hedder</td></tr>'+
+        '<tr><td><b>tengo</b></td><td>jeg har / jeg er (om alder)</td></tr>'+
+        '<tr><td><b>soy</b></td><td>jeg er</td></tr>'+
+        '<tr><td><b>vivo</b></td><td>jeg bor</td></tr>'+
+      '</table>'+
+      '<div class="ojo">⚠️ <b>¡OJO!</b> La edad se dice con <code>tengo</code>, nunca con <code>soy</code>. → <b>Tengo 14 años.</b><br>'+
+      'Alderen siger man med «tengo» — ikke med «soy».</div>' },
+
+  { letra:'F', es:'Cinco reglas de pronunciación', da:'Fem udtaleregler',
+    html:
+      '<ul>'+
+        '<li><b>La H no se dice nunca.</b> <code>hola</code> → «ola». · H\'et er altid stumt.</li>'+
+        '<li><b>LL y Y suenan como el «j» danés.</b> <code>me llamo</code> → «me jamo».</li>'+
+        '<li><b>Ñ = «nj».</b> <code>español</code> → «espanjol».</li>'+
+        '<li><b>J y G (ge, gi) raspan en la garganta.</b> <code>Jorge</code>, <code>gente</code>.</li>'+
+        '<li><b>Las cinco vocales suenan SIEMPRE igual:</b> a-e-i-o-u. No cambian nunca, como en danés.</li>'+
+      '</ul>' },
+
+  { letra:'G', es:'Mis palabras del tema', da:'Temaets ord',
+    nota:'Tryk på et ord for at høre det. <b>el</b> = masculino · <b>la</b> = femenino.',
+    chips:[
+      {es:'el nombre',    da:'navnet',            gen:'masc'},
+      {es:'la edad',      da:'alderen',           gen:'fem'},
+      {es:'el año',       da:'året',              gen:'masc'},
+      {es:'el color',     da:'farven',            gen:'masc'},
+      {es:'la casa',      da:'huset',             gen:'fem'},
+      {es:'la ciudad',    da:'byen',              gen:'fem'},
+      {es:'el país',      da:'landet',            gen:'masc'},
+      {es:'el perro',     da:'hunden',            gen:'masc'},
+      {es:'el gato',      da:'katten',            gen:'masc'},
+      {es:'el amigo',     da:'vennen',            gen:'masc'},
+      {es:'la amiga',     da:'veninden',          gen:'fem'},
+      {es:'la clase',     da:'klassen',           gen:'fem'},
+      {es:'el profesor',  da:'læreren',           gen:'masc'},
+      {es:'la profesora', da:'lærerinden',        gen:'fem'},
+      {es:'el compañero', da:'klassekammeraten',  gen:'masc'}
+    ] }
+
+],
+
+tarjeta: {
+  es:'Mi tarjeta de presentación',
+  da:'Mit præsentationskort',
+  nota:'Udfyld de otte sætninger. Det er det, du skal læse op foran klassen — og hænge på væggen.',
+  lineas:[
+    ['¡Hola! Me llamo ', 'dit navn', '.'],
+    ['Tengo ', 'din alder', ' años.'],
+    ['Soy de ', 'Dinamarca…', '.'],
+    ['Vivo en ', 'Randers…', '.'],
+    ['Mi color favorito es ', 'azul, rojo…', '.'],
+    ['Me gusta ', 'el fútbol…', '.'],
+    ['No me gusta ', 'el café…', '.'],
+    ['¡Mucho gusto!', null, '']
+  ]
+},
+
+checklist: [
+  ['Puedo saludar y despedirme.','Jeg kan hilse og sige farvel.'],
+  ['Puedo decir cómo estoy hoy.','Jeg kan sige, hvordan jeg har det.'],
+  ['Puedo decir mi nombre, mi edad, de dónde soy y dónde vivo.','Jeg kan sige navn, alder, hvor jeg er fra, og hvor jeg bor.'],
+  ['Puedo preguntar todo eso a un compañero.','Jeg kan spørge en anden om det samme.'],
+  ['Puedo pedir ayuda en español.','Jeg kan bede om hjælp på spansk.'],
+  ['Puedo hablar de mí ocho frases seguidas.','Jeg kan sige otte sætninger om mig selv.']
+],
+
+/* ── Palabras para los ejercicios de abajo ── */
+vocab: [
+  {es:'el nombre',    da:'navnet',           gen:'masc'},
+  {es:'la edad',      da:'alderen',          gen:'fem'},
+  {es:'el año',       da:'året',             gen:'masc'},
+  {es:'el color',     da:'farven',           gen:'masc'},
+  {es:'la casa',      da:'huset',            gen:'fem'},
+  {es:'la ciudad',    da:'byen',             gen:'fem'},
+  {es:'el país',      da:'landet',           gen:'masc'},
+  {es:'el perro',     da:'hunden',           gen:'masc'},
+  {es:'el gato',      da:'katten',           gen:'masc'},
+  {es:'el amigo',     da:'vennen',           gen:'masc'},
+  {es:'la amiga',     da:'veninden',         gen:'fem'},
+  {es:'la clase',     da:'klassen',          gen:'fem'},
+  {es:'el profesor',  da:'læreren',          gen:'masc'},
+  {es:'la profesora', da:'lærerinden',       gen:'fem'},
+  {es:'el compañero', da:'klassekammeraten', gen:'masc'}
+],
+
+/* ── Frases para el ejercicio de parejas ── */
+frases: [
+  {es:'Hola',                    da:'Hej'},
+  {es:'Buenos días',             da:'Godmorgen'},
+  {es:'¿Qué tal?',               da:'Hvordan går det?'},
+  {es:'Estoy bien',              da:'Jeg har det godt'},
+  {es:'Mucho gusto',             da:'Rart at møde dig'},
+  {es:'Adiós',                   da:'Farvel'},
+  {es:'¿Cómo te llamas?',        da:'Hvad hedder du?'},
+  {es:'¿Cuántos años tienes?',   da:'Hvor gammel er du?'},
+  {es:'¿De dónde eres?',         da:'Hvor er du fra?'},
+  {es:'¿Dónde vives?',           da:'Hvor bor du?'},
+  {es:'No entiendo.',            da:'Jeg forstår det ikke.'},
+  {es:'Más despacio, por favor.',da:'Lidt langsommere, tak.'},
+  {es:'No lo sé.',               da:'Det ved jeg ikke.'},
+  {es:'¿Puedo ir al baño?',      da:'Må jeg gå på toilettet?'}
+]
+
+};
+</script>
+
+  <script src="mini.js"></script>
+  <script src="tema.js"></script>
+</body>
+</html>
