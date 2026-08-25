@@ -1,0 +1,4 @@
+# Trabajo local, nunca al repo (contiene datos personales)
+scratch/
+AGENTS.md
+node_modules/
