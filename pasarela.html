@@ -207,6 +207,7 @@ input[type=text]:focus{outline:none;border-color:var(--magenta)}
 .opcion:active{transform:scale(.97)}
 .opcion.bien{background:#4FE0C022;border-color:var(--menta);color:var(--menta)}
 .opcion.mal{background:#FF6B5A1F;border-color:var(--coral);color:var(--coral);animation:tiembla .3s}
+.color.mal{border-color:var(--coral);animation:tiembla .3s}
 @keyframes tiembla{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 .pie-reto{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mini{font-size:13px;color:var(--tenue);font-weight:600;padding:8px 12px;border-radius:999px;border:1px solid var(--borde)}
@@ -697,7 +698,13 @@ let _volN = 0;
 function volumen(inner){
   if(!inner) return '';
   const n = 'v' + (++_volN);
-  return `<g><defs><clipPath id="cp${n}">${inner}</clipPath>` +
+  /* Un <clipPath> solo hace caso a formas sueltas: si dejamos los <g>
+     dentro, sus hijos (botones, puños…) quedan fuera del recorte y no
+     reciben sombra. Aplanamos SOLO la copia que sirve de recorte.
+     Ningún dibujo usa <g transform>, así que quitar la etiqueta no
+     mueve nada de sitio. */
+  const silueta = inner.replace(/<\/?g[^>]*>/g, '');
+  return `<g><defs><clipPath id="cp${n}">${silueta}</clipPath>` +
     `<linearGradient id="lg${n}" x1="0" y1="0" x2="0" y2="1">` +
       `<stop offset="0" stop-color="#FFFFFF" stop-opacity=".20"/>` +
       `<stop offset=".34" stop-color="#FFFFFF" stop-opacity="0"/>` +
@@ -1086,7 +1093,10 @@ function fondoHTML(id){
       <path d="M46 150 h44"/><path d="M46 168 h72"/><path d="M46 186 h34"/>
       <path d="M138 156 q10 -12 20 0 q-10 12 -20 0"/></g>
     <g fill="#4A3B2E">${[[10,250],[74,250],[138,250]].map(q=>
-      `<rect x="${q[0]}" y="${q[1]}" width="66" height="10" rx="3"/><rect x="${q[0]+6}" y="${q[1]+10}" width="7" height="40"/><rect x="${q[0]+53}" y="${q[1]+10}" width="7" height="40"/>`).join('')}</g>`;
+      // las patas llegan a y=336, que es donde arranca el suelo de la escena
+      `<rect x="${q[0]}" y="${q[1]}" width="66" height="10" rx="3"/>` +
+      `<rect x="${q[0]+6}" y="${q[1]+10}" width="7" height="${336-(q[1]+10)}"/>` +
+      `<rect x="${q[0]+53}" y="${q[1]+10}" width="7" height="${336-(q[1]+10)}"/>`).join('')}</g>`;
   if(e.estrellas) f += `<g fill="#FFF3D0">${Array.from({length:34},(_,i)=>
     `<circle cx="${(i*53)%214+3}" cy="${(i*97)%250+8}" r="${i%4===0?1.9:1.1}" opacity="${.35+((i*13)%50)/100}"/>`).join('')}
     </g><circle cx="42" cy="66" r="20" fill="#FFF6DC" opacity=".9"/><circle cx="34" cy="60" r="18" fill="#2A1440" opacity=".95"/>`;
@@ -1119,7 +1129,7 @@ function avatarSVG(est){
   const peloAtras = P.pelo && PR[P.pelo.id].atras ? PR[P.pelo.id].atras(colorDe(PR[P.pelo.id], P.pelo.color).hex) : '';
 
   return [
-    peloAtras,
+    volumen(peloAtras),
     volumen(
       rect(86,248,21,124,10,piel) + rect(113,248,21,124,10,piel) +
       elip(96,374,15,8,piel) + elip(124,374,15,8,piel) +
@@ -1157,15 +1167,23 @@ function avatarSVG(est){
 function estadoActual(){ return {piel:S.piel, puesto:S.puesto} }
 function pintarAvatares(){
   const m = avatarSVG(estadoActual());
-  ['#av-inicio','#av-crear','#av-armario','#av-pasarela','#av-resultado'].forEach(s => { const e=$(s); if(e) e.innerHTML = m; });
-  const esc = $('#esc-armario');
-  if(esc) esc.className = 'escenario pose-' + (S.puesto.pose ? PR[S.puesto.pose.id].anim : 'posar');
+  /* El mismo dibujo va a cinco <svg>, así que hay que renumerar los ids de
+     los recortes: si se repiten, todos los avatares apuntan a la copia que
+     vive en la pantalla de inicio, que está oculta. Chrome lo tolera; Safari
+     de iPhone no, y ahí el degradado se pintaría sin recortar encima de la
+     modelo. Renombrar es una sustitución de texto, no vuelve a dibujar. */
+  ['#av-inicio','#av-crear','#av-armario','#av-pasarela','#av-resultado'].forEach((s, i) => {
+    const e = $(s); if(!e) return;
+    e.innerHTML = i === 0 ? m : m.replace(/(cp|lg)v(\d+)/g, `$1v${i}x$2`);
+  });
+  const escArm = $('#esc-armario');
+  if(escArm) escArm.className = 'escenario pose-' + (S.puesto.pose ? PR[S.puesto.pose.id].anim : 'posar');
 }
 function vistaPrenda(p, colId){
   if(p.icono) return `<span aria-hidden="true">${p.icono}</span>`;
   const hex = colorDe(p, colId).hex;
   const atras = p.atras ? p.atras(hex) : '';
-  return `<svg viewBox="${p.vb}" aria-hidden="true">${atras}${volumen(p.dib(hex))}</svg>`;
+  return `<svg viewBox="${p.vb}" aria-hidden="true">${volumen(atras)}${volumen(p.dib(hex))}</svg>`;
 }
 /* Color con el que se enseña cada prenda antes de que el alumno elija.
    Antes salía todo azul y el armario parecía un muro de ropa idéntica. */
@@ -1181,7 +1199,10 @@ const COL_DEF = {
   diadema:'dorado', corona:'dorado',
   gafassol:'negro', gafas:'marron', antifaz:'negro',
   bufanda:'granate', collar:'dorado', corbata:'azul', pajarita:'negro',
-  bolso:'marron', mochila:'verde', paraguas:'celeste', guantes:'blanco', abanico:'rojo'
+  bolso:'marron', mochila:'verde', paraguas:'celeste', guantes:'blanco', abanico:'rojo',
+  labios:'rojo', mejillas:'rosa', purpurina:'dorado',
+  gato:'negro', perro:'marron', conejo:'blanco', pajaro:'amarillo', tortuga:'verde', raton:'gris',
+  caminar:'morado'
 };
 function colorPorDefecto(p){
   if(p.paleta === 'pelo') return S.colorPelo;
@@ -1270,13 +1291,20 @@ function leerCodigoLook(txt){
   return {nombre:m[1].replace(/_/g,' '), piel:Math.min(3, +m[2]), puesto, puntos:+m[4]};
 }
 
+/* El peinado que se regala al empezar la ronda va marcado con `auto`:
+   se ve y se puede describir, pero no suma estilo hasta que el alumno
+   elige uno de verdad en el armario. */
+function peloAutomatico(previo){
+  return {id:(previo && previo.id) || 'pelocorto', color:S.colorPelo, auto:true};
+}
+
 /* ── RONDA ── */
 function nuevaRonda(iTema){
   S.ronda++;
   /* El peinado se conserva de una ronda a otra: si no, la modelo
      empezaba calva y en ropa interior, que daba bastante pena. */
   const peloPrev = S.puesto.pelo;
-  S.puesto = {pelo:{id:(peloPrev && peloPrev.id) || 'pelocorto', color:S.colorPelo}};
+  S.puesto = {pelo:peloAutomatico(peloPrev)};
   S.puntosEs = 0; S.aciertos = 0; S.fallos = 0;
   S.tema = iTema != null ? TEMAS[iTema] : azar(TEMAS.filter(t => t !== S.tema));
   S.escenario = S.tema.esc;
@@ -1330,6 +1358,9 @@ $('#rejilla').addEventListener('click', e => {
 });
 $('#b-quitar').addEventListener('click', () => {
   delete S.puesto[S.ranura];
+  /* Sin pelo la modelo sale calva y la frase de la pasarela pierde el
+     "Tengo el pelo…", así que la ranura vuelve al peinado de regalo. */
+  if(S.ranura === 'pelo') S.puesto.pelo = peloAutomatico(null);
   pintarPestanas(); pintarRejilla(); pintarAvatares();
 });
 
@@ -1390,12 +1421,12 @@ function pintarReto(){
 }
 
 /* ── PASO 2: COLOR ── */
-function pasoColor(p){
+function pasoColor(p, ganados = 0){
   if(p.sinColor){ ponerPrenda(p, null); return; }
   const paleta = mezcla(paletaDe(p)).slice(0, 8);
   const reto = Math.random() < 0.35;
   const pedido = reto ? azar(paleta) : null;
-  retoActual = {p, tipo:'color', pedido};
+  retoActual = {p, tipo:'color', pedido, ganados};
   abrirVelo(`
     <div class="vista">${vistaPrenda(p, colorPorDefecto(p))}</div>
     <h3>${reto ? `Toca el color <b style="color:var(--oro)">${esc(pedido.f[0].toUpperCase())}</b>`
@@ -1443,7 +1474,7 @@ function retoCompra(p, vuelta){
     <div id="zona-pista"></div>
     <div class="pie-reto">
       <button class="mini" data-cerrar>Ahora no</button>
-      ${S.danes ? `<button class="mini" data-numda>💡 ${esc(numeroDa(p.precio))}</button>` : ''}
+      ${S.danes ? '<button class="mini" data-numda>💡 Hjælp (-3)</button>' : ''}
     </div>`);
 }
 function pintarTienda(){
@@ -1484,6 +1515,11 @@ $('#reto').addEventListener('click', e => {
     return;
   }
   if(e.target.closest('[data-numda]') && retoActual){
+    /* Antes el número danés venía escrito en el propio botón: se leía
+       "tolv", se pulsaba 12 y no hacía falta entender "doce". Ahora se
+       pide, y cuesta lo mismo que la pista de vocabulario. */
+    if(retoActual.pista) return;
+    retoActual.pista = true; S.puntosEs = Math.max(0, S.puntosEs - 3);
     $('#zona-pista').innerHTML = `<div class="pista-caja">På dansk: <b>${esc(numeroDa(retoActual.p.precio))}</b></div>`;
     return;
   }
@@ -1515,14 +1551,20 @@ $('#reto').addEventListener('click', e => {
     const {p, pedido} = retoActual;
     const cid = cb.dataset.color;
     if(pedido && cid !== pedido.id){
-      cb.style.borderColor = 'var(--coral)';
+      cb.classList.add('mal');
       $('#zona-pista').innerHTML = `<div class="pista-caja">${esc(pedido.f[0])} = <b>${esc(pedido.da)}</b></div>`;
       S.puntosEs = Math.max(0, S.puntosEs - 2);
       return;
     }
-    if(pedido) S.puntosEs += 6;
+    const gana = pedido ? 6 : 0;
+    /* Hay que leer lo ganado ANTES: ponerPrenda cierra el velo y deja
+       retoActual a null. */
+    const previos = retoActual.ganados || 0;
+    S.puntosEs += gana;
     ponerPrenda(p, cid);
-    chispa('+'+(pedido?18:12));
+    /* El globo canta lo ganado de verdad en toda la prenda: si falló la
+       palabra antes, fueron 6 y no 12, y decía +18 igualmente. */
+    chispa('+' + (previos + gana));
     return;
   }
 
@@ -1532,11 +1574,12 @@ $('#reto').addEventListener('click', e => {
     const p = retoActual.p;
     if(op.dataset.op === retoActual.correcta){
       op.classList.add('bien');
-      S.puntosEs += retoActual.fallos ? 6 : 12;
+      const gana = retoActual.fallos ? 6 : 12;
+      S.puntosEs += gana;
       S.aciertos++;
       S.aprendidas[p.id] = (S.aprendidas[p.id]||0) + 1;
       hablar(conDet(p));
-      setTimeout(() => pasoColor(p), 400);
+      setTimeout(() => pasoColor(p, gana), 400);
     } else {
       op.classList.add('mal'); op.disabled = true;
       retoActual.fallos++; S.fallos++;
@@ -1584,9 +1627,12 @@ function montarFrase(){
   $('#frase').innerHTML = [pelo, llevo, pose].filter(Boolean).join(' ');
 
   const pal = paletaDe(p);
-  const malaForma = pal.find(c => c.id === color).f.filter(x => x !== buena)[0] || 'x';
+  /* colorDe() ya cae en pal[0] si el id no está: aquí un find() suelto
+     petaba la pasarela entera y dejaba la ronda sin poder terminarse. */
+  const malaForma = colorDe(p, color).f.filter(x => x !== buena)[0];
   const otro = azar(pal.filter(c => c.id !== color));
-  const ops = mezcla([buena, malaForma, formaColor(p, otro.id)].filter((v,i,a) => a.indexOf(v)===i));
+  const ops = mezcla([buena, malaForma, formaColor(p, otro.id)]
+    .filter(Boolean).filter((v,i,a) => a.indexOf(v)===i));
   $('#frase-op').innerHTML = `<p class="etiqueta" style="text-align:center;margin-bottom:2px">Completa la frase</p>`
     + ops.map(o => `<button class="opcion" data-f="${esc(o)}">${esc(o)}</button>`).join('');
   $('#frase-op').dataset.buena = buena;
@@ -1608,6 +1654,7 @@ $('#frase-op').addEventListener('click', e => {
 function calcular(){
   let estilo = 0, colorOk = 0, aciertoTema = 0, n = 0;
   Object.keys(S.puesto).forEach(r => {
+    if(S.puesto[r].auto) return;          // el peinado de regalo no puntúa
     const {id, color} = S.puesto[r]; n++;
     if(S.tema.ropa.includes(id)){ estilo += 15; aciertoTema++ } else estilo += 4;
     if(color && S.tema.colores.includes(color)){ estilo += 6; colorOk++ }
@@ -1764,6 +1811,10 @@ $('#b-lista').addEventListener('click', () => { filtro='todo'; pintarDicc(); pan
 $('#b-borrar').addEventListener('click', () => {
   try{ localStorage.removeItem(CLAVE) }catch(e){}
   S.monedas = 40; S.comprado = []; S.estrellas = 0; S.aprendidas = {}; S.nombre = '';
+  /* También la partida en curso: si no, la siguiente alumna empezaba en
+     "Ronda 8" con cero estrellas y con el peinado de pago de la anterior. */
+  S.ronda = 0; S.sala = ''; S.tema = null; S.puesto = lookDemo();
+  pararReloj();
   pintarInicio(); pantalla('p-inicio');
 });
 
