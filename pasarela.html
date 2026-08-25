@@ -115,6 +115,24 @@ input[type=text]:focus{outline:none;border-color:var(--magenta)}
 .suelo{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);width:76%;height:64px;border-radius:50%;
   background:radial-gradient(50% 50% at 50% 50%, #FF3D8B3D, transparent 72%);pointer-events:none}
 .portada .foco{display:none}
+
+/* ── pasarela: alfombra en perspectiva, focos de colores y destellos ── */
+.alfombra{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:160%;height:38%;
+  clip-path:polygon(37% 0,63% 0,100% 100%,0 100%);pointer-events:none;
+  background:linear-gradient(180deg,#3A2247,#5A2A48 55%,#7A3358)}
+.alfombra::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(180deg,transparent 0 16px,#FFC24A14 16px 18px)}
+.alfombra::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,#FF3D8B2E,transparent 60%)}
+.foco2{position:absolute;left:50%;top:-8%;transform:translateX(-50%);width:190%;height:118%;pointer-events:none;
+  background:
+    conic-gradient(from 180deg at 50% 0%, transparent 300deg, #4FE0C016 320deg, transparent 340deg),
+    conic-gradient(from 180deg at 50% 0%, transparent 20deg, #FF3D8B16 40deg, transparent 60deg)}
+.destellos{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.destellos i{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--oro);opacity:0;
+  box-shadow:0 0 8px var(--oro);animation:destello 3.4s ease-in-out infinite}
+@keyframes destello{0%,100%{opacity:0;transform:translateY(6px) scale(.5)}
+  45%{opacity:.9;transform:translateY(-12px) scale(1)}}
 .av{position:relative;width:100%;height:100%;display:block;filter:drop-shadow(0 14px 18px rgba(0,0,0,.5));transform-origin:50% 88%}
 
 /* poses */
@@ -400,7 +418,13 @@ input[type=text]:focus{outline:none;border-color:var(--magenta)}
   <section class="pantalla" id="p-pasarela">
     <div class="barra"><div class="tema-mini"><p class="etiqueta">Pasarela</p><strong id="d-tema">—</strong></div></div>
     <div class="escenario" id="esc-pasarela">
-      <div class="fondo" id="fondo-pasarela"></div><div class="foco"></div><div class="suelo"></div>
+      <div class="fondo" id="fondo-pasarela"></div><div class="alfombra"></div>
+      <div class="foco"></div><div class="foco2"></div><div class="suelo"></div>
+      <div class="destellos" aria-hidden="true">
+        <i style="left:12%;top:58%;animation-delay:0s"></i><i style="left:24%;top:34%;animation-delay:.5s"></i>
+        <i style="left:78%;top:44%;animation-delay:1s"></i><i style="left:88%;top:66%;animation-delay:1.6s"></i>
+        <i style="left:34%;top:72%;animation-delay:2.1s"></i><i style="left:66%;top:26%;animation-delay:2.6s"></i>
+      </div>
       <svg class="av" id="av-pasarela" viewBox="0 0 220 400"></svg>
     </div>
     <div class="cuerpo" style="flex:0 0 auto">
@@ -515,7 +539,12 @@ const COLORES = [
   {id:'blanco',   hex:'#F3EEE6', da:'hvid',     f:['blanco','blanca','blancos','blancas']},
   {id:'gris',     hex:'#9A93A5', da:'grå',      f:['gris','gris','grises','grises']},
   {id:'marron',   hex:'#8A5A34', da:'brun',     f:['marrón','marrón','marrones','marrones']},
-  {id:'dorado',   hex:'#D9A521', da:'guld',     f:['dorado','dorada','dorados','doradas']}
+  {id:'dorado',   hex:'#D9A521', da:'guld',     f:['dorado','dorada','dorados','doradas']},
+  {id:'turquesa', hex:'#2FB3A8', da:'turkis',   f:['turquesa','turquesa','turquesas','turquesas']},
+  {id:'celeste',  hex:'#7EC8F5', da:'lyseblå',  f:['celeste','celeste','celestes','celestes']},
+  {id:'beige',    hex:'#E0C9A6', da:'beige',    f:['beige','beige','beiges','beiges']},
+  {id:'granate',  hex:'#7E2233', da:'vinrød',   f:['granate','granate','granates','granates']},
+  {id:'plateado', hex:'#C3C9D4', da:'sølv',     f:['plateado','plateada','plateados','plateadas']}
 ];
 
 /* ── COLORES DE PELO ── */
@@ -585,7 +614,9 @@ const ESCENARIOS = {
   bosque:  {es:'el bosque',  da:'skoven',    cielo:['#1E3A2E','#3E6B4C'], suelo:'#2E4A34', arboles:true},
   nieve:   {es:'la nieve',   da:'sneen',     cielo:['#3E5C86','#9EC4E8'], suelo:'#E8F0FA', copos:true},
   castillo:{es:'el castillo',da:'slottet',   cielo:['#3A2154','#7A4E96'], suelo:'#4A3358', castillo:true},
-  noche:   {es:'la noche',   da:'natten',    cielo:['#120A22','#331B4E'], suelo:'#1E1230', estrellas:true}
+  noche:   {es:'la noche',   da:'natten',    cielo:['#120A22','#331B4E'], suelo:'#1E1230', estrellas:true},
+  fiesta:  {es:'la fiesta',  da:'festen',    cielo:['#2A0F3A','#5C1F5A'], suelo:'#3A1B45', confeti:true, bola:true},
+  escuela: {es:'la clase',   da:'klassen',   cielo:['#243A52','#4C6E86'], suelo:'#3A3446', pizarra:true}
 };
 
 /* ── TEMAS DE RONDA ── */
@@ -596,9 +627,9 @@ const TEMAS = [
    ropa:['abrigo','botasagua','paraguas','jersey','pantalones','panuelo'], colores:['gris','azul','verde','amarillo']},
   {emoji:'❄️', es:'Invierno en Dinamarca', da:'Vinter i Danmark', esc:'nieve',
    ropa:['abrigo','gorro','bufanda','guantes','botas','jersey'], colores:['blanco','azul','rojo','gris']},
-  {emoji:'🎂', es:'Una fiesta de cumpleaños', da:'En fødselsdagsfest', esc:'ciudad',
+  {emoji:'🎂', es:'Una fiesta de cumpleaños', da:'En fødselsdagsfest', esc:'fiesta',
    ropa:['vestido','corona','zapatos','collar','camisa','purpurina'], colores:['rosa','morado','amarillo','rojo']},
-  {emoji:'🎒', es:'El primer día de clase', da:'Første skoledag', esc:'ciudad',
+  {emoji:'🎒', es:'El primer día de clase', da:'Første skoledag', esc:'escuela',
    ropa:['camisa','vaqueros','zapatillas','mochila','gafas'], colores:['azul','blanco','rojo','verde']},
   {emoji:'🎸', es:'Un concierto de rock', da:'En rockkoncert', esc:'noche',
    ropa:['camiseta','vaqueros','botas','gafassol','chaqueta','antifaz'], colores:['negro','rojo','morado','gris']},
@@ -616,7 +647,7 @@ const TEMAS = [
    ropa:['abrigo','sombrero','gato','botas','antifaz','raton'], colores:['negro','morado','naranja','marron']},
   {emoji:'🌲', es:'Una excursión al bosque', da:'En tur i skoven', esc:'bosque',
    ropa:['sudadera','pantalones','botas','mochila','gorra','chaleco'], colores:['verde','marron','gris','naranja']},
-  {emoji:'💃', es:'Una noche de baile', da:'En danseaften', esc:'noche',
+  {emoji:'💃', es:'Una noche de baile', da:'En danseaften', esc:'fiesta',
    ropa:['vestido','tacones','collar','falda','labios','purpurina'], colores:['rojo','negro','morado','dorado']},
   {emoji:'🏰', es:'Un baile en el castillo', da:'Et bal på slottet', esc:'castillo',
    ropa:['vestidolargo','corona','diadema','tacones','pajarita','abanico'], colores:['dorado','morado','blanco','rosa']},
@@ -660,6 +691,21 @@ function rect(x,y,w,h,r,f,extra=''){return `<rect x="${x}" y="${y}" width="${w}"
 function path(d,f,extra=''){return `<path d="${d}" fill="${f}" ${S_} ${extra}/>`}
 function circ(cx,cy,r,f,extra=''){return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${S_} ${extra}/>`}
 function elip(cx,cy,rx,ry,f,extra=''){return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" ${S_} ${extra}/>`}
+/* Da volumen a un grupo de formas: recorta un degradado con la propia
+   silueta, así la ropa deja de verse como una pegatina plana. */
+let _volN = 0;
+function volumen(inner){
+  if(!inner) return '';
+  const n = 'v' + (++_volN);
+  return `<g><defs><clipPath id="cp${n}">${inner}</clipPath>` +
+    `<linearGradient id="lg${n}" x1="0" y1="0" x2="0" y2="1">` +
+      `<stop offset="0" stop-color="#FFFFFF" stop-opacity=".20"/>` +
+      `<stop offset=".34" stop-color="#FFFFFF" stop-opacity="0"/>` +
+      `<stop offset=".68" stop-color="#000000" stop-opacity=".05"/>` +
+      `<stop offset="1" stop-color="#000000" stop-opacity=".26"/>` +
+    `</linearGradient></defs>${inner}` +
+    `<rect x="0" y="0" width="220" height="400" fill="url(#lg${n})" clip-path="url(#cp${n})"/></g>`;
+}
 function tono(hex,d){
   const n = parseInt(hex.slice(1),16);
   const c = v => Math.max(0, Math.min(255, v));
@@ -1023,6 +1069,24 @@ function fondoHTML(id){
     <path d="M20 216 l6 -16 l6 16 l6 -16 l6 16 l6 -16 l6 16 Z"/><path d="M88 184 l7 -18 l7 18 l7 -18 l7 18 l7 -18 l7 18 Z"/>
     <path d="M160 224 l6 -16 l6 16 l6 -16 l6 16 l6 -16 l6 16 Z"/></g>
     <g fill="#FFD98A" opacity=".65"><rect x="36" y="244" width="10" height="14" rx="5"/><rect x="106" y="212" width="12" height="16" rx="6"/><rect x="174" y="252" width="10" height="14" rx="5"/></g>`;
+  if(e.confeti) f += `<g>${Array.from({length:34},(_,i)=>{
+    const x=(i*37)%210+4, y=(i*61)%286+8, c=['#FF3D8B','#FFC24A','#4FE0C0','#7EC8F5','#C3C9D4'][i%5];
+    return `<rect x="${x}" y="${y}" width="5" height="9" rx="1.6" fill="${c}" opacity="${.45+((i*17)%45)/100}" transform="rotate(${(i*47)%100-50} ${x+2.5} ${y+4.5})"/>`;
+    }).join('')}</g>`;
+  /* La bola va a un lado: en el centro se la tapaba la cabeza de la modelo. */
+  if(e.bola) f += `<line x1="46" y1="0" x2="46" y2="28" stroke="#7A6A8A" stroke-width="2"/>
+    <g opacity=".26"><path d="M46 58 L2 186 L104 186 Z" fill="#FFE1F4"/></g>
+    <circle cx="46" cy="44" r="16" fill="#AEB8CC"/>
+    <g fill="#E6ECF7" opacity=".85">${[[39,34],[48,32],[55,39],[36,44],[46,44],[57,48],[40,53],[50,55]]
+      .map(q=>`<rect x="${q[0]}" y="${q[1]}" width="6" height="6" rx="1"/>`).join('')}</g>
+    <circle cx="46" cy="44" r="16" fill="none" stroke="#6E6180" stroke-width="1.5"/>`;
+  if(e.pizarra) f += `<rect x="26" y="120" width="168" height="96" rx="7" fill="#20402F"/>
+    <rect x="26" y="120" width="168" height="96" rx="7" fill="none" stroke="#8A6A44" stroke-width="6"/>
+    <g stroke="#EAF3EA" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".8">
+      <path d="M46 150 h44"/><path d="M46 168 h72"/><path d="M46 186 h34"/>
+      <path d="M138 156 q10 -12 20 0 q-10 12 -20 0"/></g>
+    <g fill="#4A3B2E">${[[10,250],[74,250],[138,250]].map(q=>
+      `<rect x="${q[0]}" y="${q[1]}" width="66" height="10" rx="3"/><rect x="${q[0]+6}" y="${q[1]+10}" width="7" height="40"/><rect x="${q[0]+53}" y="${q[1]+10}" width="7" height="40"/>`).join('')}</g>`;
   if(e.estrellas) f += `<g fill="#FFF3D0">${Array.from({length:34},(_,i)=>
     `<circle cx="${(i*53)%214+3}" cy="${(i*97)%250+8}" r="${i%4===0?1.9:1.1}" opacity="${.35+((i*13)%50)/100}"/>`).join('')}
     </g><circle cx="42" cy="66" r="20" fill="#FFF6DC" opacity=".9"/><circle cx="34" cy="60" r="18" fill="#2A1440" opacity=".95"/>`;
@@ -1042,28 +1106,43 @@ function avatarSVG(est){
   const piel = PIELES[est.piel] || PIELES[0];
   const P = est.puesto || {};
   const entero = P.cuerpo && PR[P.cuerpo.id].entero;
+  /* Las prendas grandes llevan volumen; los detalles pequeños
+     (cara, gafas, mascota) se dejan planos para que no se ensucien. */
+  const CON_VOL = {cuerpo:1, piernas:1, pies:1, cabeza:1, cuello:1, mano:1, pelo:1};
   const dib = r => {
     if(!P[r]) return '';
     const p = PR[P[r].id];
-    return p.dib ? p.dib(colorDe(p, P[r].color).hex) : '';
+    if(!p.dib) return '';
+    const m = p.dib(colorDe(p, P[r].color).hex);
+    return CON_VOL[r] ? volumen(m) : m;
   };
   const peloAtras = P.pelo && PR[P.pelo.id].atras ? PR[P.pelo.id].atras(colorDe(PR[P.pelo.id], P.pelo.color).hex) : '';
 
   return [
     peloAtras,
-    rect(86,248,21,124,10,piel) + rect(113,248,21,124,10,piel),
-    elip(96,374,15,8,piel) + elip(124,374,15,8,piel),
-    path('M74 144 Q110 133 146 144 L142 254 Q110 262 78 254 Z',piel),
-    rect(55,145,19,102,9,piel) + rect(146,145,19,102,9,piel),
-    circ(64,250,11,piel) + circ(156,250,11,piel),
+    volumen(
+      rect(86,248,21,124,10,piel) + rect(113,248,21,124,10,piel) +
+      elip(96,374,15,8,piel) + elip(124,374,15,8,piel) +
+      path('M74 144 Q110 133 146 144 L142 254 Q110 262 78 254 Z',piel) +
+      rect(55,145,19,102,9,piel) + rect(146,145,19,102,9,piel) +
+      circ(64,151,10.5,piel) + circ(156,151,10.5,piel) +
+      circ(64,250,11,piel) + circ(156,250,11,piel)
+    ),
     ropaBase(),
     entero ? '' : dib('piernas'),
     dib('cuerpo'),
     dib('pies'),
-    rect(99,110,22,36,9,piel),
-    circ(75,96,8,piel) + circ(145,96,8,piel),
-    circ(110,92,37,piel),
-    `<g fill="#33223B"><circle cx="98" cy="90" r="3.6"/><circle cx="122" cy="90" r="3.6"/></g>`,
+    volumen(
+      rect(99,110,22,36,9,piel) +
+      circ(75,96,8,piel) + circ(145,96,8,piel) +
+      circ(110,92,37,piel)
+    ),
+    elip(110,133,11,4,tono(piel,-45),'opacity=".32"'),
+    `<g fill="${tono(piel,-30)}" opacity=".45"><ellipse cx="93" cy="99" rx="6.5" ry="4.4"/><ellipse cx="127" cy="99" rx="6.5" ry="4.4"/></g>`,
+    `<g fill="none" stroke="#3B2740" stroke-width="2.6" stroke-linecap="round" opacity=".7">
+       <path d="M91 80 q7 -4.5 14 -1.5"/><path d="M115 78.5 q7 -3 14 1.5"/></g>`,
+    `<g><ellipse cx="98" cy="90" rx="4.3" ry="4.8" fill="#33223B"/><ellipse cx="122" cy="90" rx="4.3" ry="4.8" fill="#33223B"/>` +
+     `<circle cx="99.7" cy="88.3" r="1.5" fill="#FFFFFF" opacity=".92"/><circle cx="123.7" cy="88.3" r="1.5" fill="#FFFFFF" opacity=".92"/></g>`,
     (P.cara && P.cara.id === 'labios') ? '' :
      `<path d="M100 107 Q110 115 120 107" fill="none" stroke="#33223B" stroke-width="3" stroke-linecap="round"/>`,
     dib('cara'),
@@ -1086,9 +1165,30 @@ function vistaPrenda(p, colId){
   if(p.icono) return `<span aria-hidden="true">${p.icono}</span>`;
   const hex = colorDe(p, colId).hex;
   const atras = p.atras ? p.atras(hex) : '';
-  return `<svg viewBox="${p.vb}" aria-hidden="true">${atras}${p.dib(hex)}</svg>`;
+  return `<svg viewBox="${p.vb}" aria-hidden="true">${atras}${volumen(p.dib(hex))}</svg>`;
 }
-function colorPorDefecto(p){ return p.paleta==='pelo' ? S.colorPelo : 'azul' }
+/* Color con el que se enseña cada prenda antes de que el alumno elija.
+   Antes salía todo azul y el armario parecía un muro de ropa idéntica. */
+const COL_DEF = {
+  camiseta:'rojo', camisa:'blanco', blusa:'rosa', jersey:'verde', sudadera:'gris',
+  chaqueta:'negro', chaleco:'amarillo', abrigo:'marron', vestido:'morado',
+  vestidolargo:'granate', banador:'turquesa', pijama:'celeste',
+  pantalones:'negro', vaqueros:'azul', deporte:'gris', mallas:'negro',
+  falda:'rojo', faldalarga:'morado', cortos:'beige',
+  zapatos:'negro', zapatillas:'blanco', botas:'marron', botines:'negro',
+  sandalias:'dorado', chanclas:'celeste', tacones:'rojo', botasagua:'amarillo',
+  gorra:'azul', sombrero:'beige', gorro:'rojo', panuelo:'rosa',
+  diadema:'dorado', corona:'dorado',
+  gafassol:'negro', gafas:'marron', antifaz:'negro',
+  bufanda:'granate', collar:'dorado', corbata:'azul', pajarita:'negro',
+  bolso:'marron', mochila:'verde', paraguas:'celeste', guantes:'blanco', abanico:'rojo'
+};
+function colorPorDefecto(p){
+  if(p.paleta === 'pelo') return S.colorPelo;
+  if(COL_DEF[p.id]) return COL_DEF[p.id];
+  let n = 0; for(let i=0;i<p.id.length;i++) n = (n*31 + p.id.charCodeAt(i)) >>> 0;
+  return COLORES[n % COLORES.length].id;
+}
 
 /* ── NAVEGACIÓN ── */
 function pantalla(id){
@@ -1173,7 +1273,11 @@ function leerCodigoLook(txt){
 /* ── RONDA ── */
 function nuevaRonda(iTema){
   S.ronda++;
-  S.puesto = {}; S.puntosEs = 0; S.aciertos = 0; S.fallos = 0;
+  /* El peinado se conserva de una ronda a otra: si no, la modelo
+     empezaba calva y en ropa interior, que daba bastante pena. */
+  const peloPrev = S.puesto.pelo;
+  S.puesto = {pelo:{id:(peloPrev && peloPrev.id) || 'pelocorto', color:S.colorPelo}};
+  S.puntosEs = 0; S.aciertos = 0; S.fallos = 0;
   S.tema = iTema != null ? TEMAS[iTema] : azar(TEMAS.filter(t => t !== S.tema));
   S.escenario = S.tema.esc;
   const t = S.tema;
