@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tema 3 · ¿El o la? Los artículos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active" id="tema-root"></div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+<!-- ============================================================
+     CONTENIDO DEL TEMA 3
+     ============================================================ -->
+<script>
+window.TEMA = {
+
+num: 3,
+es:  '¿El o la? <em>Los artículos</em>',
+da:  'El eller la? Artiklerne',
+intro: 'Hvert spansk navneord har et køn — og du kan næsten altid se det på ordets sidste bogstav. Denne uge lærer du de fire små ord <b>el, la, los</b> og <b>las</b>, og du øver dem med dyr, tøj og farver. Når du har styr på dem, bliver alt det andet lettere.',
+hoja: 'Hoja_del_alumno_Tema3_Artikler.pdf',
+
+bloques: [
+
+  { letra:'A', es:'La regla', da:'Reglen',
+    nota:'På dansk siger vi <b>en</b> hund og <b>et</b> hus. Spansk har også to køn, men de hedder <b>hankøn</b> og <b>hunkøn</b> — der findes ingen «et». Forskellen er, at det lille ord står <b>foran</b> på spansk.',
+    html:'<table class="regla-tabla"><tr><th></th><th>Ental</th><th>Flertal</th></tr>'+
+         '<tr><td><b>Hankøn</b> — ender på <b>-o</b></td><td><b>el</b> perro</td><td><b>los</b> perros</td></tr>'+
+         '<tr><td><b>Hunkøn</b> — ender på <b>-a</b></td><td><b>la</b> bota</td><td><b>las</b> botas</td></tr>'+
+         '</table>'+
+         '<p style="margin-top:.9rem;font-size:.9rem;line-height:1.6">Reglen passer på langt de fleste ord, du møder nu. '+
+         'Nogle få bryder den, og dem lærer man udenad: <b>el día</b> (dagen) ender på -a, men er hankøn. '+
+         '<b>la mano</b> (hånden) ender på -o, men er hunkøn.</p>' },
+
+  { letra:'B', es:'Los animales', da:'Dyrene',
+    nota:'Tryk på et ord for at høre det. Læg mærke til farven: blå er <b>el</b>, rosa er <b>la</b>.',
+    chips:[
+      {es:'el perro',    da:'hunden',      gen:'masc'},
+      {es:'el gato',     da:'katten',      gen:'masc'},
+      {es:'el caballo',  da:'hesten',      gen:'masc'},
+      {es:'el pájaro',   da:'fuglen',      gen:'masc'},
+      {es:'el conejo',   da:'kaninen',     gen:'masc'},
+      {es:'la vaca',     da:'koen',        gen:'fem'},
+      {es:'la gallina',  da:'hønen',       gen:'fem'},
+      {es:'la tortuga',  da:'skildpadden', gen:'fem'},
+      {es:'la oveja',    da:'fåret',       gen:'fem'},
+      {es:'la araña',    da:'edderkoppen', gen:'fem'}
+    ] },
+
+  { letra:'C', es:'La ropa', da:'Tøjet',
+    nota:'Samme regel: slutter ordet på -o, hedder det <b>el</b>. Slutter det på -a, hedder det <b>la</b>.',
+    chips:[
+      {es:'el vestido',  da:'kjolen',           gen:'masc'},
+      {es:'el abrigo',   da:'frakken',          gen:'masc'},
+      {es:'el sombrero', da:'hatten',           gen:'masc'},
+      {es:'el zapato',   da:'skoen',            gen:'masc'},
+      {es:'la camiseta', da:'T-shirten',        gen:'fem'},
+      {es:'la falda',    da:'nederdelen',       gen:'fem'},
+      {es:'la chaqueta', da:'jakken',           gen:'fem'},
+      {es:'la gorra',    da:'kasketten',        gen:'fem'},
+      {es:'la bufanda',  da:'halstørklædet',    gen:'fem'},
+      {es:'la bota',     da:'støvlen',          gen:'fem'}
+    ] },
+
+  { letra:'D', es:'Los colores', da:'Farverne',
+    nota:'Farven retter sig efter ordet. Ender farven på <b>-o</b>, skifter den til <b>-a</b> ved hunkøn. Farver på -e eller konsonant skifter aldrig.',
+    frases:[
+      ['el perro negro',       'den sorte hund'],
+      ['la falda negra',       'den sorte nederdel'],
+      ['el vestido rojo',      'den røde kjole'],
+      ['la camiseta roja',     'den røde T-shirt'],
+      ['el gato blanco',       'den hvide kat'],
+      ['la gallina blanca',    'den hvide høne'],
+      ['el zapato verde',      'den grønne sko'],
+      ['la bota verde',        'den grønne støvle'],
+      ['el sombrero azul',     'den blå hat'],
+      ['la chaqueta azul',     'den blå jakke']
+    ] },
+
+  { letra:'E', es:'Uno o muchos', da:'Én eller mange',
+    nota:'I flertal får ordet et <b>-s</b>, og artiklen skifter fra el til <b>los</b> og fra la til <b>las</b>.',
+    frases:[
+      ['el gato → los gatos',       'katten → kattene'],
+      ['la bota → las botas',       'støvlen → støvlerne'],
+      ['el libro → los libros',     'bogen → bøgerne'],
+      ['la mesa → las mesas',       'bordet → bordene'],
+      ['el caballo → los caballos', 'hesten → hestene'],
+      ['la vaca → las vacas',       'koen → køerne']
+    ] },
+
+  { letra:'F', es:'Me gusta / me gustan', da:'Jeg kan lide',
+    nota:'Her skal du passe på: <b>me gusta</b> ved <u>én</u> ting, <b>me gustan</b> ved <u>flere</u>. Det er artiklen, der afslører hvilken form du skal bruge.',
+    frases:[
+      ['Me gusta el perro.',          'Jeg kan lide hunden.'],
+      ['Me gustan los perros.',       'Jeg kan lide hunde.'],
+      ['Me gusta la camiseta roja.',  'Jeg kan lide den røde T-shirt.'],
+      ['Me gustan las botas negras.', 'Jeg kan lide de sorte støvler.'],
+      ['No me gusta el color gris.',  'Jeg kan ikke lide farven grå.'],
+      ['¿Te gustan los gatos?',       'Kan du lide katte?']
+    ] }
+,
+
+  { letra:'G', es:'La canción: <em>Me gustas tú</em>', da:'Sangen — Manu Chao',
+    nota:'Manu Chao er en fransk-spansk musiker. Sangen er fra albummet <i>Próxima Estación: Esperanza</i> (2001). Næsten hver eneste linje følger <b>samme mønster</b>: <b>me gusta</b> + artikel + navneord. Derfor er den perfekt lige nu — lyt efter artiklerne.',
+    html:'<div class="tema-tools" style="margin-top:.4rem">'+
+         '<a class="tema-tool" href="https://www.youtube.com/results?search_query=Manu+Chao+Me+gustas+tu" target="_blank" rel="noopener noreferrer">▶ Hør sangen på YouTube</a>'+
+         '<a class="tema-tool" href="Hoja_del_alumno_Tema3_Me_gustas_tu.pdf" download>⬇️ Arbejdsark til sangen (PDF)</a>'+
+         '</div>'+
+         '<p style="margin-top:.9rem;font-size:.9rem;line-height:1.6"><b>Lyt og kryds af:</b> hør sangen igennem én gang, og sæt kryds ved de navneord, du fanger. Anden gang: skriv artiklen foran hvert ord. Ordene står i arbejdsarket.</p>',
+    frases:[
+      ['Me gusta la moto.',        'Jeg kan lide motorcyklen.'],
+      ['Me gusta el viento.',      'Jeg kan lide vinden.'],
+      ['Me gusta la lluvia.',      'Jeg kan lide regnen.'],
+      ['Me gustan los aviones.',   'Jeg kan lide flyene.'],
+      ['Me gusta viajar.',         'Jeg kan lide at rejse. (udsagnsord → altid gusta)'],
+      ['¿Qué horas son?',          'Hvad er klokken?']
+    ] }
+],
+
+tarjeta: {
+  es:'Mi tarjeta: me gusta',
+  da:'Mit kort: det kan jeg lide',
+  nota:'Udfyld sætningerne med ord fra temaet. Husk artiklen — og husk at vælge mellem gusta og gustan.',
+  lineas:[
+    ['Me gusta ', 'el perro…', '.'],
+    ['Me gustan ', 'los gatos…', '.'],
+    ['No me gusta ', 'la araña…', '.'],
+    ['Mi color favorito es ', 'azul, rojo…', '.'],
+    ['Hoy llevo ', 'una camiseta…', '.'],
+    ['En casa tengo ', 'un perro…', '.'],
+    ['¿Y tú? ¿Qué te gusta?', null, '']
+  ]
+},
+
+checklist: [
+  ['Sé cuándo se dice el y cuándo se dice la.','Jeg ved, hvornår det hedder el, og hvornår det hedder la.'],
+  ['Sé formar el plural: los y las.','Jeg kan lave flertal: los og las.'],
+  ['Puedo decir diez animales con su artículo.','Jeg kan sige ti dyr med den rigtige artikel.'],
+  ['Puedo decir diez prendas de ropa con su artículo.','Jeg kan sige ti stykker tøj med den rigtige artikel.'],
+  ['Sé cambiar el color: negro / negra.','Jeg kan ændre farven: negro / negra.'],
+  ['Sé usar me gusta y me gustan sin equivocarme.','Jeg kan bruge me gusta og me gustan uden at tage fejl.']
+],
+
+/* ── Palabras para los ejercicios de abajo ── */
+vocab: [
+  {es:'el perro',     da:'hunden',        gen:'masc'},
+  {es:'el gato',      da:'katten',        gen:'masc'},
+  {es:'el caballo',   da:'hesten',        gen:'masc'},
+  {es:'el pájaro',    da:'fuglen',        gen:'masc'},
+  {es:'el conejo',    da:'kaninen',       gen:'masc'},
+  {es:'la vaca',      da:'koen',          gen:'fem'},
+  {es:'la gallina',   da:'hønen',         gen:'fem'},
+  {es:'la tortuga',   da:'skildpadden',   gen:'fem'},
+  {es:'la oveja',     da:'fåret',         gen:'fem'},
+  {es:'la araña',     da:'edderkoppen',   gen:'fem'},
+  {es:'el vestido',   da:'kjolen',        gen:'masc'},
+  {es:'el abrigo',    da:'frakken',       gen:'masc'},
+  {es:'el sombrero',  da:'hatten',        gen:'masc'},
+  {es:'el zapato',    da:'skoen',         gen:'masc'},
+  {es:'la camiseta',  da:'T-shirten',     gen:'fem'},
+  {es:'la falda',     da:'nederdelen',    gen:'fem'},
+  {es:'la chaqueta',  da:'jakken',        gen:'fem'},
+  {es:'la gorra',     da:'kasketten',     gen:'fem'},
+  {es:'la bufanda',   da:'halstørklædet', gen:'fem'},
+  {es:'la bota',      da:'støvlen',       gen:'fem'},
+  {es:'el libro',     da:'bogen',         gen:'masc'},
+  {es:'el cuaderno',  da:'hæftet',        gen:'masc'},
+  {es:'la mesa',      da:'bordet',        gen:'fem'},
+  {es:'la silla',     da:'stolen',        gen:'fem'},
+  {es:'la mochila',   da:'rygsækken',     gen:'fem'}
+],
+
+/* ── Frases para el ejercicio de parejas ── */
+frases: [
+  {es:'el perro negro',           da:'den sorte hund'},
+  {es:'la camiseta roja',         da:'den røde T-shirt'},
+  {es:'los zapatos blancos',      da:'de hvide sko'},
+  {es:'las botas negras',         da:'de sorte støvler'},
+  {es:'Me gusta el gato',         da:'Jeg kan lide katten'},
+  {es:'Me gustan los caballos',   da:'Jeg kan lide heste'},
+  {es:'No me gusta la araña',     da:'Jeg kan ikke lide edderkoppen'},
+  {es:'¿Te gustan las vacas?',    da:'Kan du lide køer?'},
+  {es:'la falda azul',            da:'den blå nederdel'},
+  {es:'el sombrero verde',        da:'den grønne hat'},
+  {es:'los libros',               da:'bøgerne'},
+  {es:'las mesas',                da:'bordene'}
+]
+
+};
+</script>
+
+  <script src="mini.js"></script>
+  <script src="tema.js"></script>
+</body>
+</html>

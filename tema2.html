@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tema 2 · Mi clase y mi material</title>
+  <title>Tema 2 · ¿Qué haces? Mi día</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
@@ -46,184 +46,158 @@
 window.TEMA = {
 
 num: 2,
-es:  'Mi clase y <em>mi material</em>',
-da:  'Mit klasseværelse og mine ting',
-intro: 'Denne uge lærer du at sige, hvad du har i tasken, hvad der er i klasseværelset, og hvordan du beder om at låne noget. Og det vigtigste af alt: hvornår det hedder <b>el</b> og hvornår det hedder <b>la</b>.',
-hoja: 'Hoja_del_alumno_Tema2.docx',
+es:  '¿Qué haces? <em>Mi día</em>',
+da:  'Hvad laver du? Min dag',
+intro: 'Denne uge lærer du at fortælle, hvad du laver — fra du står op til du går i seng. Det handler om <b>udsagnsord</b> (verbos), og de er nøglen til resten af året: når du kan bøje ét verbum, kan du bøje hundrede.',
+hoja: 'Hoja_del_alumno_Tema2.pdf',
 
 bloques: [
 
-  { letra:'A', es:'En mi mochila', da:'I min taske',
-    nota:'Tryk på et ord for at høre det. Læg mærke til <b>el</b> / <b>la</b> — det skal du bruge hele året.',
-    chips:[
-      {es:'la mochila',      da:'tasken',            gen:'fem'},
-      {es:'el estuche',      da:'penalhuset',        gen:'masc'},
-      {es:'el libro',        da:'bogen',             gen:'masc'},
-      {es:'el cuaderno',     da:'hæftet',            gen:'masc'},
-      {es:'la carpeta',      da:'mappen',            gen:'fem'},
-      {es:'el bolígrafo',    da:'kuglepennen',       gen:'masc'},
-      {es:'el lápiz',        da:'blyanten',          gen:'masc'},
-      {es:'la goma',         da:'viskelæderet',      gen:'fem'},
-      {es:'la regla',        da:'linealen',          gen:'fem'},
-      {es:'el sacapuntas',   da:'blyantspidseren',   gen:'masc'},
-      {es:'el rotulador',    da:'tuschen',           gen:'masc'},
-      {es:'la calculadora',  da:'lommeregneren',     gen:'fem'},
-      {es:'el papel',        da:'papiret',           gen:'masc'},
-      {es:'el ordenador',    da:'computeren',        gen:'masc'},
-      {es:'el móvil',        da:'mobilen',           gen:'masc'}
-    ] },
-
-  { letra:'B', es:'En el aula', da:'I klasseværelset',
-    chips:[
-      {es:'la mesa',        da:'bordet',           gen:'fem'},
-      {es:'la silla',       da:'stolen',           gen:'fem'},
-      {es:'la pizarra',     da:'tavlen',           gen:'fem'},
-      {es:'la puerta',      da:'døren',            gen:'fem'},
-      {es:'la ventana',     da:'vinduet',          gen:'fem'},
-      {es:'la pared',       da:'væggen',           gen:'fem'},
-      {es:'el suelo',       da:'gulvet',           gen:'masc'},
-      {es:'el techo',       da:'loftet',           gen:'masc'},
-      {es:'el reloj',       da:'uret',             gen:'masc'},
-      {es:'la luz',         da:'lyset',            gen:'fem'},
-      {es:'el mapa',        da:'kortet',           gen:'masc'},
-      {es:'la papelera',    da:'papirkurven',      gen:'fem'},
-      {es:'la clase',       da:'klassen',          gen:'fem'},
-      {es:'el profesor',    da:'læreren',          gen:'masc'},
-      {es:'el compañero',   da:'klassekammeraten', gen:'masc'}
-    ] },
-
-  { letra:'C', es:'El, la, un, una', da:'Kendeord — det svære',
-    nota:'På dansk siger man <i>en</i> eller <i>et</i>. På spansk er det <b>el/un</b> eller <b>la/una</b> — og man skal lære det sammen med ordet.',
-    html:
-      '<table class="mini-tabla">'+
-        '<tr><th>Masculino · el</th><th>Femenino · la</th></tr>'+
-        '<tr><td>el libro → <b>un</b> libro</td><td>la mesa → <b>una</b> mesa</td></tr>'+
-        '<tr><td>los libros → <b>unos</b> libros</td><td>las mesas → <b>unas</b> mesas</td></tr>'+
-      '</table>'+
-      '<ul style="margin-top:1rem">'+
-        '<li>Ord på <code>-o</code> er næsten altid <b>masculino</b>: el libr<b>o</b>, el cuadern<b>o</b>.</li>'+
-        '<li>Ord på <code>-a</code> er næsten altid <b>femenino</b>: la mes<b>a</b>, la sill<b>a</b>.</li>'+
-        '<li>Flertal: + <code>-s</code> efter vokal (mesa → mesa<b>s</b>), + <code>-es</code> efter konsonant (papel → papel<b>es</b>).</li>'+
-        '<li><code>lápiz</code> → <code>lápices</code>. Z bliver til C i flertal.</li>'+
-      '</ul>'+
-      '<div class="ojo">⚠️ <b>¡OJO!</b> <code>el mapa</code> og <code>el sacapuntas</code> ender ikke på -o, og <code>la mano</code> ender på -o. '+
-      'Reglen holder ikke 100 % — derfor lærer man altid ordet <b>sammen med el eller la</b>.</div>' },
-
-  { letra:'D', es:'Hay / está', da:'Der er / den står',
-    nota:'To ord, to jobs. <b>Hay</b> = «der er» (hvor mange). <b>Está</b> = «den er / den står» (hvor).',
-    html:
-      '<table class="mini-tabla">'+
-        '<tr><th>Español</th><th>Dansk</th></tr>'+
-        '<tr><td>En mi clase <b>hay</b> veinte sillas.</td><td>I min klasse er der tyve stole.</td></tr>'+
-        '<tr><td>¿Qué <b>hay</b> en tu mochila?</td><td>Hvad er der i din taske?</td></tr>'+
-        '<tr><td>La pizarra <b>está</b> delante.</td><td>Tavlen er foran.</td></tr>'+
-        '<tr><td>El libro <b>está</b> encima de la mesa.</td><td>Bogen ligger på bordet.</td></tr>'+
-      '</table>'+
-      '<p style="margin-top:1rem;font-size:.88rem;color:var(--text-dim)">Ord til at sige <b>hvor</b>:</p>'+
-      '<ul>'+
-        '<li><code>encima de</code> — oven på</li>'+
-        '<li><code>debajo de</code> — under</li>'+
-        '<li><code>al lado de</code> — ved siden af</li>'+
-        '<li><code>delante de</code> — foran</li>'+
-        '<li><code>detrás de</code> — bagved</li>'+
-        '<li><code>en</code> — i / på</li>'+
-      '</ul>' },
-
-  { letra:'E', es:'Los números 0–20', da:'Tallene 0–20',
-    nota:'Tryk på et tal for at høre det. Du skal bruge dem til at tælle dine ting.',
-    nums:[
-      ['0','cero','nul'],      ['1','uno','en'],        ['2','dos','to'],
-      ['3','tres','tre'],      ['4','cuatro','fire'],   ['5','cinco','fem'],
-      ['6','seis','seks'],     ['7','siete','syv'],     ['8','ocho','otte'],
-      ['9','nueve','ni'],      ['10','diez','ti'],      ['11','once','elleve'],
-      ['12','doce','tolv'],    ['13','trece','tretten'],['14','catorce','fjorten'],
-      ['15','quince','femten'],['16','dieciséis','seksten'],['17','diecisiete','sytten'],
-      ['18','dieciocho','atten'],['19','diecinueve','nitten'],['20','veinte','tyve']
-    ] },
-
-  { letra:'F', es:'Para sobrevivir con el material', da:'Overlevelsessætninger',
-    nota:'Disse sætninger bruger du <b>hver eneste time</b>. Lær dem udenad, så går du aldrig i stå.',
+  { letra:'A', es:'Mi día, hora a hora', da:'Min dag, time for time',
+    nota:'Tryk på 🔊 og hør sætningen. Læg mærke til, at alle verberne slutter på <b>-o</b>: det er formen for <b>yo</b> (jeg).',
     frases:[
-      ['¿Qué hay en tu mochila?','Hvad er der i din taske?'],
-      ['En mi mochila hay un libro.','I min taske er der en bog.'],
-      ['No tengo bolígrafo.','Jeg har ikke en kuglepen.'],
-      ['¿Me dejas una goma, por favor?','Må jeg låne et viskelæder?'],
-      ['¿Puedo coger un papel?','Må jeg tage et stykke papir?'],
-      ['Se me ha olvidado el libro.','Jeg har glemt bogen.'],
-      ['¿Qué significa esta palabra?','Hvad betyder dette ord?'],
-      ['¿Cómo se dice «lineal» en español?','Hvordan siger man «lineal» på spansk?'],
-      ['El libro está encima de la mesa.','Bogen ligger på bordet.'],
-      ['La pizarra está delante.','Tavlen er foran.']
-    ] }
+      ['Me levanto a las siete.',         'Jeg står op klokken syv.'],
+      ['Desayuno en casa.',               'Jeg spiser morgenmad hjemme.'],
+      ['Voy al instituto en bici.',       'Jeg tager i skole på cykel.'],
+      ['Estudio español por la mañana.',  'Jeg læser spansk om formiddagen.'],
+      ['Como con mis amigos.',            'Jeg spiser frokost med mine venner.'],
+      ['Vuelvo a casa a las tres.',       'Jeg kommer hjem klokken tre.'],
+      ['Hago los deberes.',               'Jeg laver lektier.'],
+      ['Entreno los martes.',             'Jeg træner om tirsdagen.'],
+      ['Juego al fútbol con mi hermano.', 'Jeg spiller fodbold med min bror.'],
+      ['Veo una serie en el móvil.',      'Jeg ser en serie på mobilen.'],
+      ['Ceno con mi familia.',            'Jeg spiser aftensmad med min familie.'],
+      ['Duermo ocho horas.',              'Jeg sover otte timer.']
+    ] },
 
+  { letra:'B', es:'La regla de oro: los verbos en -ar', da:'Den gyldne regel: udsagnsord på -ar',
+    nota:'Der findes tre slags verber på spansk: <b>-ar</b>, <b>-er</b> og <b>-ir</b>. De fleste er <b>-ar</b>, og de bøjes alle ens. Lær dette ene skema, og du kan pludselig bruge hundredvis af verber.',
+    html:'<p><b>hablar</b> (at tale) — fjern <code>-ar</code>, og sæt den nye endelse på:</p>'+
+         '<ul>'+
+           '<li>yo <b>hablo</b> — jeg taler</li>'+
+           '<li>tú <b>hablas</b> — du taler</li>'+
+           '<li>él / ella <b>habla</b> — han / hun taler</li>'+
+           '<li>nosotros <b>hablamos</b> — vi taler</li>'+
+           '<li>vosotros <b>habláis</b> — I taler</li>'+
+           '<li>ellos / ellas <b>hablan</b> — de taler</li>'+
+         '</ul>'+
+         '<p>Samme skema virker med <code>estudiar</code>, <code>escuchar</code>, <code>cenar</code>, <code>entrenar</code>, <code>desayunar</code> og <code>trabajar</code>.</p>'+
+         '<div class="ojo">👁️ <b>Pas på:</b> på spansk siger man som regel <b>ikke</b> "yo". Endelsen fortæller allerede, hvem der taler. <code>Hablo español</code> betyder "jeg taler spansk".</div>' },
+
+  { letra:'C', es:'Tres verbos rebeldes', da:'Tre oprørske udsagnsord',
+    nota:'Disse tre følger ikke reglen — og de er samtidig dem, du bruger allermest. Dem skal du kunne udenad.',
+    html:'<p><b>ser</b> (at være): <code>soy · eres · es · somos · sois · son</code></p>'+
+         '<p><b>tener</b> (at have): <code>tengo · tienes · tiene · tenemos · tenéis · tienen</code></p>'+
+         '<p><b>ir</b> (at tage af sted): <code>voy · vas · va · vamos · vais · van</code></p>'+
+         '<div class="ojo">👁️ <b>ir</b> + <b>a</b> + infinitiv = fremtid, præcis som på dansk: <code>Voy a estudiar</code> = "jeg skal læse".</div>' },
+
+  { letra:'D', es:'¿Qué hora es?', da:'Hvad er klokken?',
+    nota:'Tryk på timen for at høre den. Man siger <b>son las</b> + tallet — undtagen klokken ét, hvor det hedder <b>es la una</b>.',
+    nums:[
+      ['7:00',  'las siete',              'klokken syv'],
+      ['8:30',  'las ocho y media',       'halv ni'],
+      ['10:15', 'las diez y cuarto',      'kvart over ti'],
+      ['12:00', 'las doce',               'klokken tolv'],
+      ['13:00', 'la una',                 'klokken et'],
+      ['15:45', 'las cuatro menos cuarto','kvart i fire'],
+      ['18:00', 'las seis',               'klokken seks'],
+      ['21:30', 'las nueve y media',      'halv ti']
+    ] },
+
+  { letra:'E', es:'Las partes del día', da:'Dagens dele',
+    nota:'De eneste navneord i dette tema — men husk stadig <b>el</b> og <b>la</b>.',
+    chips:[
+      {es:'la mañana',    da:'formiddagen',   gen:'fem'},
+      {es:'la tarde',     da:'eftermiddagen', gen:'fem'},
+      {es:'la noche',     da:'natten',        gen:'fem'},
+      {es:'el desayuno',  da:'morgenmaden',   gen:'masc'},
+      {es:'la comida',    da:'frokosten',     gen:'fem'},
+      {es:'la cena',      da:'aftensmaden',   gen:'fem'},
+      {es:'el instituto', da:'skolen',        gen:'masc'},
+      {es:'la hora',      da:'timen',         gen:'fem'},
+      {es:'el día',       da:'dagen',         gen:'masc'},
+      {es:'la semana',    da:'ugen',          gen:'fem'}
+    ] },
+
+  { letra:'F', es:'Pregunta a un compañero', da:'Spørg en klassekammerat',
+    nota:'Rejs dig op, find en makker og stil de seks spørgsmål. Svar altid i hele sætninger.',
+    frases:[
+      ['¿Qué haces por la mañana?',       'Hvad laver du om formiddagen?'],
+      ['¿A qué hora te levantas?',        'Hvornår står du op?'],
+      ['¿Cómo vas al instituto?',         'Hvordan kommer du i skole?'],
+      ['¿Qué haces después de clase?',    'Hvad laver du efter skole?'],
+      ['¿A qué hora cenas?',              'Hvornår spiser du aftensmad?'],
+      ['¿Qué haces los fines de semana?', 'Hvad laver du i weekenden?']
+    ] }
 ],
 
 tarjeta: {
-  es:'Mi clase en ocho frases',
-  da:'Min klasse i otte sætninger',
-  nota:'Udfyld og læs det højt for din sidemakker. Det er ugens opgave.',
+  es:'Mi día en ocho frases',
+  da:'Min dag i otte sætninger',
+  nota:'Udfyld de otte sætninger med din egen dag. Det er den tekst, du skal læse op for klassen.',
   lineas:[
-    ['En mi mochila hay ', 'un libro, dos cuadernos…', '.'],
-    ['También tengo ', 'una goma…', '.'],
-    ['No tengo ', 'calculadora…', '.'],
-    ['En mi clase hay ', 'antal', ' mesas.'],
-    ['En mi clase hay ', 'antal', ' sillas.'],
-    ['La pizarra está ', 'delante / detrás', '.'],
-    ['Mi mesa está al lado de ', 'et navn', '.'],
-    ['Mi color favorito del aula es ', 'en farve', '.']
+    ['Me levanto a las ',    'siete…',           '.'],
+    ['Desayuno ',            'pan, cereales…',   '.'],
+    ['Voy al instituto en ', 'bici, autobús…',   '.'],
+    ['Por la mañana estudio ','español…',        '.'],
+    ['Como a las ',          'doce…',            '.'],
+    ['Por la tarde ',        'juego al fútbol…', '.'],
+    ['Ceno con ',            'mi familia…',      '.'],
+    ['Duermo ',              'ocho',             ' horas.']
   ]
 },
 
 checklist: [
-  ['Puedo nombrar diez cosas de mi mochila.','Jeg kan nævne ti ting i min taske.'],
-  ['Sé decir el o la delante de cada palabra.','Jeg kan sige el eller la foran hvert ord.'],
-  ['Puedo contar del 0 al 20 en español.','Jeg kan tælle fra 0 til 20 på spansk.'],
-  ['Sé la diferencia entre hay y está.','Jeg kender forskellen på hay og está.'],
-  ['Puedo pedir prestado algo en español.','Jeg kan bede om at låne noget på spansk.'],
-  ['Puedo describir mi clase con ocho frases.','Jeg kan beskrive min klasse med otte sætninger.']
+  ['Puedo contar mi día de la mañana a la noche.','Jeg kan fortælle om min dag fra morgen til aften.'],
+  ['Puedo conjugar un verbo en -ar sin mirar.','Jeg kan bøje et -ar-verbum uden at kigge.'],
+  ['Puedo usar ser, tener e ir.','Jeg kan bruge ser, tener og ir.'],
+  ['Puedo decir la hora.','Jeg kan sige, hvad klokken er.'],
+  ['Puedo preguntar a un compañero qué hace.','Jeg kan spørge en anden, hvad han eller hun laver.'],
+  ['Puedo hablar de mi día ocho frases seguidas.','Jeg kan sige otte sætninger om min dag.']
 ],
 
 /* ── Palabras para los ejercicios de abajo ── */
 vocab: [
-  {es:'la mochila',     da:'tasken',          gen:'fem'},
-  {es:'el estuche',     da:'penalhuset',      gen:'masc'},
-  {es:'el libro',       da:'bogen',           gen:'masc'},
-  {es:'el cuaderno',    da:'hæftet',          gen:'masc'},
-  {es:'la carpeta',     da:'mappen',          gen:'fem'},
-  {es:'el bolígrafo',   da:'kuglepennen',     gen:'masc'},
-  {es:'el lápiz',       da:'blyanten',        gen:'masc'},
-  {es:'la goma',        da:'viskelæderet',    gen:'fem'},
-  {es:'la regla',       da:'linealen',        gen:'fem'},
-  {es:'el rotulador',   da:'tuschen',         gen:'masc'},
-  {es:'la calculadora', da:'lommeregneren',   gen:'fem'},
-  {es:'el papel',       da:'papiret',         gen:'masc'},
-  {es:'el ordenador',   da:'computeren',      gen:'masc'},
-  {es:'la mesa',        da:'bordet',          gen:'fem'},
-  {es:'la silla',       da:'stolen',          gen:'fem'},
-  {es:'la pizarra',     da:'tavlen',          gen:'fem'},
-  {es:'la puerta',      da:'døren',           gen:'fem'},
-  {es:'la ventana',     da:'vinduet',         gen:'fem'},
-  {es:'la pared',       da:'væggen',          gen:'fem'},
-  {es:'el suelo',       da:'gulvet',          gen:'masc'},
-  {es:'el reloj',       da:'uret',            gen:'masc'},
-  {es:'el mapa',        da:'kortet',          gen:'masc'},
-  {es:'la papelera',    da:'papirkurven',     gen:'fem'}
+  {es:'hablar',       da:'at tale'},
+  {es:'estudiar',     da:'at læse lektier'},
+  {es:'escuchar',     da:'at lytte'},
+  {es:'comer',        da:'at spise'},
+  {es:'beber',        da:'at drikke'},
+  {es:'vivir',        da:'at bo'},
+  {es:'cenar',        da:'at spise aftensmad'},
+  {es:'entrenar',     da:'at træne'},
+  {es:'jugar',        da:'at spille'},
+  {es:'dormir',       da:'at sove'},
+  {es:'volver',       da:'at komme tilbage'},
+  {es:'trabajar',     da:'at arbejde'},
+  {es:'la mañana',    da:'formiddagen',   gen:'fem'},
+  {es:'la tarde',     da:'eftermiddagen', gen:'fem'},
+  {es:'la noche',     da:'natten',        gen:'fem'},
+  {es:'el desayuno',  da:'morgenmaden',   gen:'masc'},
+  {es:'la comida',    da:'frokosten',     gen:'fem'},
+  {es:'la cena',      da:'aftensmaden',   gen:'fem'},
+  {es:'el instituto', da:'skolen',        gen:'masc'},
+  {es:'la hora',      da:'timen',         gen:'fem'},
+  {es:'el día',       da:'dagen',         gen:'masc'},
+  {es:'la semana',    da:'ugen',          gen:'fem'}
 ],
 
 /* ── Frases para el ejercicio de parejas ── */
 frases: [
-  {es:'¿Qué hay en tu mochila?',        da:'Hvad er der i din taske?'},
-  {es:'En mi mochila hay un libro.',    da:'I min taske er der en bog.'},
-  {es:'No tengo bolígrafo.',            da:'Jeg har ikke en kuglepen.'},
-  {es:'¿Me dejas una goma, por favor?', da:'Må jeg låne et viskelæder?'},
-  {es:'¿Puedo coger un papel?',         da:'Må jeg tage et stykke papir?'},
-  {es:'Se me ha olvidado el libro.',    da:'Jeg har glemt bogen.'},
-  {es:'¿Qué significa esta palabra?',   da:'Hvad betyder dette ord?'},
-  {es:'El libro está encima de la mesa.', da:'Bogen ligger på bordet.'},
-  {es:'La pizarra está delante.',       da:'Tavlen er foran.'},
-  {es:'En mi clase hay veinte sillas.', da:'I min klasse er der tyve stole.'},
-  {es:'debajo de la mesa',              da:'under bordet'},
-  {es:'al lado de la ventana',          da:'ved siden af vinduet'}
+  {es:'Me levanto',               da:'Jeg står op'},
+  {es:'Desayuno en casa',         da:'Jeg spiser morgenmad hjemme'},
+  {es:'Voy al instituto',         da:'Jeg tager i skole'},
+  {es:'Estudio español',          da:'Jeg læser spansk'},
+  {es:'Como con mis amigos',      da:'Jeg spiser frokost med mine venner'},
+  {es:'Hago los deberes',         da:'Jeg laver lektier'},
+  {es:'Juego al fútbol',          da:'Jeg spiller fodbold'},
+  {es:'Veo una serie',            da:'Jeg ser en serie'},
+  {es:'Ceno con mi familia',      da:'Jeg spiser aftensmad med min familie'},
+  {es:'Duermo ocho horas',        da:'Jeg sover otte timer'},
+  {es:'¿Qué haces?',              da:'Hvad laver du?'},
+  {es:'¿A qué hora te levantas?', da:'Hvornår står du op?'},
+  {es:'Son las siete',            da:'Klokken er syv'},
+  {es:'Voy a estudiar',           da:'Jeg skal læse'}
 ]
 
 };
