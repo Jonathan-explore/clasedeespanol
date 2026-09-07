@@ -41,6 +41,9 @@ function sinArt(es){
 }
 var VOCAB   = T.vocab   || [];
 var FRASES  = T.frases  || [];
+/* Verbos del ejercicio de terminaciones. Se filtran aqui: una entrada sin
+   raiz o sin infinitivo pintaria "undefined" en el hueco. */
+var CONJUGA = (T.conjuga || []).filter(function(v){ return v && v.raiz && v.inf; });
 
 /* ── 1 · CABECERA ───────────────────────────────────────── */
 function renderHero(){
@@ -199,8 +202,8 @@ function ejGenero(panel){
     word.style.cursor = 'default';
     bucket.appendChild(word);
     var ok = word.dataset.gen === bucket.dataset.gender;
-    if(ok){ score++; word.style.background='rgba(34,197,94,.2)'; word.style.borderColor='#22c55e'; }
-    else  { word.style.background='rgba(239,68,68,.2)';  word.style.borderColor='#ef4444';
+    if(ok){ score++; word.style.background='rgba(34,197,94,.2)'; word.style.borderColor='var(--ok-line)'; }
+    else  { word.style.background='rgba(239,68,68,.2)';  word.style.borderColor='var(--bad-line)';
             word.textContent = (word.dataset.gen==='fem'?'la ':'el ') + word.dataset.w; }
     placed++;
     if(placed>=total){
@@ -281,7 +284,7 @@ function ejEscucha(panel){
       var opts = [q.da];
       shuffle(todas.filter(function(d){ return d !== q.da; })).forEach(function(d){ if(opts.length<4 && opts.indexOf(d)<0) opts.push(d); });
       opts = shuffle(opts);
-      return '<div class="list-q" data-ans="'+esc(q.da)+'" data-w="'+esc(q.es)+'" style="background:rgba(255,255,255,.03);padding:1.3rem;border-radius:16px;border:1px solid var(--glass-border)">'+
+      return '<div class="list-q ej-card" data-ans="'+esc(q.da)+'" data-w="'+esc(q.es)+'">'+
         '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.1rem">'+
           '<button class="frase-play" type="button" data-say="'+esc(q.es)+'" style="width:3rem;height:3rem;font-size:1.3rem">🔊</button>'+
           '<span class="l-reveal" style="font-size:.95rem;color:var(--text-dim)">Klik for at lytte</span>'+
@@ -304,11 +307,11 @@ function ejEscucha(panel){
       q.querySelector('.l-reveal').innerHTML = '<strong style="color:var(--glow);font-size:1.05rem">'+esc(q.dataset.w)+'</strong>';
       var res = q.querySelector('.l-res');
       if(btn.textContent === q.dataset.ans){
-        btn.style.borderColor='#22c55e'; btn.style.background='rgba(34,197,94,.12)'; btn.style.color='#4ade80';
-        res.textContent = '✅ Korrekt!'; res.style.color = '#4ade80';
+        btn.style.borderColor='var(--ok-line)'; btn.style.background='rgba(34,197,94,.12)'; btn.style.color='var(--ok)';
+        res.textContent = '✅ Korrekt!'; res.style.color = 'var(--ok)';
       } else {
-        btn.style.borderColor='#f87171'; btn.style.background='rgba(248,113,113,.12)'; btn.style.color='#f87171';
-        res.textContent = '❌ Svaret var: '+q.dataset.ans; res.style.color = '#fca5a5';
+        btn.style.borderColor='var(--bad-line)'; btn.style.background='rgba(248,113,113,.12)'; btn.style.color='var(--bad-line)';
+        res.textContent = '❌ Svaret var: '+q.dataset.ans; res.style.color = 'var(--bad)';
       }
     });
   });
@@ -334,7 +337,7 @@ function ejPuzzle(panel){
     '<div style="display:flex;flex-direction:column;gap:1.1rem">'+
     qs.map(function(q){
       var w = sinArt(q.es);
-      return '<div class="scr-q" data-ans="'+esc(w)+'" style="background:rgba(255,255,255,.03);padding:1.3rem;border-radius:16px;border:1px solid var(--glass-border)">'+
+      return '<div class="scr-q ej-card" data-ans="'+esc(w)+'">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem">'+
           '<span style="font-size:.85rem;color:var(--text-dim)">Dansk: <strong style="color:var(--glow);font-size:1rem">'+esc(q.da)+'</strong></span>'+
           '<span style="font-size:.85rem;color:var(--text-dim)">Blandet: <strong style="letter-spacing:3px;font-size:1.1rem;color:#a78bfa">'+esc(mezcla(w))+'</strong></span>'+
@@ -359,12 +362,12 @@ function ejPuzzle(panel){
       inp.disabled = true;
       card.querySelector('.scr-check').style.opacity = '.5';
       if(inp.value.trim().toLowerCase() === ans.toLowerCase()){
-        score++; res.textContent = '✅ Korrekt! «'+ans+'»'; res.style.color='#4ade80'; inp.style.borderColor='#22c55e'; say(ans);
+        score++; res.textContent = '✅ Korrekt! «'+ans+'»'; res.style.color='var(--ok)'; inp.style.borderColor='var(--ok-line)'; say(ans);
       } else {
-        res.textContent = '❌ Det rigtige ord er: '+ans; res.style.color='#fca5a5'; inp.style.borderColor='#ef4444';
+        res.textContent = '❌ Det rigtige ord er: '+ans; res.style.color='var(--bad)'; inp.style.borderColor='var(--bad-line)';
       }
       scoreEl.textContent = (score===total) ? '🎉 Perfekt! Alle '+total+' ord rigtige!' : 'Score: '+score+' / '+total;
-      if(score===total) scoreEl.style.color = '#4ade80';
+      if(score===total) scoreEl.style.color = 'var(--ok)';
     }
     card.querySelector('.scr-check').addEventListener('click',check);
     inp.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
@@ -372,8 +375,75 @@ function ejPuzzle(panel){
   panel.querySelector('#p-reset').addEventListener('click',function(){ ejPuzzle(panel); });
 }
 
+/* 🔧 Vælg endelsen — solo aparece si el tema define T.conjuga */
+function ejConjuga(panel){
+  var PERS = [
+    {es:'yo',        da:'jeg',     fin:'o'},
+    {es:'tú',        da:'du',      fin:'as'},
+    {es:'él / ella', da:'han/hun', fin:'a'}
+  ];
+  var todas = [];
+  CONJUGA.forEach(function(v){ PERS.forEach(function(p){ todas.push({v:v,p:p}); }); });
+  var qs = shuffle(todas).slice(0, Math.min(9, todas.length));
+  var total = qs.length, score = 0;
+
+  panel.innerHTML =
+    '<p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.6">'+
+      '🔧 Hvem gør det? Stammen står der allerede — vælg den rigtige <b>endelse</b>.</p>'+
+    '<div id="cj-score" style="text-align:center;font-size:1rem;font-weight:600;color:var(--glow);margin-bottom:1rem">Score: 0 / '+total+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:1.1rem">'+
+    qs.map(function(q){
+      return '<div class="cj-q ej-card" data-fin="'+esc(q.p.fin)+'" data-full="'+esc(q.v.raiz+q.p.fin)+'">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">'+
+          '<span style="font-size:1.15rem">'+
+            '<b style="color:var(--glow)">'+esc(q.p.es)+'</b>&nbsp; '+
+            '<span style="font-family:\'Share Tech Mono\',monospace;font-size:1.3rem">'+esc(q.v.raiz)+'</span>'+
+            '<span style="opacity:.4;letter-spacing:3px">___</span>'+
+          '</span>'+
+          '<span style="font-size:.85rem;color:var(--text-dim)">'+esc(q.p.da+' '+q.v.pres)+' · <i>'+esc(q.v.inf)+'</i></span>'+
+        '</div>'+
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">'+
+          ['o','as','a'].map(function(f){
+            return '<button class="opt-btn" type="button" data-f="'+f+'" style="font-size:1.05rem;font-weight:600;min-width:4.5rem">-'+f+'</button>';
+          }).join('')+
+        '</div>'+
+        '<span class="cj-res" style="font-size:.9rem;font-weight:500"></span>'+
+      '</div>';
+    }).join('')+
+    '</div><button class="save-btn" id="cj-reset" style="margin-top:1.4rem">🔄 Nye verber</button>';
+
+  var scoreEl = panel.querySelector('#cj-score');
+  panel.querySelectorAll('.cj-q .opt-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var q = btn.closest('.cj-q');
+      if(q.dataset.done) return;
+      q.dataset.done = '1';
+      q.querySelectorAll('.opt-btn').forEach(function(b){ b.style.opacity='.35'; b.style.pointerEvents='none'; });
+      btn.style.opacity = '1';
+      var res  = q.querySelector('.cj-res');
+      var full = q.dataset.full;
+      if(btn.dataset.f === q.dataset.fin){
+        score++;
+        btn.style.borderColor='var(--ok-line)'; btn.style.background='rgba(34,197,94,.12)'; btn.style.color='var(--ok)';
+        res.innerHTML = '✅ <b style="font-size:1.05rem">'+esc(full)+'</b>';
+        res.style.color = 'var(--ok)';
+        say(full);
+      } else {
+        btn.style.borderColor='var(--bad-line)'; btn.style.background='rgba(248,113,113,.12)'; btn.style.color='var(--bad-line)';
+        res.innerHTML = '❌ Det rigtige er <b>'+esc(full)+'</b> — endelsen <b>-'+esc(q.dataset.fin)+'</b>';
+        res.style.color = 'var(--bad)';
+      }
+      scoreEl.textContent = (score===total)
+        ? '🎉 Perfekt! Alle '+total+' rigtige!' : 'Score: '+score+' / '+total;
+      if(score===total) scoreEl.style.color = 'var(--ok)';
+    });
+  });
+  panel.querySelector('#cj-reset').addEventListener('click',function(){ ejConjuga(panel); });
+}
+
 /* ── ZONA DE EJERCICIOS ─────────────────────────────────── */
 var EJ = [
+  { id:'cnj',  ico:'🔧', nom:'Endelser',      fn:ejConjuga, ok:function(){ return CONJUGA.length >= 2; } },
   { id:'gen',  ico:'🎯', nom:'el / la',       fn:ejGenero,  ok:function(){ return VOCAB.filter(function(v){return v.gen;}).length >= 4; } },
   { id:'mat',  ico:'🃏', nom:'Match-par',     fn:ejMatch,   ok:function(){ return (FRASES.length+VOCAB.length) >= 4; } },
   { id:'lyt',  ico:'🎧', nom:'Lytteøvelse',   fn:ejEscucha, ok:function(){ return (VOCAB.length+FRASES.length) >= 4; } },

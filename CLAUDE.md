@@ -26,9 +26,10 @@ señala esa carpeta, avísale antes de copiar nada.
   Arranca en `DOMContentLoaded` y **da error fuera de `index.html`**, porque espera
   el DOM de la SPA (`#back-btn`, las secciones `view-*`). No lo cargues en páginas
   sueltas.
-- `mini.js` — la versión ligera (fondo, partículas, ordbog rápida) para las páginas
-  sueltas. Es lo que cargan las páginas de tema.
-- `tema1.html`, `tema2.html` + `tema.js` / `tema.css` — un tema por semana. Cada
+- `mini.js` — la versión ligera (fondo, partículas, ordbog rápida, y el tema
+  claro/oscuro guardado) para las páginas sueltas. Es lo que cargan las páginas de
+  tema. Toda página que no sea `index.html` debe cargarlo, o saldrá siempre oscura.
+- `tema1.html` … `tema4.html` + `tema.js` / `tema.css` — un tema por semana. Cada
   página define `window.TEMA = {...}` con su contenido y `tema.js` lo pinta. `tema.js`
   es autónomo, no depende de `script.js`.
 - `pasarela.html` — juego de vestir, autocontenido en un solo archivo (SVG a mano).
@@ -42,9 +43,12 @@ otra vez su tarjeta en `index.html`.
 
 ## El tema de cada semana
 
-1. Copia `_plantilla-tema.html` a `tema3.html` y rellena `window.TEMA`.
-2. En `index.html`, copia la tarjeta del Tema 2 y cambia `data-href`, número, título
-   y descripción.
+1. Copia `_plantilla-tema.html` a `temaN.html` (el siguiente número libre) y rellena
+   `window.TEMA`.
+2. En `index.html`, copia la tarjeta del tema anterior y cambia `data-href`, número,
+   título y descripción; mueve la tarjeta `card-soon` al número siguiente.
+3. Si el tema lleva hoja del alumno, ponla en `hoja:` para que salga el botón de
+   descarga.
 
 La regla CSS de la portada ya reparte bien cualquier número de tarjetas: la última
 ocupa toda la fila solo si se queda sola.

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tema 4 · Los verbos en -AR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active" id="tema-root"></div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+<!-- ============================================================
+     CONTENIDO DEL TEMA 4 · LOS VERBOS EN -AR
+     Versión lenta de la regla que ya salió en el Tema 2:
+     6 verbos, 3 personas, 3 terminaciones. Nada más.
+     ============================================================ -->
+<script>
+window.TEMA = {
+
+num: 4,
+es:  'Los verbos <em>en -AR</em>',
+da:  'AR-udsagnsord — jeg taler, du taler, hun taler',
+intro: 'Du så reglen kort i <b>Tema 2</b>. Nu tager vi den <b>langsomt</b>, for det er den vigtigste regel i hele spansk. På dansk ændrer udsagnsordet sig aldrig: <i>jeg taler, du taler, hun taler</i>. På spansk fortæller <b>endelsen</b>, hvem der gør det — og der er kun <b>tre</b> at lære: <b>-o</b>, <b>-as</b>, <b>-a</b>. Seks udsagnsord × tre endelser, så kan du selv bygge hundredvis af sætninger.',
+hoja: 'Hoja_del_alumno_Tema4_Verbos_AR.pdf',
+
+bloques: [
+
+  /* ── A · LA REGLA ─────────────────────────────────────── */
+  { letra:'A', es:'Solo cambia el final', da:'Kun endelsen ændrer sig',
+    nota:'Sammenlign de to sprog. På dansk står der <b>taler</b> tre gange. På spansk skifter ordet hver gang.',
+    html:
+      '<table class="mini-tabla">'+
+        '<tr><th>Dansk · intet ændrer sig</th><th>Español · endelsen ændrer sig</th></tr>'+
+        '<tr><td>jeg <b>taler</b></td><td>(yo) habl<b style="color:var(--glow)">o</b></td></tr>'+
+        '<tr><td>du <b>taler</b></td><td>(tú) habl<b style="color:var(--glow)">as</b></td></tr>'+
+        '<tr><td>han / hun <b>taler</b></td><td>(él / ella) habl<b style="color:var(--glow)">a</b></td></tr>'+
+      '</table>'+
+
+      '<p style="text-align:center;font-size:1.25rem;margin:1.4rem 0 .4rem;letter-spacing:.02em">'+
+        '<code>habl</code> <span style="opacity:.5">+</span> '+
+        '<b style="color:var(--glow)">o</b> <span style="opacity:.5">=</span> '+
+        '<b style="font-size:1.35rem">hablo</b></p>'+
+      '<p style="text-align:center;font-size:.85rem;color:var(--text-dim);margin-bottom:1.2rem">'+
+        'stammen · <code>habl</code> — endelsen · <code>-o</code></p>'+
+
+      '<ul>'+
+        '<li>Tag infinitiv: <code>habl<b>ar</b></code> · <code>bail<b>ar</b></code> · <code>cant<b>ar</b></code></li>'+
+        '<li>Fjern <code>-ar</code>. Det, der er tilbage, er <b>stammen</b>: <code>habl-</code>, <code>bail-</code>, <code>cant-</code>.</li>'+
+        '<li>Stammen ændrer sig <b>aldrig</b>. Du sætter bare en af de tre endelser på.</li>'+
+      '</ul>'+
+
+      '<table class="mini-tabla" style="margin-top:1.2rem">'+
+        '<tr><th>Quién · hvem</th><th>Endelse</th><th>Ejemplo</th></tr>'+
+        '<tr><td>yo · jeg</td><td><b style="color:var(--glow)">-o</b></td><td>bail<b>o</b></td></tr>'+
+        '<tr><td>tú · du</td><td><b style="color:var(--glow)">-as</b></td><td>bail<b>as</b></td></tr>'+
+        '<tr><td>él / ella · han / hun</td><td><b style="color:var(--glow)">-a</b></td><td>bail<b>a</b></td></tr>'+
+      '</table>'+
+
+      '<div class="ojo">⚠️ <b>¡OJO!</b> Læg mærke til, at <code>yo</code>, <code>tú</code> og <code>él</code> står i parentes ovenfor. '+
+      'På spansk behøver du <b>ikke</b> sige pronomenet — endelsen siger det allerede.<br>'+
+      '<code>Hablo español.</code> = <i>Jeg taler spansk.</i> Ordet <code>yo</code> er ikke nødvendigt. '+
+      'Det er derfor, endelsen er så vigtig: <b>den er selve pronomenet</b>.</div>'+
+
+      '<div class="ojo" style="margin-top:.8rem">📌 <b>Og de tre andre linjer?</b> I Tema 2 så du seks linjer '+
+      '(<code>nosotros</code>, <code>vosotros</code>, <code>ellos</code>). De findes stadig — men i dette tema '+
+      'rører vi dem <b>ikke</b>. Tre endelser først. Resten kommer, når de tre sidder fast.</div>' },
+
+  /* ── B · LOS SEIS VERBOS ──────────────────────────────── */
+  { letra:'B', es:'Los seis verbos de la semana', da:'Ugens seks udsagnsord',
+    nota:'Tryk på 🔊 for at høre dem. Alle seks ender på <b>-ar</b> — derfor virker den samme regel på dem alle.',
+    frases:[
+      ['hablar','at tale'],
+      ['mirar','at kigge / at se på'],
+      ['escuchar','at lytte / at høre'],
+      ['bailar','at danse'],
+      ['cantar','at synge'],
+      ['jugar','at spille / at lege']
+    ] },
+
+  /* ── C · LA TABLA ─────────────────────────────────────── */
+  { letra:'C', es:'La tabla que hay que saber', da:'Tabellen du skal kunne',
+    nota:'Hele temaet på ét bord. Tag et billede af den med mobilen.',
+    html:
+      '<div class="tabla-scroll">'+
+      '<table class="mini-tabla" style="min-width:440px">'+
+        '<tr><th>Infinitivo</th><th>yo <span style="color:var(--glow)">-o</span></th>'+
+            '<th>tú <span style="color:var(--glow)">-as</span></th>'+
+            '<th>él/ella <span style="color:var(--glow)">-a</span></th></tr>'+
+        '<tr><td>hablar<br><span style="font-size:.78rem;opacity:.6">at tale</span></td>'+
+            '<td>habl<b>o</b></td><td>habl<b>as</b></td><td style="color:var(--text)">habl<b>a</b></td></tr>'+
+        '<tr><td>mirar<br><span style="font-size:.78rem;opacity:.6">at kigge</span></td>'+
+            '<td>mir<b>o</b></td><td>mir<b>as</b></td><td style="color:var(--text)">mir<b>a</b></td></tr>'+
+        '<tr><td>escuchar<br><span style="font-size:.78rem;opacity:.6">at lytte</span></td>'+
+            '<td>escuch<b>o</b></td><td>escuch<b>as</b></td><td style="color:var(--text)">escuch<b>a</b></td></tr>'+
+        '<tr><td>bailar<br><span style="font-size:.78rem;opacity:.6">at danse</span></td>'+
+            '<td>bail<b>o</b></td><td>bail<b>as</b></td><td style="color:var(--text)">bail<b>a</b></td></tr>'+
+        '<tr><td>cantar<br><span style="font-size:.78rem;opacity:.6">at synge</span></td>'+
+            '<td>cant<b>o</b></td><td>cant<b>as</b></td><td style="color:var(--text)">cant<b>a</b></td></tr>'+
+        '<tr><td style="color:#fbbf24 !important">jugar 🔥<br><span style="font-size:.78rem;opacity:.6">at spille</span></td>'+
+            '<td>j<b style="color:#fbbf24">ue</b>g<b>o</b></td><td>j<b style="color:#fbbf24">ue</b>g<b>as</b></td>'+
+            '<td style="color:var(--text)">j<b style="color:#fbbf24">ue</b>g<b>a</b></td></tr>'+
+      '</table></div>'+
+      '<div class="ojo">🔥 <b>jugar er oprøreren.</b> Stammen laver om på sig selv: <code>u</code> bliver til <code>ue</code>. '+
+      'Man siger <b>juego</b>, ikke <s>jugo</s> — og <code>jugo</code> betyder faktisk <i>juice</i> 🧃, så det bliver sjovt, hvis du tager fejl.<br>'+
+      '<b>MEN:</b> endelserne er præcis de samme — <code>-o</code>, <code>-as</code>, <code>-a</code>. Reglen holder.</div>' },
+
+  /* ── D · COMPLEMENTOS ─────────────────────────────────── */
+  { letra:'D', es:'Para acabar la frase', da:'Ord til at bygge sætningen færdig',
+    nota:'Udsagnsord + et af disse = en færdig sætning. Bland frit: <b>Yo canto</b> + <b>en la ducha</b>.',
+    frases:[
+      ['español / danés / inglés','spansk / dansk / engelsk'],
+      ['música','musik'],
+      ['reggaetón','reggaeton'],
+      ['salsa','salsa'],
+      ['la tele','fjernsyn'],
+      ['el móvil','mobilen'],
+      ['una película','en film'],
+      ['al fútbol','fodbold'],
+      ['al baloncesto','basketball'],
+      ['en casa','derhjemme'],
+      ['en la ducha','i badet'],
+      ['en el coche','i bilen'],
+      ['con mis amigos','med mine venner'],
+      ['los sábados','om lørdagen'],
+      ['todos los días','hver dag'],
+      ['muy bien','rigtig godt'],
+      ['un poco','lidt']
+    ] },
+
+  /* ── E · FRASES DE EJEMPLO ────────────────────────────── */
+  { letra:'E', es:'Dieciocho frases de verdad', da:'Atten rigtige sætninger',
+    nota:'Tre sætninger pr. udsagnsord — én for hver endelse. Læs dem højt, og læg mærke til det <b>sidste bogstav</b>.',
+    frases:[
+      ['Yo hablo español.','Jeg taler spansk.'],
+      ['Tú hablas danés.','Du taler dansk.'],
+      ['Ella habla inglés.','Hun taler engelsk.'],
+
+      ['Yo miro la tele.','Jeg ser fjernsyn.'],
+      ['Tú miras el móvil.','Du kigger på mobilen.'],
+      ['Él mira una película.','Han ser en film.'],
+
+      ['Yo escucho música.','Jeg lytter til musik.'],
+      ['Tú escuchas al profesor.','Du lytter til læreren.'],
+      ['Ella escucha reggaetón.','Hun lytter til reggaeton.'],
+
+      ['Yo bailo en casa.','Jeg danser derhjemme.'],
+      ['Tú bailas muy bien.','Du danser rigtig godt.'],
+      ['Él baila salsa.','Han danser salsa.'],
+
+      ['Yo canto en la ducha.','Jeg synger i badet.'],
+      ['Tú cantas en el coche.','Du synger i bilen.'],
+      ['Ella canta una canción.','Hun synger en sang.'],
+
+      ['Yo juego al fútbol.','Jeg spiller fodbold.'],
+      ['Tú juegas con tus amigos.','Du leger med dine venner.'],
+      ['Él juega al baloncesto.','Han spiller basketball.']
+    ] },
+
+  /* ── F · PREGUNTAR ────────────────────────────────────── */
+  { letra:'F', es:'¿Y tú?', da:'Spørg din sidemakker',
+    nota:'For at spørge bruger du <b>-as</b>-formen. Samme ord — kun spørgsmålstegnene og stemmen ændrer sig.',
+    frases:[
+      ['¿Hablas español?','Taler du spansk?'],
+      ['Sí, hablo un poco.','Ja, jeg taler lidt.'],
+      ['No, no hablo español.','Nej, jeg taler ikke spansk.'],
+      ['¿Qué música escuchas?','Hvilken musik lytter du til?'],
+      ['Escucho pop y reggaetón.','Jeg lytter til pop og reggaeton.'],
+      ['¿Bailas?','Danser du?'],
+      ['¿Cantas en la ducha?','Synger du i badet?'],
+      ['¿Juegas al fútbol?','Spiller du fodbold?'],
+      ['¿Qué miras en la tele?','Hvad ser du i fjernsynet?'],
+      ['¿Y tú?','Og dig?']
+    ] },
+
+  /* ── G · TRES AVISOS ──────────────────────────────────── */
+  { letra:'G', es:'Tres cosas que hay que recordar', da:'Tre ting du skal huske',
+    html:
+      '<ul>'+
+        '<li><b>1 · Pronomenet er usynligt.</b> <code>Bailo salsa.</code> = <i>Jeg danser salsa.</i> '+
+          'Du siger kun <code>yo</code>, hvis du vil fremhæve det: <code><b>Yo</b> bailo, pero <b>tú</b> no.</code></li>'+
+        '<li><b>2 · Nægtelse er nemt.</b> Sæt <code>no</code> foran udsagnsordet. Færdig. '+
+          '<code>No bailo.</code> · <code>No hablo francés.</code> · <code>Ella no canta.</code></li>'+
+        '<li><b>3 · Spørgsmål har to tegn.</b> Et omvendt i starten og et normalt i slutningen: '+
+          '<code>¿Bailas?</code> · <code>¿Qué escuchas?</code></li>'+
+      '</ul>'+
+      '<div class="ojo">⚠️ <b>¡OJO!</b> Den fejl alle laver i starten: at bruge <b>-o</b>-formen om andre. '+
+      '<s>Ella bailo.</s> ❌ → <b>Ella baila.</b> ✅<br>'+
+      'Reglen i én sætning: <b>-o er kun til mig selv.</b></div>' }
+
+],
+
+/* ── MI TARJETA ──────────────────────────────────────────── */
+tarjeta: {
+  es:'Ocho frases sobre mí',
+  da:'Otte sætninger om mig',
+  nota:'Udfyld hullerne og læs det højt for din sidemakker. Bemærk sætning 7 og 8: der skal du bruge <b>-a</b>-formen.',
+  lineas:[
+    ['Yo hablo ',         'danés, un poco de español…', '.'],
+    ['Yo escucho ',       'pop, reggaetón…',            '.'],
+    ['Yo miro ',          'la tele, YouTube…',          '.'],
+    ['Yo juego al ',      'fútbol, baloncesto…',        '.'],
+    ['Yo canto en ',      'la ducha, el coche…',        '.'],
+    ['Los sábados yo ',   'bailo, juego, escucho…',     '.'],
+    ['Mi amigo se llama ','et navn',                    '.'],
+    ['Él o ella ',        'baila, canta, juega…',       ' también.']
+  ]
+},
+
+/* ── CHECKLIST ───────────────────────────────────────────── */
+checklist: [
+  ['Sé quitar el -ar y encontrar la raíz.','Jeg kan fjerne -ar og finde stammen.'],
+  ['Me sé las tres terminaciones: -o, -as, -a.','Jeg kan de tre endelser: -o, -as, -a.'],
+  ['Puedo conjugar los seis verbos del tema.','Jeg kan bøje temaets seks udsagnsord.'],
+  ['Puedo decir cinco frases sobre mí.','Jeg kan sige fem sætninger om mig selv.'],
+  ['Puedo preguntar a un compañero con -as.','Jeg kan spørge en klassekammerat med -as.'],
+  ['Puedo contar lo que hace él o ella con -a.','Jeg kan fortælle, hvad han eller hun laver, med -a.']
+],
+
+/* ── Verbos para el ejercicio de terminaciones ───────────── */
+conjuga: [
+  {inf:'hablar',   raiz:'habl',   da:'at tale',   pres:'taler'},
+  {inf:'mirar',    raiz:'mir',    da:'at kigge',  pres:'kigger'},
+  {inf:'escuchar', raiz:'escuch', da:'at lytte',  pres:'lytter'},
+  {inf:'bailar',   raiz:'bail',   da:'at danse',  pres:'danser'},
+  {inf:'cantar',   raiz:'cant',   da:'at synge',  pres:'synger'},
+  {inf:'jugar',    raiz:'jueg',   da:'at spille', pres:'spiller'}
+],
+
+/* ── Formas conjugadas para escucha, puzle y LinguaStrike ── */
+vocab: [
+  {es:'hablo',    da:'jeg taler'},
+  {es:'hablas',   da:'du taler'},
+  {es:'habla',    da:'han/hun taler'},
+  {es:'miro',     da:'jeg kigger'},
+  {es:'miras',    da:'du kigger'},
+  {es:'mira',     da:'han/hun kigger'},
+  {es:'escucho',  da:'jeg lytter'},
+  {es:'escuchas', da:'du lytter'},
+  {es:'escucha',  da:'han/hun lytter'},
+  {es:'bailo',    da:'jeg danser'},
+  {es:'bailas',   da:'du danser'},
+  {es:'baila',    da:'han/hun danser'},
+  {es:'canto',    da:'jeg synger'},
+  {es:'cantas',   da:'du synger'},
+  {es:'canta',    da:'han/hun synger'},
+  {es:'juego',    da:'jeg spiller'},
+  {es:'juegas',   da:'du spiller'},
+  {es:'juega',    da:'han/hun spiller'}
+],
+
+/* ── Frases para el ejercicio de parejas ─────────────────── */
+frases: [
+  {es:'Yo hablo español.',        da:'Jeg taler spansk.'},
+  {es:'Tú hablas danés.',         da:'Du taler dansk.'},
+  {es:'Ella habla inglés.',       da:'Hun taler engelsk.'},
+  {es:'Yo escucho música.',       da:'Jeg lytter til musik.'},
+  {es:'Él baila salsa.',          da:'Han danser salsa.'},
+  {es:'Tú bailas muy bien.',      da:'Du danser rigtig godt.'},
+  {es:'Yo canto en la ducha.',    da:'Jeg synger i badet.'},
+  {es:'Ella canta una canción.',  da:'Hun synger en sang.'},
+  {es:'Yo juego al fútbol.',      da:'Jeg spiller fodbold.'},
+  {es:'Tú miras el móvil.',       da:'Du kigger på mobilen.'},
+  {es:'No bailo.',                da:'Jeg danser ikke.'},
+  {es:'¿Hablas español?',         da:'Taler du spansk?'},
+  {es:'¿Juegas al fútbol?',       da:'Spiller du fodbold?'},
+  {es:'¿Qué música escuchas?',    da:'Hvilken musik lytter du til?'}
+]
+
+};
+</script>
+
+  <script src="mini.js"></script>
+  <script src="tema.js"></script>
+</body>
+</html>

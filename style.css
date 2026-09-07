@@ -17,6 +17,9 @@ button,a,[role="button"]{touch-action:manipulation}
   --text:#e2e8f4;
   --text-dim:#6b7fa3;
   --text-muted:#3d4f6e;
+  --text-strong:#fff;          /* texto destacado: titulares, palabra española */
+  --ok:#4ade80;   --ok-line:#22c55e;   /* acierto en los ejercicios */
+  --bad:#fca5a5;  --bad-line:#f87171;  /* fallo en los ejercicios */
   --fem:hsl(330,75%,72%);
   --masc:hsl(210,80%,68%);
   --r:22px;
@@ -1272,6 +1275,9 @@ html[data-theme="light"]{
   --text-muted:#bab3ac;
   --fem:hsl(8,55%,58%);
   --masc:hsl(220,50%,58%);
+  --text-strong:#1c1917;
+  --ok:#15803d;   --ok-line:#16a34a;
+  --bad:#b91c1c;  --bad-line:#dc2626;
 }
 
 /* canvas & overlays */

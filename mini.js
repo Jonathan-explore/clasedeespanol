@@ -10,6 +10,17 @@
 
 function $(id){ return document.getElementById(id); }
 
+/* -- TEMA CLARO / OSCURO ---------------------------------
+   La portada guarda la eleccion en localStorage y la aplica
+   desde script.js, que aqui no se carga. Sin esto las paginas
+   sueltas salian siempre oscuras aunque la web estuviera en
+   claro. Mismo valor por defecto que script.js: 'light'.    */
+(function initTheme(){
+  var t;
+  try{ t = localStorage.getItem('theme'); }catch(e){ t = null; }
+  document.documentElement.dataset.theme = (t || 'light') === 'light' ? 'light' : '';
+})();
+
 /* ── FONDO FLUIDO ───────────────────────────────────────── */
 (function initFluid(){
   var canvas = $('fluid-bg');

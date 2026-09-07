@@ -52,7 +52,7 @@ a.back-btn{text-decoration:none}
 }
 .tema-h1{
   font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);
-  font-weight:700;color:#fff;line-height:1.15;margin-bottom:.35rem;
+  font-weight:700;color:var(--text-strong);line-height:1.15;margin-bottom:.35rem;
 }
 .tema-h1 em{font-style:italic;background:linear-gradient(90deg,var(--glow),var(--glow2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .tema-da{font-size:1rem;color:var(--text-dim);margin-bottom:1rem}
@@ -81,7 +81,7 @@ a.back-btn{text-decoration:none}
   border:1px solid rgba(94,234,212,.3);color:var(--glow);
   font-weight:700;font-size:.85rem;
 }
-.bloque-es{font-size:1.12rem;font-weight:600;color:#fff}
+.bloque-es{font-size:1.12rem;font-weight:600;color:var(--text-strong)}
 .bloque-da{font-size:.85rem;color:var(--text-dim)}
 .bloque-nota{
   font-size:.82rem;line-height:1.6;color:var(--text-dim);
@@ -106,7 +106,7 @@ a.back-btn{text-decoration:none}
 }
 .frase-play:hover{background:rgba(94,234,212,.24);transform:scale(1.08)}
 .frase-play:active{transform:scale(.92)}
-.frase-es{font-size:.95rem;font-weight:500;color:#fff}
+.frase-es{font-size:.95rem;font-weight:500;color:var(--text-strong)}
 .frase-da{font-size:.88rem;color:var(--text-dim)}
 @media(max-width:640px){
   .frase{grid-template-columns:2.2rem 1fr;row-gap:.2rem}
@@ -131,7 +131,7 @@ a.back-btn{text-decoration:none}
 
 /* Bloque HTML libre (gramática) */
 .bloque-html{font-size:.92rem;line-height:1.75;color:var(--text)}
-.bloque-html b,.bloque-html strong{color:#fff}
+.bloque-html b,.bloque-html strong{color:var(--text-strong)}
 .bloque-html code{
   font-family:'Share Tech Mono',monospace;font-size:.9em;
   background:rgba(94,234,212,.10);color:var(--glow);
@@ -146,7 +146,7 @@ a.back-btn{text-decoration:none}
 .mini-tabla{width:100%;border-collapse:collapse;margin-top:.8rem;font-size:.9rem}
 .mini-tabla th,.mini-tabla td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.07)}
 .mini-tabla th{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:600}
-.mini-tabla td:first-child{color:#fff;font-weight:500}
+.mini-tabla td:first-child{color:var(--text-strong);font-weight:500}
 .mini-tabla td:last-child{color:var(--text-dim)}
 
 /* Rejilla de números */
@@ -158,7 +158,7 @@ a.back-btn{text-decoration:none}
 }
 .num:hover{background:rgba(94,234,212,.12);border-color:rgba(94,234,212,.3);transform:translateY(-2px)}
 .num b{display:block;font-size:1.25rem;color:var(--glow);font-weight:700}
-.num span{display:block;font-size:.88rem;font-weight:600;color:#fff;margin-top:.15rem}
+.num span{display:block;font-size:.88rem;font-weight:600;color:var(--text-strong);margin-top:.15rem}
 .num em{display:block;font-size:.72rem;color:var(--text-dim);font-style:normal}
 
 /* ── MI TARJETA (rellenar) ────────────────────────────────── */
@@ -169,7 +169,7 @@ a.back-btn{text-decoration:none}
   background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;
   font-size:.75rem;color:var(--text-dim);
 }
-.tarjeta-txt{font-size:.95rem;color:#fff;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;flex:1}
+.tarjeta-txt{font-size:.95rem;color:var(--text-strong);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;flex:1}
 .tarjeta-in{
   background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
   border-radius:10px;padding:.35rem .7rem;color:var(--glow);font-family:inherit;
@@ -179,7 +179,7 @@ a.back-btn{text-decoration:none}
 .tarjeta-salida{
   margin-top:1.2rem;padding:1.2rem 1.4rem;border-radius:18px;
   background:linear-gradient(135deg,rgba(94,234,212,.09),rgba(129,140,248,.07));
-  border:1px solid rgba(94,234,212,.25);font-size:1.02rem;line-height:1.9;color:#fff;
+  border:1px solid rgba(94,234,212,.25);font-size:1.02rem;line-height:1.9;color:var(--text-strong);
 }
 .tarjeta-salida:empty{display:none}
 
@@ -198,14 +198,14 @@ a.back-btn{text-decoration:none}
   font-size:.8rem;color:#0a0f1e;transition:all .2s ease;
 }
 .check.on .check-box{background:#22c55e;border-color:#22c55e}
-.check-txt b{display:block;font-size:.92rem;font-weight:500;color:#fff}
+.check-txt b{display:block;font-size:.92rem;font-weight:500;color:var(--text-strong)}
 .check-txt span{display:block;font-size:.8rem;color:var(--text-dim);margin-top:.1rem}
 
 /* ── ZONA DE EJERCICIOS (abajo, "extra") ──────────────────── */
 .ejercicios{margin-top:3rem;padding-top:2.2rem;border-top:1px solid var(--glass-border)}
 .ejercicios-head{margin-bottom:1.4rem}
 .ejercicios-head h2{
-  font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff;margin-bottom:.3rem;
+  font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text-strong);margin-bottom:.3rem;
 }
 .ejercicios-head p{font-size:.85rem;color:var(--text-dim)}
 .exercise-tabs{flex-wrap:wrap}
@@ -216,7 +216,7 @@ a.back-btn{text-decoration:none}
   background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
   color:var(--text);cursor:pointer;transition:all .2s ease;
 }
-.opt-btn:hover{background:rgba(94,234,212,.12);border-color:rgba(94,234,212,.32);color:#fff;transform:translateY(-2px)}
+.opt-btn:hover{background:rgba(94,234,212,.12);border-color:rgba(94,234,212,.32);color:var(--text-strong);transform:translateY(-2px)}
 
 /* ── PIE DE PÁGINA DE TEMA ────────────────────────────────── */
 .tema-footer{
@@ -229,6 +229,37 @@ a.back-btn{text-decoration:none}
 }
 .tema-footer a:hover{color:var(--glow)}
 
+
+/* Tarjeta de los ejercicios generados por tema.js */
+.ej-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--glass-border);
+  border-radius:16px;padding:1.3rem;
+}
+
+/* Tabla ancha que no cabe en el movil: scrollea ella sola */
+.tabla-scroll{overflow-x:auto}
+
+/* -- TEMA CLARO ------------------------------------------------
+   Los fondos y bordes de arriba son blancos translucidos: sobre el
+   fondo claro desaparecen. Aqui se cambian por tinta suave, para
+   que las paginas de tema respeten la eleccion de la portada.
+   Se usa :where() para no sumar especificidad: asi .chip.masc,
+   .check.on y los :hover de arriba siguen ganando.               */
+[data-theme="light"] .bloque{
+  background:rgba(255,255,255,.72);
+  box-shadow:0 8px 34px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.6);
+}
+[data-theme="light"] :where(.extra-card,.qd-result,.frase,.chip,.num,.check,
+                            .tarjeta-in,.opt-btn,.ej-card){
+  background:rgba(0,0,0,.028);border-color:rgba(0,0,0,.10);
+}
+[data-theme="light"] :where(.extra-card,.frase,.chip,.check):hover{background:rgba(0,0,0,.055)}
+[data-theme="light"] :where(.mini-tabla th,.mini-tabla td){border-bottom-color:rgba(0,0,0,.10)}
+[data-theme="light"] .tarjeta-n{background:rgba(0,0,0,.06)}
+[data-theme="light"] .bloque-html .ojo{
+  background:rgba(176,120,64,.10);border-color:rgba(176,120,64,.35);color:#7c4a13;
+}
+
 /* ── IMPRIMIR ─────────────────────────────────────────────── */
 @media print{
   #fluid-bg,#noise-overlay,.orb,.particle,.back-btn,.quick-dict-fab,
@@ -240,4 +271,7 @@ a.back-btn{text-decoration:none}
   .bloque-da,.frase-da,.check-txt span,.mini-tabla td:last-child{color:#555 !important}
   .frase-play{display:none !important}
   .frase{grid-template-columns:1fr 1fr;background:#fff !important;border-color:#eee !important}
+  html{--text-strong:#111}   /* si se imprime en modo noche, la negrita seguia siendo blanca */
+  .tabla-scroll{overflow:visible !important}
+  .tabla-scroll table{min-width:0 !important}
 }
