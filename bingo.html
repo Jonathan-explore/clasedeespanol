@@ -144,6 +144,7 @@
     </div>
   </div>
 
+  <script src="mini.js"></script>
 <script>
 /* ============================================================
    bingo.html — Bingo en español
@@ -160,19 +161,28 @@
    que en el bingo de toda la vida. Así no hay nada que se pueda
    caer en mitad de la clase.
 
-   El cartón se genera a partir de su NÚMERO, siempre igual. Por
-   eso quien canta puede escribir "47" y ver ese cartón exacto
-   para comprobar si el bingo es de verdad. Sin servidor.
+   Las dos partidas se guardan en el navegador (localStorage), y
+   cada grupo de palabras guarda la suya por separado. Por eso
+   cambiar de grupo, recargar o salirse sin querer NO pierde lo
+   que llevabas cantado.
+
+   El cartón se identifica con una LETRA y un NÚMERO — A47, C12 —
+   donde la letra es el grupo de palabras. Así quien canta puede
+   comprobar el cartón exacto aunque el alumno esté en otro
+   grupo, y sin necesidad de servidor.
    ============================================================ */
 (function(){
 'use strict';
 
-var URL_ALUMNO = 'https://jonathan-explore.github.io/clasedeespanol/bingo.html';
+/* Dirección publicada, que es la que lleva codificada el QR. */
+var URL_PUBLICADA = 'https://jonathan-explore.github.io/clasedeespanol/bingo.html';
+/* Dónde se está abriendo esto de verdad (puede ser local). */
+var URL_AQUI = location.origin + location.pathname;
 var QR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNyAzNyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cmVjdCB3aWR0aD0iMzciIGhlaWdodD0iMzciIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMiAyaDd2MWgtN3pNMTIgMmgxdjFoLTF6TTE0IDJoM3YxaC0zek0xOCAyaDZ2MWgtNnpNMjUgMmgxdjFoLTF6TTI4IDJoN3YxaC03ek0yIDNoMXYxaC0xek04IDNoMXYxaC0xek0xMSAzaDJ2MWgtMnpNMTQgM2g0djFoLTR6TTE5IDNoMXYxaC0xek0yMyAzaDF2MWgtMXpNMjYgM2gxdjFoLTF6TTI4IDNoMXYxaC0xek0zNCAzaDF2MWgtMXpNMiA0aDF2MWgtMXpNNCA0aDN2MWgtM3pNOCA0aDF2MWgtMXpNMTAgNGgydjFoLTJ6TTEzIDRoMXYxaC0xek0xNSA0aDF2MWgtMXpNMTcgNGgxdjFoLTF6TTIwIDRoMXYxaC0xek0yMiA0aDJ2MWgtMnpNMjggNGgxdjFoLTF6TTMwIDRoM3YxaC0zek0zNCA0aDF2MWgtMXpNMiA1aDF2MWgtMXpNNCA1aDN2MWgtM3pNOCA1aDF2MWgtMXpNMTAgNWgxdjFoLTF6TTEyIDVoMnYxaC0yek0xNiA1aDF2MWgtMXpNMTkgNWgxdjFoLTF6TTIxIDVoMXYxaC0xek0yNCA1aDF2MWgtMXpNMjggNWgxdjFoLTF6TTMwIDVoM3YxaC0zek0zNCA1aDF2MWgtMXpNMiA2aDF2MWgtMXpNNCA2aDN2MWgtM3pNOCA2aDF2MWgtMXpNMTAgNmgxdjFoLTF6TTE3IDZoMXYxaC0xek0xOSA2aDR2MWgtNHpNMjUgNmgxdjFoLTF6TTI4IDZoMXYxaC0xek0zMCA2aDN2MWgtM3pNMzQgNmgxdjFoLTF6TTIgN2gxdjFoLTF6TTggN2gxdjFoLTF6TTEwIDdoNXYxaC01ek0xNiA3aDJ2MWgtMnpNMTkgN2gxdjFoLTF6TTIyIDdoMnYxaC0yek0yOCA3aDF2MWgtMXpNMzQgN2gxdjFoLTF6TTIgOGg3djFoLTd6TTEwIDhoMXYxaC0xek0xMiA4aDF2MWgtMXpNMTQgOGgxdjFoLTF6TTE2IDhoMXYxaC0xek0xOCA4aDF2MWgtMXpNMjAgOGgxdjFoLTF6TTIyIDhoMXYxaC0xek0yNCA4aDF2MWgtMXpNMjYgOGgxdjFoLTF6TTI4IDhoN3YxaC03ek0xMCA5aDF2MWgtMXpNMTIgOWgzdjFoLTN6TTE2IDloM3YxaC0zek0yMyA5aDF2MWgtMXpNMjUgOWgydjFoLTJ6TTIgMTBoMXYxaC0xek00IDEwaDV2MWgtNXpNMTMgMTBoNHYxaC00ek0xOSAxMGgxdjFoLTF6TTIxIDEwaDF2MWgtMXpNMjQgMTBoMXYxaC0xek0yOCAxMGg1djFoLTV6TTIgMTFoMXYxaC0xek02IDExaDJ2MWgtMnpNOSAxMWgydjFoLTJ6TTEzIDExaDJ2MWgtMnpNMTggMTFoMXYxaC0xek0yMSAxMWgzdjFoLTN6TTI1IDExaDF2MWgtMXpNMjggMTFoMnYxaC0yek0zMSAxMWgydjFoLTJ6TTM0IDExaDF2MWgtMXpNMyAxMmgxdjFoLTF6TTUgMTJoMXYxaC0xek03IDEyaDJ2MWgtMnpNMTEgMTJoMnYxaC0yek0xNyAxMmgxdjFoLTF6TTE5IDEyaDF2MWgtMXpNMjMgMTJoMXYxaC0xek0zMCAxMmgxdjFoLTF6TTMyIDEyaDJ2MWgtMnpNMiAxM2g0djFoLTR6TTExIDEzaDR2MWgtNHpNMTYgMTNoM3YxaC0zek0yMyAxM2gydjFoLTJ6TTI2IDEzaDN2MWgtM3pNMzAgMTNoNHYxaC00ek0yIDE0aDJ2MWgtMnpNOCAxNGgxdjFoLTF6TTEwIDE0aDJ2MWgtMnpNMTMgMTRoMnYxaC0yek0xNyAxNGgxdjFoLTF6TTE5IDE0aDF2MWgtMXpNMjQgMTRoMXYxaC0xek0yNyAxNGgxdjFoLTF6TTMwIDE0aDJ2MWgtMnpNMzQgMTRoMXYxaC0xek01IDE1aDN2MWgtM3pNMTAgMTVoNHYxaC00ek0xNSAxNWgydjFoLTJ6TTE4IDE1aDF2MWgtMXpNMjAgMTVoNHYxaC00ek0yNSAxNWgxdjFoLTF6TTI4IDE1aDF2MWgtMXpNMzEgMTVoMXYxaC0xek0zMyAxNWgydjFoLTJ6TTIgMTZoNXYxaC01ek04IDE2aDJ2MWgtMnpNMTEgMTZoMXYxaC0xek0xNCAxNmg3djFoLTd6TTIzIDE2aDF2MWgtMXpNMjcgMTZoMnYxaC0yek0zMSAxNmgxdjFoLTF6TTMzIDE2aDF2MWgtMXpNMiAxN2g0djFoLTR6TTEwIDE3aDN2MWgtM3pNMTYgMTdoM3YxaC0zek0yMCAxN2gydjFoLTJ6TTIzIDE3aDJ2MWgtMnpNMjcgMTdoM3YxaC0zek0zMiAxN2gxdjFoLTF6TTQgMThoMnYxaC0yek03IDE4aDJ2MWgtMnpNMTAgMThoMXYxaC0xek0xMiAxOGgxdjFoLTF6TTE1IDE4aDF2MWgtMXpNMTggMThoMnYxaC0yek0yMiAxOGgxdjFoLTF6TTI0IDE4aDF2MWgtMXpNMjYgMThoMnYxaC0yek0yOSAxOGgydjFoLTJ6TTM0IDE4aDF2MWgtMXpNMyAxOWgxdjFoLTF6TTYgMTloMnYxaC0yek05IDE5aDN2MWgtM3pNMTYgMTloMXYxaC0xek0xOCAxOWg1djFoLTV6TTI1IDE5aDF2MWgtMXpNMjggMTloMnYxaC0yek0zMSAxOWgydjFoLTJ6TTM0IDE5aDF2MWgtMXpNMiAyMGg0djFoLTR6TTggMjBoMXYxaC0xek0xMCAyMGg1djFoLTV6TTE2IDIwaDR2MWgtNHpNMjQgMjBoMXYxaC0xek0yNiAyMGgydjFoLTJ6TTI5IDIwaDJ2MWgtMnpNMzIgMjBoMnYxaC0yek0zIDIxaDF2MWgtMXpNNSAyMWgydjFoLTJ6TTkgMjFoMnYxaC0yek0xMiAyMWgxdjFoLTF6TTE0IDIxaDF2MWgtMXpNMTcgMjFoMXYxaC0xek0yMyAyMWgxdjFoLTF6TTI1IDIxaDF2MWgtMXpNMjcgMjFoMXYxaC0xek0yOSAyMWg0djFoLTR6TTM0IDIxaDF2MWgtMXpNNCAyMmgxdjFoLTF6TTYgMjJoMXYxaC0xek04IDIyaDJ2MWgtMnpNMTEgMjJoMnYxaC0yek0xNCAyMmgxdjFoLTF6TTE2IDIyaDF2MWgtMXpNMTkgMjJoM3YxaC0zek0yNCAyMmg0djFoLTR6TTI5IDIyaDN2MWgtM3pNMzMgMjJoMnYxaC0yek0yIDIzaDF2MWgtMXpNOSAyM2gxdjFoLTF6TTEzIDIzaDF2MWgtMXpNMTYgMjNoMXYxaC0xek0xOCAyM2gxdjFoLTF6TTIwIDIzaDN2MWgtM3pNMjUgMjNoMXYxaC0xek0yOCAyM2gxdjFoLTF6TTMxIDIzaDF2MWgtMXpNMzQgMjNoMXYxaC0xek0yIDI0aDF2MWgtMXpNNCAyNGgxdjFoLTF6TTggMjRoNHYxaC00ek0xNCAyNGg0djFoLTR6TTIyIDI0aDF2MWgtMXpNMjQgMjRoMXYxaC0xek0yOCAyNGgydjFoLTJ6TTMxIDI0aDF2MWgtMXpNMzMgMjRoMXYxaC0xek0yIDI1aDF2MWgtMXpNNSAyNWgydjFoLTJ6TTkgMjVoM3YxaC0zek0xMyAyNWgxdjFoLTF6TTE3IDI1aDJ2MWgtMnpNMjEgMjVoM3YxaC0zek0yOCAyNWgxdjFoLTF6TTMwIDI1aDN2MWgtM3pNMiAyNmgxdjFoLTF6TTQgMjZoMnYxaC0yek03IDI2aDJ2MWgtMnpNMTIgMjZoMXYxaC0xek0xNSAyNmgzdjFoLTN6TTE5IDI2aDR2MWgtNHpNMjYgMjZoNXYxaC01ek0zMyAyNmgydjFoLTJ6TTEwIDI3aDF2MWgtMXpNMTQgMjdoMXYxaC0xek0xOCAyN2g1djFoLTV6TTI2IDI3aDF2MWgtMXpNMzAgMjdoMXYxaC0xek0zMiAyN2gxdjFoLTF6TTM0IDI3aDF2MWgtMXpNMiAyOGg3djFoLTd6TTExIDI4aDF2MWgtMXpNMTcgMjhoM3YxaC0zek0yMiAyOGgxdjFoLTF6TTI0IDI4aDN2MWgtM3pNMjggMjhoMXYxaC0xek0zMCAyOGgxdjFoLTF6TTMyIDI4aDF2MWgtMXpNMiAyOWgxdjFoLTF6TTggMjloMXYxaC0xek0xMCAyOWgzdjFoLTN6TTE0IDI5aDJ2MWgtMnpNMTggMjloMXYxaC0xek0yMCAyOWgxdjFoLTF6TTIyIDI5aDV2MWgtNXpNMzAgMjloM3YxaC0zek0zNCAyOWgxdjFoLTF6TTIgMzBoMXYxaC0xek00IDMwaDN2MWgtM3pNOCAzMGgxdjFoLTF6TTEwIDMwaDN2MWgtM3pNMTQgMzBoMnYxaC0yek0xNyAzMGgzdjFoLTN6TTI0IDMwaDF2MWgtMXpNMjYgMzBoNnYxaC02ek0yIDMxaDF2MWgtMXpNNCAzMWgzdjFoLTN6TTggMzFoMXYxaC0xek0xMCAzMWgydjFoLTJ6TTE0IDMxaDF2MWgtMXpNMTggMzFoNHYxaC00ek0yNSAzMWgxdjFoLTF6TTI3IDMxaDF2MWgtMXpNMzAgMzFoMXYxaC0xek0zMiAzMWgzdjFoLTN6TTIgMzJoMXYxaC0xek00IDMyaDN2MWgtM3pNOCAzMmgxdjFoLTF6TTEwIDMyaDF2MWgtMXpNMTYgMzJoMnYxaC0yek0xOSAzMmgxdjFoLTF6TTIzIDMyaDN2MWgtM3pNMjggMzJoMnYxaC0yek0zMSAzMmgxdjFoLTF6TTIgMzNoMXYxaC0xek04IDMzaDF2MWgtMXpNMTEgMzNoMXYxaC0xek0xMyAzM2gxdjFoLTF6TTE3IDMzaDF2MWgtMXpNMjAgMzNoMXYxaC0xek0yMiAzM2gzdjFoLTN6TTI3IDMzaDF2MWgtMXpNMzAgMzNoM3YxaC0zek0yIDM0aDd2MWgtN3pNMTAgMzRoMnYxaC0yek0xNCAzNGgydjFoLTJ6TTE5IDM0aDF2MWgtMXpNMjEgMzRoMXYxaC0xek0yNCAzNGgzdjFoLTN6TTI5IDM0aDF2MWgtMXpNMzMgMzRoMXYxaC0xeiIgZmlsbD0iIzAwMCIvPjwvc3ZnPg==';
 
 /* ── Las palabras, sacadas de los temas ─────────────────── */
 var POOLS = [
-  { id:'t3', nom:'Animales, ropa y clase', da:'Dyr, tøj og klasseting', de:'Tema 3',
+  { id:'t3', letra:'A', nom:'Animales, ropa y clase', da:'Dyr, tøj og klasseting', de:'Tema 3',
     palabras:[
       ['el perro','hunden'],        ['el gato','katten'],
       ['el caballo','hesten'],      ['el pájaro','fuglen'],
@@ -188,7 +198,7 @@ var POOLS = [
       ['la mesa','bordet'],         ['la silla','stolen']
     ] },
 
-  { id:'t4', nom:'Verbos en -AR', da:'AR-udsagnsord', de:'Tema 4',
+  { id:'t4', letra:'B', nom:'Verbos en -AR', da:'AR-udsagnsord', de:'Tema 4',
     palabras:[
       ['hablo','jeg taler'],     ['hablas','du taler'],     ['habla','han/hun taler'],
       ['miro','jeg kigger'],     ['miras','du kigger'],     ['mira','han/hun kigger'],
@@ -198,7 +208,7 @@ var POOLS = [
       ['juego','jeg spiller'],   ['juegas','du spiller'],   ['juega','han/hun spiller']
     ] },
 
-  { id:'t5', nom:'Verbos en -ER', da:'ER-udsagnsord', de:'Tema 5',
+  { id:'t5', letra:'C', nom:'Verbos en -ER', da:'ER-udsagnsord', de:'Tema 5',
     palabras:[
       ['como','jeg spiser'],      ['comes','du spiser'],      ['come','han/hun spiser'],
       ['bebo','jeg drikker'],     ['bebes','du drikker'],     ['bebe','han/hun drikker'],
@@ -210,7 +220,7 @@ var POOLS = [
 
   /* El más difícil: mezcla -ar y -er, así que hay que mirar el
      infinitivo antes de decidir la terminación. */
-  { id:'mix', nom:'Verbos mezclados', da:'Blandede udsagnsord', de:'Temas 4 y 5',
+  { id:'mix', letra:'D', nom:'Verbos mezclados', da:'Blandede udsagnsord', de:'Temas 4 y 5',
     palabras:[
       ['hablo','jeg taler'],      ['hablas','du taler'],      ['habla','han/hun taler'],
       ['bailo','jeg danser'],     ['bailas','du danser'],     ['baila','han/hun danser'],
@@ -223,14 +233,15 @@ var POOLS = [
 ];
 
 var LINEAS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+var SIN_MARCAR = [false,false,false,false,false,false,false,false,false];
 
 /* ── utilidades ─────────────────────────────────────────── */
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
                   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-/* Generador con semilla (mulberry32): el mismo número de cartón
-   da siempre exactamente las mismas nueve palabras. */
+/* Generador con semilla (mulberry32): el mismo cartón da siempre
+   exactamente las mismas nueve palabras. */
 function rng(semilla){
   var a = semilla >>> 0;
   return function(){
@@ -240,17 +251,17 @@ function rng(semilla){
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-function pool(id){
-  for(var i=0;i<POOLS.length;i++){ if(POOLS[i].id===id) return POOLS[i]; }
-  return POOLS[0];
-}
 function indicePool(id){
   for(var i=0;i<POOLS.length;i++){ if(POOLS[i].id===id) return i; }
   return 0;
 }
-/* Las nueve palabras del cartón N. Determinista: la semilla mezcla
-   el número y el grupo, así el cartón 47 de los verbos no es el
-   cartón 47 de los animales. */
+function pool(id){ return POOLS[indicePool(id)]; }
+function poolPorLetra(l){
+  for(var i=0;i<POOLS.length;i++){ if(POOLS[i].letra===l) return POOLS[i]; }
+  return null;
+}
+/* Las nueve palabras del cartón. Determinista: la semilla mezcla
+   el número y el grupo, así el A47 no es el mismo que el C47. */
 function cartonDe(poolId, num){
   var p = pool(poolId), r = rng(num * 977 + indicePool(poolId) * 7919 + 13);
   var copia = p.palabras.slice();
@@ -260,11 +271,45 @@ function cartonDe(poolId, num){
   }
   return copia.slice(0,9);
 }
+/* "A47", "a 47", "47" → {p, num}. Estricto a propósito: si se
+   cuela un "47x" es mejor pedir que lo repita que dar por bueno
+   un cartón que el alumno no tiene. */
+function leeId(txt, poolPorDefecto){
+  var m = /^\s*([A-Da-d])?\s*0*(\d{1,3})\s*$/.exec(txt || '');
+  if(!m) return null;
+  var num = parseInt(m[2], 10);
+  if(!(num >= 1 && num <= 999)) return null;
+  var p = m[1] ? poolPorLetra(m[1].toUpperCase()) : pool(poolPorDefecto);
+  return p ? { p:p, num:num, conLetra: !!m[1] } : null;
+}
 function leer(k, porDefecto){
   try{ var v = localStorage.getItem(k); return v===null ? porDefecto : JSON.parse(v); }
   catch(e){ return porDefecto; }
 }
 function guardar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+/* ── El estado de las partidas vive AQUÍ, no dentro de la
+   función que dibuja. Por eso cambiar de grupo o recargar ya
+   no se lleva por delante lo que llevabas. Cada grupo guarda
+   lo suyo por separado. ─────────────────────────────────── */
+function partidaProfe(poolId){
+  var g = leer('bingo.profe.' + poolId, null);
+  if(!g || !(g.dichas instanceof Array)) g = { dichas:[], enEspanol:false };
+  return g;
+}
+function guardaProfe(poolId, g){ guardar('bingo.profe.' + poolId, g); }
+
+/* Un solo cartón activo por grupo: así no se acumulan claves
+   viejas en el navegador cada vez que se pide cartón nuevo. */
+function cartonAlumno(poolId){
+  var c = leer('bingo.carton.' + poolId, null);
+  if(!c || !(c.num >= 1 && c.num <= 999) || !(c.marcadas instanceof Array) || c.marcadas.length !== 9){
+    c = { num: 1 + Math.floor(Math.random() * 999), marcadas: SIN_MARCAR.slice() };
+    guardar('bingo.carton.' + poolId, c);
+  }
+  return c;
+}
+function guardaCarton(poolId, c){ guardar('bingo.carton.' + poolId, c); }
 
 var raiz = document.getElementById('bingo-root');
 
@@ -272,6 +317,7 @@ var raiz = document.getElementById('bingo-root');
 function pintaPools(actual){
   return '<div class="pools">'+ POOLS.map(function(p){
     return '<button class="pool'+(p.id===actual?' on':'')+'" type="button" data-pool="'+p.id+'">'+
+      '<b style="opacity:.55;font-weight:700">'+p.letra+'</b> '+
       esc(p.nom)+' <span style="opacity:.6">· '+esc(p.de)+'</span></button>';
   }).join('') +'</div>';
 }
@@ -313,13 +359,14 @@ function vistaInicio(){
    ════════════════════════════════════════════════════════════ */
 function vistaProfe(poolId){
   var p = pool(poolId);
-  var dichas = [];        // índices ya cantados, en orden
-  var enEspanol = false;  // false = canta en danés (más difícil para ellos)
+  var g = partidaProfe(poolId);          // {dichas, enEspanol} — ya guardado
+  var consulta = { txt:'', html:'' };    // lo tecleado en "comprobar", para no perderlo al repintar
 
   function pinta(){
-    var ultima = dichas.length ? p.palabras[dichas[dichas.length-1]] : null;
-    var grande = ultima ? (enEspanol ? ultima[0] : ultima[1]) : '';
-    var chica  = ultima ? (enEspanol ? ultima[1] : ultima[0]) : '';
+    var ultima = g.dichas.length ? p.palabras[g.dichas[g.dichas.length-1]] : null;
+    var grande = ultima ? (g.enEspanol ? ultima[0] : ultima[1]) : '';
+    var chica  = ultima ? (g.enEspanol ? ultima[1] : ultima[0]) : '';
+    var agotado = g.dichas.length >= p.palabras.length;
 
     raiz.innerHTML =
       '<h1 class="bingo-h1">Bingo <em>en español</em></h1>'+
@@ -328,25 +375,29 @@ function vistaProfe(poolId){
 
       '<div class="canta">'+
         (ultima
-          ? '<p class="canta-tag">'+(enEspanol?'siger du · español':'siger du · dansk')+'</p>'+
+          ? '<p class="canta-tag">'+(g.enEspanol?'siger du · español':'siger du · dansk')+'</p>'+
             '<p class="canta-da">'+esc(grande)+'</p>'+
-            '<p class="canta-es">'+(enEspanol?'betyder: ':'på deres kort: ')+esc(chica)+'</p>'
+            '<p class="canta-es">'+(g.enEspanol?'betyder: ':'på deres kort: ')+esc(chica)+'</p>'
           : '<p class="canta-vacio">Tryk på <b>Tag et ord</b> for at begynde.</p>')+
+        (agotado
+          ? '<p style="margin-top:.9rem;font-size:.9rem;color:var(--text-dim)">'+
+            '🏁 Alle '+p.palabras.length+' ord er sagt. Tryk <b>Nyt spil</b> for at begynde forfra.</p>'
+          : '')+
       '</div>'+
 
       '<div class="barra">'+
-        '<button class="btn-grande" type="button" id="sacar"'+
-          (dichas.length>=p.palabras.length?' disabled':'')+'>🎲 Tag et ord</button>'+
+        '<button class="btn-grande" type="button" id="sacar"'+(agotado?' disabled':'')+'>🎲 Tag et ord</button>'+
         '<button class="btn-sec" type="button" id="idioma">'+
-          (enEspanol?'🔁 Skift til dansk':'🔁 Skift til spansk')+'</button>'+
+          (g.enEspanol?'🔁 Skift til dansk':'🔁 Skift til spansk')+'</button>'+
         '<button class="btn-sec" type="button" id="reinicio">🔄 Nyt spil</button>'+
-        '<span class="contador">'+dichas.length+' / '+p.palabras.length+'</span>'+
+        '<span class="contador">'+g.dichas.length+' / '+p.palabras.length+'</span>'+
       '</div>'+
 
       '<div class="lista">'+ p.palabras.map(function(w,i){
-        var ya = dichas.indexOf(i) >= 0;
-        var ult = dichas.length && dichas[dichas.length-1]===i;
-        return '<button class="pal'+(ya?' dicha':'')+(ult?' ultima':'')+'" type="button" data-i="'+i+'">'+
+        var ya = g.dichas.indexOf(i) >= 0;
+        var ult = g.dichas.length && g.dichas[g.dichas.length-1]===i;
+        return '<button class="pal'+(ya?' dicha':'')+(ult?' ultima':'')+'" type="button" '+
+          'aria-pressed="'+(ya?'true':'false')+'" data-i="'+i+'">'+
           '<b>'+esc(w[0])+'</b><span>'+esc(w[1])+'</span></button>';
       }).join('') +'</div>'+
 
@@ -354,69 +405,95 @@ function vistaProfe(poolId){
         '<p style="font-size:.92rem;color:var(--text-strong);font-weight:600;margin-bottom:.2rem">'+
           '¿Bingo de verdad? · Er det rigtigt?</p>'+
         '<p style="font-size:.84rem;color:var(--text-dim);margin-bottom:.9rem">'+
-          'Spørg om kortets nummer og skriv det her. Så ser du præcis det kort.</p>'+
+          'Spørg om kortets kode — den står øverst på elevens kort, fx <b>'+p.letra+'47</b> — '+
+          'og skriv den her. Bogstavet siger hvilken gruppe kortet er fra.</p>'+
         '<div class="comprobar-fila">'+
-          '<input type="number" id="num-carton" placeholder="nr." min="1" max="999" />'+
+          '<input type="text" id="num-carton" placeholder="'+p.letra+'47" '+
+            'inputmode="text" autocomplete="off" spellcheck="false" maxlength="5" />'+
           '<button class="btn-sec" type="button" id="ver-carton">Se kortet</button>'+
         '</div>'+
         '<div id="salida-carton"></div>'+
       '</div>'+
 
       '<div class="enlace-caja">'+
-        '<img src="'+QR+'" alt="QR" />'+
+        (URL_AQUI === URL_PUBLICADA
+          ? '<img src="'+QR+'" alt="QR" />'
+          : '')+
         '<div class="enlace-txt">'+
           '<b>📱 Elevernes kort</b>'+
-          '<div class="enlace-url">'+esc(URL_ALUMNO.replace(/^https:\/\//,''))+'</div>'+
-          '<small>Scan koden eller skriv adressen. Tryk derefter på <b>Jeg har et kort</b> '+
-          'og vælg <b>'+esc(p.nom)+'</b> — samme gruppe som her.</small>'+
+          '<div class="enlace-url">'+esc(URL_AQUI.replace(/^https?:\/\//,''))+'</div>'+
+          (URL_AQUI === URL_PUBLICADA
+            ? '<small>Scan koden eller skriv adressen. Tryk derefter på <b>Jeg har et kort</b> '+
+              'og vælg gruppe <b>'+p.letra+' · '+esc(p.nom)+'</b> — samme som her.</small>'
+            : '<small>⚠️ Denne side kører ikke fra den offentlige adresse, så QR-koden er skjult: '+
+              'den ville sende eleverne til den udgivne version i stedet for hertil.</small>')+
         '</div>'+
       '</div>';
+
+    /* Devolver lo que había en el recuadro de comprobar: repintamos
+       toda la vista en cada clic y si no se perdería el número. */
+    var inpNum = document.getElementById('num-carton');
+    var out    = document.getElementById('salida-carton');
+    inpNum.value = consulta.txt;
+    if(consulta.html) out.innerHTML = consulta.html;
 
     enganchaPools(function(id){ vistaProfe(id); });
 
     document.getElementById('sacar').addEventListener('click', function(){
       var libres = [];
-      for(var i=0;i<p.palabras.length;i++){ if(dichas.indexOf(i)<0) libres.push(i); }
+      for(var i=0;i<p.palabras.length;i++){ if(g.dichas.indexOf(i)<0) libres.push(i); }
       if(!libres.length) return;
-      dichas.push(libres[Math.floor(Math.random()*libres.length)]);
-      pinta();
+      g.dichas.push(libres[Math.floor(Math.random()*libres.length)]);
+      guardaProfe(poolId, g); pinta();
     });
     document.getElementById('idioma').addEventListener('click', function(){
-      enEspanol = !enEspanol; pinta();
+      g.enEspanol = !g.enEspanol; guardaProfe(poolId, g); pinta();
     });
     document.getElementById('reinicio').addEventListener('click', function(){
-      dichas = []; pinta();
+      if(g.dichas.length && !window.confirm('Nyt spil? De '+g.dichas.length+' ord, der er sagt, bliver nulstillet.')) return;
+      g.dichas = []; consulta = { txt:'', html:'' };
+      guardaProfe(poolId, g); pinta();
     });
     /* Tocar una palabra la marca o la desmarca, por si se canta a mano
        o se cuela una sin querer. */
     raiz.querySelectorAll('[data-i]').forEach(function(b){
       b.addEventListener('click', function(){
-        var i = +b.dataset.i, k = dichas.indexOf(i);
-        if(k >= 0) dichas.splice(k,1); else dichas.push(i);
-        pinta();
+        var i = +b.dataset.i, k = g.dichas.indexOf(i);
+        if(k >= 0) g.dichas.splice(k,1); else g.dichas.push(i);
+        guardaProfe(poolId, g); pinta();
       });
     });
 
-    var btnVer = document.getElementById('ver-carton');
-    var inpNum = document.getElementById('num-carton');
     function comprueba(){
-      var n = parseInt(inpNum.value, 10);
-      var out = document.getElementById('salida-carton');
-      if(!(n >= 1 && n <= 999)){
-        out.innerHTML = '<p class="veredicto" style="color:var(--bad)">Skriv et nummer mellem 1 og 999.</p>';
+      consulta.txt = inpNum.value;
+      var id = leeId(inpNum.value, poolId);
+      if(!id){
+        consulta.html = '<p class="veredicto" style="color:var(--bad)">'+
+          'Skriv kortets kode, fx <b>'+p.letra+'47</b> (bogstav + tal fra 1 til 999).</p>';
+        out.innerHTML = consulta.html;
         return;
       }
-      var cart = cartonDe(poolId, n);
+      /* Se comprueba SIEMPRE contra el grupo del cartón, no contra el
+         que esté elegido en pantalla: si el alumno está en otro grupo
+         el veredicto seguiría siendo correcto. */
+      var otroGrupo = id.p.id !== poolId;
+      var gOtro = otroGrupo ? partidaProfe(id.p.id) : g;
+      var cart = cartonDe(id.p.id, id.num);
       var hechas = cart.map(function(w){
-        for(var i=0;i<p.palabras.length;i++){
-          if(p.palabras[i][0] === w[0]) return dichas.indexOf(i) >= 0;
+        for(var i=0;i<id.p.palabras.length;i++){
+          if(id.p.palabras[i][0] === w[0]) return gOtro.dichas.indexOf(i) >= 0;
         }
         return false;
       });
       var tieneLinea = LINEAS.some(function(l){ return hechas[l[0]] && hechas[l[1]] && hechas[l[2]]; });
       var lleno = hechas.every(function(x){ return x; });
 
-      out.innerHTML =
+      consulta.html =
+        '<p style="font-size:.85rem;color:var(--text-dim);margin-bottom:.5rem">'+
+          'Kort <b style="color:var(--glow)">'+id.p.letra+id.num+'</b> · '+esc(id.p.nom)+
+          (id.conLetra ? '' : ' <i>(uden bogstav — antog den valgte gruppe)</i>')+
+          (otroGrupo ? ' <b style="color:#fbbf24">⚠️ en anden gruppe end din skærm</b>' : '')+
+        '</p>'+
         '<div class="mini-carton">'+ cart.map(function(w,i){
           return '<div class="mini-casilla'+(hechas[i]?' dicha':'')+'">'+esc(w[0])+'</div>';
         }).join('') +'</div>'+
@@ -427,8 +504,10 @@ function vistaProfe(poolId){
         '</p>'+
         '<p style="font-size:.8rem;color:var(--text-dim);margin-top:.4rem">'+
           'Grønt = ord du har sagt. Bed eleven læse rækken højt på spansk.</p>';
+      out.innerHTML = consulta.html;
     }
-    btnVer.addEventListener('click', comprueba);
+    document.getElementById('ver-carton').addEventListener('click', comprueba);
+    inpNum.addEventListener('input', function(){ consulta.txt = inpNum.value; });
     inpNum.addEventListener('keydown', function(e){ if(e.key==='Enter') comprueba(); });
   }
   pinta();
@@ -439,26 +518,18 @@ function vistaProfe(poolId){
    ════════════════════════════════════════════════════════════ */
 function vistaAlumno(poolId){
   var p = pool(poolId);
-  var claveNum = 'bingo.num.' + poolId;
-  var num = leer(claveNum, null);
-  if(!(num >= 1 && num <= 999)){
-    num = 1 + Math.floor(Math.random() * 999);
-    guardar(claveNum, num);
-  }
-  var claveMarcas = 'bingo.marcas.' + poolId + '.' + num;
-  var marcadas = leer(claveMarcas, []);
-  if(!(marcadas instanceof Array) || marcadas.length !== 9) marcadas = [false,false,false,false,false,false,false,false,false];
-  var cart = cartonDe(poolId, num);
+  var c = cartonAlumno(poolId);          // {num, marcadas} — ya guardado
+  var cart = cartonDe(poolId, c.num);
+  var codigo = p.letra + c.num;
 
   function pinta(){
-    var enLinea = {};
-    var lineas = 0;
+    var enLinea = {}, lineas = 0;
     LINEAS.forEach(function(l){
-      if(marcadas[l[0]] && marcadas[l[1]] && marcadas[l[2]]){
+      if(c.marcadas[l[0]] && c.marcadas[l[1]] && c.marcadas[l[2]]){
         lineas++; enLinea[l[0]] = enLinea[l[1]] = enLinea[l[2]] = true;
       }
     });
-    var lleno = marcadas.every(function(x){ return x; });
+    var lleno = c.marcadas.every(function(x){ return x; });
 
     raiz.innerHTML =
       '<h1 class="bingo-h1">Mit <em>bingokort</em></h1>'+
@@ -467,40 +538,40 @@ function vistaAlumno(poolId){
 
       '<div class="carton-cab">'+
         '<div><span style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">'+
-          esc(p.nom)+'</span><br><span class="carton-num">CARTÓN '+num+'</span></div>'+
+          esc(p.nom)+'</span><br><span class="carton-num">CARTÓN '+codigo+'</span></div>'+
         '<button class="btn-sec" type="button" id="otro">🔄 Nyt kort</button>'+
       '</div>'+
 
       '<div class="carton">'+ cart.map(function(w,i){
-        var cls = marcadas[i] ? (enLinea[i] ? 'marcada linea' : 'marcada') : '';
-        return '<button class="casilla '+cls+'" type="button" data-c="'+i+'">'+esc(w[0])+'</button>';
+        var cls = c.marcadas[i] ? (enLinea[i] ? 'marcada linea' : 'marcada') : '';
+        return '<button class="casilla '+cls+'" type="button" '+
+          'aria-pressed="'+(c.marcadas[i]?'true':'false')+'" data-c="'+i+'">'+esc(w[0])+'</button>';
       }).join('') +'</div>'+
 
       (lleno
-        ? '<div class="aviso">🎉 ¡BINGO!<small>Råb det — og læs hele kortet højt på spansk.</small></div>'
+        ? '<div class="aviso">🎉 ¡BINGO!<small>Råb det — og læs hele kortet højt på spansk. Dit kort er '+codigo+'.</small></div>'
         : lineas
-          ? '<div class="aviso">✅ ¡LÍNEA!<small>Råb det — og læs din række højt på spansk.</small></div>'
+          ? '<div class="aviso">✅ ¡LÍNEA!<small>Råb det — og læs din række højt på spansk. Dit kort er '+codigo+'.</small></div>'
           : '<p style="font-size:.84rem;color:var(--text-dim);margin-top:1.1rem;line-height:1.6">'+
             'Tre i træk — vandret, lodret eller skråt — er <b>¡Línea!</b> Alle ni er <b>¡Bingo!</b><br>'+
-            'Sig dit nummer ('+num+'), hvis læreren skal tjekke kortet.</p>');
+            'Sig din kode (<b>'+codigo+'</b>), hvis læreren skal tjekke kortet.</p>');
 
     enganchaPools(function(id){ vistaAlumno(id); });
 
     raiz.querySelectorAll('[data-c]').forEach(function(b){
       b.addEventListener('click', function(){
         var i = +b.dataset.c;
-        marcadas[i] = !marcadas[i];
-        guardar(claveMarcas, marcadas);
-        pinta();
+        c.marcadas[i] = !c.marcadas[i];
+        guardaCarton(poolId, c); pinta();
       });
     });
     document.getElementById('otro').addEventListener('click', function(){
-      num = 1 + Math.floor(Math.random() * 999);
-      guardar(claveNum, num);
-      claveMarcas = 'bingo.marcas.' + poolId + '.' + num;
-      marcadas = [false,false,false,false,false,false,false,false,false];
-      guardar(claveMarcas, marcadas);
-      cart = cartonDe(poolId, num);
+      var puestas = c.marcadas.filter(function(x){ return x; }).length;
+      if(puestas && !window.confirm('Nyt kort? Du mister de '+puestas+' felter, du har markeret.')) return;
+      c = { num: 1 + Math.floor(Math.random() * 999), marcadas: SIN_MARCAR.slice() };
+      guardaCarton(poolId, c);
+      cart = cartonDe(poolId, c.num);
+      codigo = p.letra + c.num;
       pinta();
     });
   }
@@ -512,6 +583,5 @@ vistaInicio();
 })();
 </script>
 
-  <script src="mini.js"></script>
 </body>
 </html>
