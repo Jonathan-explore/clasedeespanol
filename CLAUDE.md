@@ -29,10 +29,15 @@ señala esa carpeta, avísale antes de copiar nada.
 - `mini.js` — la versión ligera (fondo, partículas, ordbog rápida, y el tema
   claro/oscuro guardado) para las páginas sueltas. Es lo que cargan las páginas de
   tema. Toda página que no sea `index.html` debe cargarlo, o saldrá siempre oscura.
-- `tema1.html` … `tema4.html` + `tema.js` / `tema.css` — un tema por semana. Cada
+- `tema1.html` … `tema5.html` + `tema.js` / `tema.css` — un tema por semana. Cada
   página define `window.TEMA = {...}` con su contenido y `tema.js` lo pinta. `tema.js`
   es autónomo, no depende de `script.js`.
 - `pasarela.html` — juego de vestir, autocontenido en un solo archivo (SVG a mano).
+- `bingo.html` — bingo de vocabulario, autocontenido. Dos pantallas en una página:
+  la profesora canta (ella lee en voz alta, no el ordenador) y el alumno marca su
+  cartón. **No hay conexión entre las dos**, a propósito. El cartón se genera a partir
+  de su número con una semilla, así que escribiendo el número se reproduce el cartón
+  exacto para comprobar un bingo. El QR va incrustado como SVG en data URI.
 - `game.js` / `game.css` — LinguaStrike, dentro de la SPA (`view-spil`).
 
 Actividades que ya no salen en el menú (Tablón, Kultur, Prøve, Pasapalabra,

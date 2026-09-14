@@ -44,6 +44,9 @@ var FRASES  = T.frases  || [];
 /* Verbos del ejercicio de terminaciones. Se filtran aqui: una entrada sin
    raiz o sin infinitivo pintaria "undefined" en el hueco. */
 var CONJUGA = (T.conjuga || []).filter(function(v){ return v && v.raiz && v.inf; });
+/* Terminaciones del tema: -ar usa o/as/a, -er usa o/es/e, -ir usa o/es/e.
+   Si el tema no las declara se asume -ar, que es como estaba antes. */
+var FINALES = (T.finales && T.finales.length === 3) ? T.finales : ['o','as','a'];
 
 /* ── 1 · CABECERA ───────────────────────────────────────── */
 function renderHero(){
@@ -378,9 +381,9 @@ function ejPuzzle(panel){
 /* 🔧 Vælg endelsen — solo aparece si el tema define T.conjuga */
 function ejConjuga(panel){
   var PERS = [
-    {es:'yo',        da:'jeg',     fin:'o'},
-    {es:'tú',        da:'du',      fin:'as'},
-    {es:'él / ella', da:'han/hun', fin:'a'}
+    {es:'yo',        da:'jeg',     fin:FINALES[0]},
+    {es:'tú',        da:'du',      fin:FINALES[1]},
+    {es:'él / ella', da:'han/hun', fin:FINALES[2]}
   ];
   var todas = [];
   CONJUGA.forEach(function(v){ PERS.forEach(function(p){ todas.push({v:v,p:p}); }); });
@@ -403,7 +406,7 @@ function ejConjuga(panel){
           '<span style="font-size:.85rem;color:var(--text-dim)">'+esc(q.p.da+' '+q.v.pres)+' · <i>'+esc(q.v.inf)+'</i></span>'+
         '</div>'+
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">'+
-          ['o','as','a'].map(function(f){
+          FINALES.map(function(f){
             return '<button class="opt-btn" type="button" data-f="'+f+'" style="font-size:1.05rem;font-weight:600;min-width:4.5rem">-'+f+'</button>';
           }).join('')+
         '</div>'+
