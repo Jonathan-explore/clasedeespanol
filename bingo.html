@@ -140,6 +140,10 @@
 [data-theme="light"] .btn-grande,
 [data-theme="light"] .carton-tira{color:#fff}
 
+/* Boton esperando el segundo toque para confirmar. */
+.btn-sec.armado{background:rgba(251,146,60,.16);border-color:#fb923c;color:#b45309;font-weight:700}
+[data-theme="light"] .btn-sec.armado{color:#9a3412}
+
 .oculto{display:none !important}
 @media print{ .bingo-wrap{padding:0} .barra,.comprobar,.enlace-caja,.back-btn{display:none !important} }
 </style>
@@ -411,6 +415,26 @@ function cartonAlumno(poolId){
 }
 function guardaCarton(poolId, c){ guardar('bingo.carton.' + poolId, c); }
 
+/* Confirmar sin el dialogo del navegador: los navegadores incrustados
+   -el de la app, o abrir el enlace desde Instagram o Snapchat- no lo
+   muestran, devuelven false, y el boton se quedaba sin hacer nada.
+   Aqui el primer toque arma el boton y el segundo ejecuta. */
+function conGuardia(btn, hayQuePerder, textoAviso, accion){
+  if(!btn) return;
+  if(!hayQuePerder){ btn.addEventListener('click', accion); return; }
+  var original = btn.innerHTML, armado = false, reloj = null;
+  function desarma(){
+    armado = false; btn.innerHTML = original; btn.classList.remove('armado');
+  }
+  btn.addEventListener('click', function(){
+    if(armado){ clearTimeout(reloj); accion(); return; }
+    armado = true;
+    btn.innerHTML = textoAviso;
+    btn.classList.add('armado');
+    reloj = setTimeout(desarma, 4000);
+  });
+}
+
 var raiz = document.getElementById('bingo-root');
 
 /* ── selector de grupo de palabras (común a las dos pantallas) ── */
@@ -556,11 +580,11 @@ function vistaProfe(poolId){
     document.getElementById('idioma').addEventListener('click', function(){
       g.enEspanol = !g.enEspanol; guardaProfe(poolId, g); pinta();
     });
-    document.getElementById('reinicio').addEventListener('click', function(){
-      if(g.dichas.length && !window.confirm('Nyt spil? De '+g.dichas.length+' ord, der er sagt, bliver nulstillet.')) return;
-      g.dichas = []; consulta = { txt:'', html:'' };
-      guardaProfe(poolId, g); pinta();
-    });
+    conGuardia(document.getElementById('reinicio'), g.dichas.length > 0,
+      '⚠️ Sikker? Tryk igen', function(){
+        g.dichas = []; consulta = { txt:'', html:'' };
+        guardaProfe(poolId, g); pinta();
+      });
     /* Tocar una palabra la marca o la desmarca, por si se canta a mano
        o se cuela una sin querer. */
     raiz.querySelectorAll('[data-i]').forEach(function(b){
@@ -677,15 +701,15 @@ function vistaAlumno(poolId){
         guardaCarton(poolId, c); pinta();
       });
     });
-    document.getElementById('otro').addEventListener('click', function(){
-      var puestas = c.marcadas.filter(function(x){ return x; }).length;
-      if(puestas && !window.confirm('Nyt kort? Du mister de '+puestas+' felter, du har markeret.')) return;
-      c = { v: VERSION, num: 1 + Math.floor(Math.random() * 999), marcadas: vacias() };
-      guardaCarton(poolId, c);
-      cart = cartonDe(poolId, c.num);
-      codigo = p.letra + c.num;
-      pinta();
-    });
+    var puestas = c.marcadas.filter(function(x){ return x; }).length;
+    conGuardia(document.getElementById('otro'), puestas > 0,
+      '⚠️ Sikker? Tryk igen', function(){
+        c = { v: VERSION, num: 1 + Math.floor(Math.random() * 999), marcadas: vacias() };
+        guardaCarton(poolId, c);
+        cart = cartonDe(poolId, c.num);
+        codigo = p.letra + c.num;
+        pinta();
+      });
   }
   pinta();
 }
