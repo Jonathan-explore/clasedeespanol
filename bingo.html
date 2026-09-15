@@ -551,14 +551,13 @@ function vistaProfe(poolId){
           : '')+
         '<div class="enlace-txt">'+
           '<b>📱 Elevernes kort</b>'+
-          '<div class="enlace-url">'+esc(URL_AQUI.replace(/^https?:\/\//,''))+'</div>'+
-          '<small style="margin-top:.3rem">Din skærm: <b>'+VERSION+'</b> — hvis en elevs kort viser '+
-          'en anden version, skal de genindlæse siden (kortene passer ikke sammen).</small>'+
+          '<div class="enlace-url">'+esc(URL_AQUI.replace(/^https?:\/\//,''))+
+            ' <span style="opacity:.45">'+VERSION+'</span></div>'+
+
           (URL_AQUI === URL_PUBLICADA
             ? '<small>Scan koden eller skriv adressen. Tryk derefter på <b>Jeg har et kort</b> '+
               'og vælg gruppe <b>'+p.letra+' · '+esc(p.nom)+'</b> — samme som her.</small>'
-            : '<small>⚠️ Denne side kører ikke fra den offentlige adresse, så QR-koden er skjult: '+
-              'den ville sende eleverne til den udgivne version i stedet for hertil.</small>')+
+            : '<small>⚠️ Ikke den offentlige adresse — QR skjult.</small>')+
         '</div>'+
       '</div>';
 
@@ -669,7 +668,8 @@ function vistaAlumno(poolId){
         tiraBingo()+
         '<div class="carton-cab">'+
           '<div><span style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">'+
-            esc(p.nom)+'</span><br><span class="carton-num">'+codigo+'</span></div>'+
+            esc(p.nom)+'</span><br><span class="carton-num">'+codigo+'</span>'+
+          '<span style="font-size:.7rem;color:var(--text-dim);margin-left:.45rem">'+VERSION+'</span></div>'+
           '<button class="btn-sec" type="button" id="otro">🔄 Nyt kort</button>'+
         '</div>'+
         '<div class="carton">'+ cart.map(function(w,i){
@@ -689,8 +689,7 @@ function vistaAlumno(poolId){
             '<small>Råb det — og læs din række højt på spansk. Dit kort er '+codigo+'.</small></div>'
           : '<p style="font-size:.84rem;color:var(--text-dim);margin-top:1.1rem;line-height:1.6">'+
             'Fire i træk — vandret, lodret eller skråt — er <b>¡Línea!</b> Alle 16 er <b>¡Bingo!</b><br>'+
-            'Sig din kode (<b>'+codigo+'</b>), hvis læreren skal tjekke kortet.<br>'+
-            '<span style="opacity:.55">Version '+VERSION+'</span></p>');
+            'Sig din kode (<b>'+codigo+'</b>), hvis læreren skal tjekke kortet.</p>');
 
     enganchaPools(function(id){ vistaAlumno(id); });
 
