@@ -41,16 +41,18 @@
 
 <!-- ============================================================
      CONTENIDO DEL TEMA 5 · LOS VERBOS EN -ER
-     Mismo formato que el Tema 4. La idea entera del tema cabe en
-     una frase: cambia la A por una E. La forma yo ni se toca.
+     Versión corta y visual. La idea entera cabe en una frase:
+     cambia la A por una E. Nada de gramática en profundidad —
+     están aquí para hablar y pasarlo bien, no para saberlo todo.
+     Si hace falta recortar más, se quitan frases de D y E.
      ============================================================ -->
 <script>
 window.TEMA = {
 
 num: 5,
 es:  'Los verbos <em>en -ER</em>',
-da:  'ER-udsagnsord — cambia la A por una E',
-intro: 'I <b>Tema 4</b> lærte du <b>-ar</b>-verberne: <b>-o</b>, <b>-as</b>, <b>-a</b>. Nu kommer den anden store gruppe, <b>-er</b>-verberne — og her er den gode nyhed: <b>du kan allerede det halve</b>. <i>yo</i>-formen er præcis den samme, og i de to andre bytter du bare <b>A</b> ud med <b>E</b>. Seks nye udsagnsord, én lille ændring.',
+da:  'ER-udsagnsord — byt A ud med E',
+intro: 'Du kan allerede <b>-ar</b>-verberne. Her er hele Tema 5: <b>byt A ud med E</b>. Og <i>yo</i>-formen ændrer sig slet ikke. Det var det.',
 hoja: 'Hoja_del_alumno_Tema5_Verbos_ER.pdf',
 
 /* Los verbos en -er usan estas tres terminaciones. */
@@ -58,46 +60,43 @@ finales: ['o','es','e'],
 
 bloques: [
 
-  /* ── A · LA REGLA ─────────────────────────────────────── */
+  /* ── A · LA REGLA, EN UNA TABLA ───────────────────────── */
   { letra:'A', es:'Cambia la A por una E', da:'Byt A ud med E',
-    nota:'Pon las dos familias una al lado de la otra. Hay <b>una sola</b> diferencia, y la primera línea ni siquiera cambia.',
+    nota:'De to familier ved siden af hinanden. Første linje er <b>helt ens</b>.',
     html:
-      '<div class="tabla-scroll">'+
-      '<table class="mini-tabla" style="min-width:420px">'+
-        '<tr><th>Quién · hvem</th><th>-AR · hablar</th><th>-ER · comer</th><th></th></tr>'+
-        '<tr><td>yo · jeg</td><td>habl<b style="color:var(--glow)">o</b></td>'+
-            '<td style="color:var(--text)">com<b style="color:var(--glow)">o</b></td>'+
-            '<td style="color:#4ade80;font-size:.8rem">samme!</td></tr>'+
-        '<tr><td>tú · du</td><td>habl<b style="color:var(--glow)">as</b></td>'+
-            '<td style="color:var(--text)">com<b style="color:var(--glow)">es</b></td>'+
-            '<td style="color:var(--text-dim);font-size:.8rem">a → e</td></tr>'+
-        '<tr><td>él / ella · han / hun</td><td>habl<b style="color:var(--glow)">a</b></td>'+
-            '<td style="color:var(--text)">com<b style="color:var(--glow)">e</b></td>'+
-            '<td style="color:var(--text-dim);font-size:.8rem">a → e</td></tr>'+
-      '</table></div>'+
+      '<div class="fam">'+
+        '<div class="fam-row">'+
+          '<div class="fam-cab">-AR<b>hablar</b></div>'+
+          '<div class="fam-cab"></div>'+
+          '<div class="fam-cab">-ER<b>comer</b></div>'+
+        '</div>'+
+        '<div class="fam-row">'+
+          '<div class="fam-word"><span>habl<b>o</b></span></div>'+
+          '<div class="fam-quien">yo<small>jeg</small></div>'+
+          '<div class="fam-word"><span>com<b>o</b></span><span class="fam-tag ok">samme!</span></div>'+
+        '</div>'+
+        '<div class="fam-row">'+
+          '<div class="fam-word"><span>habl<b>as</b></span></div>'+
+          '<div class="fam-quien">tú<small>du</small></div>'+
+          '<div class="fam-word"><span>com<b>es</b></span><span class="fam-tag">a → e</span></div>'+
+        '</div>'+
+        '<div class="fam-row">'+
+          '<div class="fam-word"><span>habl<b>a</b></span></div>'+
+          '<div class="fam-quien">él / ella<small>han / hun</small></div>'+
+          '<div class="fam-word"><span>com<b>e</b></span><span class="fam-tag">a → e</span></div>'+
+        '</div>'+
+      '</div>'+
 
-      '<p style="text-align:center;font-size:1.25rem;margin:1.4rem 0 .4rem;letter-spacing:.02em">'+
+      '<p style="text-align:center;font-size:1.25rem;margin:1.4rem 0 .3rem;letter-spacing:.02em">'+
         '<code>com</code> <span style="opacity:.5">+</span> '+
         '<b style="color:var(--glow)">es</b> <span style="opacity:.5">=</span> '+
         '<b style="font-size:1.35rem">comes</b></p>'+
-      '<p style="text-align:center;font-size:.85rem;color:var(--text-dim);margin-bottom:1.2rem">'+
-        'stammen · <code>com</code> — endelsen · <code>-es</code></p>'+
-
-      '<ul>'+
-        '<li>Samme fremgangsmåde som i Tema 4: tag infinitiv — <code>com<b>er</b></code>, '+
-          '<code>beb<b>er</b></code>, <code>corr<b>er</b></code> — og fjern <b>-er</b>.</li>'+
-        '<li>Det, der er tilbage, er <b>stammen</b>. Den ændrer sig aldrig.</li>'+
-        '<li>Sæt en af de tre nye endelser på: <b>-o</b>, <b>-es</b>, <b>-e</b>.</li>'+
-      '</ul>'+
-
-      '<div class="ojo">⚠️ <b>¡OJO!</b> Det vigtigste i hele temaet: <b>kig altid på infinitiv først</b>.<br>'+
-      'Ender det på <code>-ar</code>? → <b>-o, -as, -a</b><br>'+
-      'Ender det på <code>-er</code>? → <b>-o, -es, -e</b><br>'+
-      'Det er dér, man tager fejl — ikke i selve endelserne, men i at glemme at kigge.</div>' },
+      '<p style="text-align:center;font-size:.85rem;color:var(--text-dim);margin-bottom:.6rem">'+
+        'com<s>er</s> → <code>com</code> + <b>-o</b>, <b>-es</b>, <b>-e</b></p>' },
 
   /* ── B · LOS SEIS VERBOS ──────────────────────────────── */
-  { letra:'B', es:'Los seis verbos de la semana', da:'Ugens seks udsagnsord',
-    nota:'Tryk på 🔊 for at høre dem. Alle seks ender på <b>-er</b>.',
+  { letra:'B', es:'Los seis verbos', da:'Ugens seks udsagnsord',
+    nota:'Tryk på 🔊 for at høre dem.',
     frases:[
       ['comer','at spise'],
       ['beber','at drikke'],
@@ -108,8 +107,8 @@ bloques: [
     ] },
 
   /* ── C · LA TABLA ─────────────────────────────────────── */
-  { letra:'C', es:'La tabla que hay que saber', da:'Tabellen du skal kunne',
-    nota:'Hele temaet på ét bord. Tag et billede af den med mobilen.',
+  { letra:'C', es:'Todo en una tabla', da:'Det hele på ét bord',
+    nota:'Tag et billede af den med mobilen.',
     html:
       '<div class="tabla-scroll">'+
       '<table class="mini-tabla" style="min-width:440px">'+
@@ -130,122 +129,52 @@ bloques: [
             '<td>qu<b style="color:#fbbf24">ie</b>r<b>o</b></td><td>qu<b style="color:#fbbf24">ie</b>r<b>es</b></td>'+
             '<td style="color:var(--text)">qu<b style="color:#fbbf24">ie</b>r<b>e</b></td></tr>'+
       '</table></div>'+
-      '<div class="ojo">🔥 <b>querer er oprøreren</b>, ligesom <i>jugar</i> i Tema 4. Stammen laver om på sig selv: '+
-      '<code>e</code> bliver til <code>ie</code>. Man siger <b>quiero</b>, ikke <s>quero</s>.<br>'+
-      '<b>MEN:</b> endelserne er præcis de samme — <code>-o</code>, <code>-es</code>, <code>-e</code>. Reglen holder.<br>'+
-      'Og det er et af de mest nyttige ord, du lærer i år: <code>Quiero una pizza.</code></div>' },
+      '<div class="ojo">🔥 <b>querer</b> er oprøreren: man siger <b>quiero</b>, ikke <s>quero</s>. '+
+      'Endelserne er de samme. Og det er årets mest nyttige ord: <code>Quiero una pizza.</code></div>' },
 
-  /* ── D · COMPLEMENTOS ─────────────────────────────────── */
-  { letra:'D', es:'Para acabar la frase', da:'Ord til at bygge sætningen færdig',
-    nota:'Udsagnsord + et af disse = en færdig sætning. Bland frit: <b>Yo bebo</b> + <b>zumo</b>.',
-    frases:[
-      ['pizza / pasta','pizza / pasta'],
-      ['fruta','frugt'],
-      ['un bocadillo','en sandwich'],
-      ['agua','vand'],
-      ['zumo','juice'],
-      ['leche','mælk'],
-      ['un libro','en bog'],
-      ['el móvil','mobilen'],
-      ['español / inglés','spansk / engelsk'],
-      ['en el instituto','i skolen'],
-      ['en casa','derhjemme'],
-      ['en el parque','i parken'],
-      ['los martes','om tirsdagen'],
-      ['todos los días','hver dag'],
-      ['muy rápido','meget hurtigt'],
-      ['mucho','meget'],
-      ['un poco','lidt']
-    ] },
-
-  /* ── E · FRASES DE EJEMPLO ────────────────────────────── */
-  { letra:'E', es:'Dieciocho frases de verdad', da:'Atten rigtige sætninger',
-    nota:'Tre sætninger pr. udsagnsord — én for hver endelse. Læs dem højt, og læg mærke til det <b>sidste bogstav</b>.',
+  /* ── D · FRASES ───────────────────────────────────────── */
+  { letra:'D', es:'Frases para usar hoy', da:'Sætninger du kan bruge i dag',
+    nota:'Læs dem højt. Kig på det <b>sidste bogstav</b>.',
     frases:[
       ['Yo como pizza.','Jeg spiser pizza.'],
-      ['Tú comes en el instituto.','Du spiser i skolen.'],
-      ['Ella come fruta.','Hun spiser frugt.'],
-
-      ['Yo bebo agua.','Jeg drikker vand.'],
       ['Tú bebes zumo.','Du drikker juice.'],
-      ['Él bebe leche.','Han drikker mælk.'],
-
-      ['Yo leo un libro.','Jeg læser en bog.'],
-      ['Tú lees en español.','Du læser på spansk.'],
       ['Ella lee el móvil.','Hun læser på mobilen.'],
-
       ['Yo aprendo español.','Jeg lærer spansk.'],
-      ['Tú aprendes muy rápido.','Du lærer meget hurtigt.'],
-      ['Él aprende inglés.','Han lærer engelsk.'],
-
-      ['Yo corro los martes.','Jeg løber om tirsdagen.'],
-      ['Tú corres en el parque.','Du løber i parken.'],
-      ['Ella corre todos los días.','Hun løber hver dag.'],
-
-      ['Yo quiero una pizza.','Jeg vil have en pizza.'],
-      ['Tú quieres un bocadillo.','Du vil have en sandwich.'],
-      ['Él quiere agua.','Han vil have vand.']
+      ['Él corre en el parque.','Han løber i parken.'],
+      ['Yo quiero una pizza.','Jeg vil have en pizza.']
     ] },
 
-  /* ── F · PREGUNTAR ────────────────────────────────────── */
-  { letra:'F', es:'¿Y tú?', da:'Spørg din sidemakker',
-    nota:'Til at spørge bruger du <b>-es</b>-formen. Læg mærke til <code>¿Qué quieres?</code> — den kommer du til at bruge resten af livet.',
+  /* ── E · PREGUNTAR ────────────────────────────────────── */
+  { letra:'E', es:'¿Y tú?', da:'Spørg din sidemakker',
+    nota:'Til spørgsmål bruger du <b>-es</b>-formen.',
     frases:[
       ['¿Qué comes?','Hvad spiser du?'],
-      ['Como un bocadillo.','Jeg spiser en sandwich.'],
       ['¿Qué bebes?','Hvad drikker du?'],
-      ['¿Lees mucho?','Læser du meget?'],
-      ['No, no leo mucho.','Nej, jeg læser ikke meget.'],
-      ['¿Aprendes español?','Lærer du spansk?'],
-      ['Sí, aprendo español.','Ja, jeg lærer spansk.'],
       ['¿Corres los martes?','Løber du om tirsdagen?'],
       ['¿Qué quieres?','Hvad vil du have?'],
       ['Quiero una pizza, por favor.','Jeg vil gerne have en pizza, tak.']
-    ] },
-
-  /* ── G · TRES AVISOS ──────────────────────────────────── */
-  { letra:'G', es:'Tres cosas que hay que recordar', da:'Tre ting du skal huske',
-    html:
-      '<ul>'+
-        '<li><b>1 · Infinitiv først.</b> Før du bøjer noget som helst, kig på de sidste to bogstaver: '+
-          '<code>-ar</code> eller <code>-er</code>? Det afgør hele resten.</li>'+
-        '<li><b>2 · yo-formen er gratis.</b> Den er <code>-o</code> i begge grupper. '+
-          '<code>hablo</code>, <code>como</code>, <code>bailo</code>, <code>bebo</code>. Den kan du allerede.</li>'+
-        '<li><b>3 · Alt det andet virker som før.</b> Nægtelse: <code>no</code> foran '+
-          '(<code>No como carne.</code>). Spørgsmål: to tegn (<code>¿Bebes agua?</code>). '+
-          'Pronomenet er stadig usynligt.</li>'+
-      '</ul>'+
-      '<div class="ojo">⚠️ <b>¡OJO!</b> Den typiske fejl i dette tema er at blande de to familier: '+
-      '<s>tú comas</s> ❌ → <b>tú comes</b> ✅ &nbsp;·&nbsp; <s>ella hable</s> ❌ → <b>ella habla</b> ✅<br>'+
-      'Reglen i én sætning: <b>A-verber beholder deres A, E-verber deres E.</b></div>' }
+    ] }
 
 ],
 
 /* ── MI TARJETA ──────────────────────────────────────────── */
 tarjeta: {
-  es:'Ocho frases sobre mí',
-  da:'Otte sætninger om mig',
-  nota:'Udfyld hullerne — bemærk, at endelsen mangler i de seks første. Læs det højt for din sidemakker.',
+  es:'Cuatro frases sobre mí',
+  da:'Fire sætninger om mig',
+  nota:'Udfyld hullerne og læs det højt for din sidemakker.',
   lineas:[
-    ['Yo com',     'o + pizza, pasta…',      '.'],
-    ['Yo beb',     'o + agua, zumo…',        '.'],
-    ['Yo le',      'o + libros, el móvil…',  '.'],
-    ['Yo aprend',  'o + español, inglés…',   '.'],
-    ['Yo corr',    'o + los martes… / no corro', '.'],
-    ['Yo quier',   'o + una pizza…',         '.'],
-    ['Mi amigo se llama ','et navn',         '.'],
-    ['Él o ella ', 'come, bebe, lee… husk -e!', ' también.']
+    ['Yo com',      'o + pizza, pasta…',              '.'],
+    ['Yo beb',      'o + agua, zumo…',                '.'],
+    ['Yo quier',    'o + una pizza…',                 '.'],
+    ['Mi amigo/a ', 'come, bebe, lee… husk -e!',      ' también.']
   ]
 },
 
 /* ── CHECKLIST ───────────────────────────────────────────── */
 checklist: [
-  ['Sé mirar el infinitivo antes de conjugar.','Jeg kigger på infinitiv, før jeg bøjer.'],
   ['Me sé las tres terminaciones: -o, -es, -e.','Jeg kan de tre endelser: -o, -es, -e.'],
-  ['Sé que la forma yo es igual en -ar y en -er.','Jeg ved, at yo-formen er ens i -ar og -er.'],
-  ['Puedo conjugar los seis verbos del tema.','Jeg kan bøje temaets seks udsagnsord.'],
-  ['Puedo pedir algo con quiero.','Jeg kan bede om noget med quiero.'],
-  ['No mezclo comes con comas.','Jeg blander ikke comes og comas.']
+  ['La forma yo es igual en -ar y en -er.','yo-formen er ens i -ar og -er.'],
+  ['Puedo pedir algo con quiero.','Jeg kan bede om noget med quiero.']
 ],
 
 /* ── Verbos para el ejercicio de terminaciones ───────────── */

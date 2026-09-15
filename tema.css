@@ -239,6 +239,59 @@ a.back-btn{text-decoration:none}
 /* Tabla ancha que no cabe en el movil: scrollea ella sola */
 .tabla-scroll{overflow-x:auto}
 
+/* -- DOS FAMILIAS ----------------------------------------------
+   Las dos familias de verbos (-ar / -er) enfrentadas, con el
+   pronombre en la columna del medio haciendo de separador. Es una
+   rejilla de 3 columnas para que las filas queden alineadas de
+   lado a lado; dos tarjetas sueltas no alinearian.
+   En movil se apila: la columna del medio pasa a ser una etiqueta
+   ancha encima de cada pareja.                                   */
+.fam{
+  display:flex;flex-direction:column;margin:1.1rem 0 .2rem;
+  border:1px solid rgba(255,255,255,.10);border-radius:18px;overflow:hidden;
+}
+/* Cada fila lleva su propia rejilla con las mismas columnas: asi las
+   tres filas quedan alineadas, y en movil cada una se apila sola sin
+   que el auto-placement mezcle celdas de filas distintas.          */
+.fam-row{display:grid;grid-template-columns:1fr 104px 1fr;align-items:stretch}
+.fam-row + .fam-row{border-top:1px solid rgba(255,255,255,.07)}
+.fam-cab{
+  padding:.7rem .9rem;text-align:center;font-size:.74rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);
+  background:rgba(255,255,255,.04);
+}
+.fam-cab b{display:block;font-size:1rem;letter-spacing:.02em;color:var(--text-strong);margin-top:.15rem}
+.fam-quien{
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.1rem;
+  padding:.85rem 1rem;min-width:88px;
+  border-left:1px solid rgba(255,255,255,.10);border-right:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.035);
+  font-size:.95rem;font-weight:600;color:var(--text-strong);
+}
+.fam-quien small{font-size:.68rem;font-weight:500;color:var(--text-dim);letter-spacing:.06em}
+.fam-word{
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.85rem 1rem;font-size:1.5rem;letter-spacing:.01em;color:var(--text-strong);
+}
+.fam-word b{color:var(--glow);font-weight:700}
+/* La marca de la derecha: "samme!" o "a -> e" */
+.fam-tag{font-size:.7rem;font-weight:600;letter-spacing:.06em;color:var(--text-dim);white-space:nowrap}
+.fam-tag.ok{color:#4ade80}
+
+@media (max-width:620px){
+  .fam-row{grid-template-columns:1fr 1fr}
+  .fam-cab{font-size:.68rem}
+  .fam-cab:empty{display:none}
+  /* El pronombre pasa a ser una banda ancha encima de su pareja */
+  .fam-quien{
+    grid-column:1 / -1;order:-1;flex-direction:row;gap:.45rem;padding:.45rem;min-width:0;
+    border-left:0;border-right:0;border-bottom:1px solid rgba(255,255,255,.07);
+    font-size:.85rem;
+  }
+  .fam-word{font-size:1.25rem;padding:.6rem .5rem;flex-wrap:wrap;gap:.3rem}
+  .fam-tag{font-size:.65rem}
+}
+
 /* -- TEMA CLARO ------------------------------------------------
    Los fondos y bordes de arriba son blancos translucidos: sobre el
    fondo claro desaparecen. Aqui se cambian por tinta suave, para
@@ -255,6 +308,17 @@ a.back-btn{text-decoration:none}
 }
 [data-theme="light"] :where(.extra-card,.frase,.chip,.check):hover{background:rgba(0,0,0,.055)}
 [data-theme="light"] :where(.mini-tabla th,.mini-tabla td){border-bottom-color:rgba(0,0,0,.10)}
+[data-theme="light"] .fam{border-color:rgba(0,0,0,.12)}
+[data-theme="light"] :where(.fam-cab,.fam-quien){background:rgba(0,0,0,.035)}
+[data-theme="light"] .fam-quien{border-left-color:rgba(0,0,0,.12);border-right-color:rgba(0,0,0,.12)}
+/* Las lineas que separan las filas: en claro tienen que ser tinta, no
+   blanco translucido, o el bloque se queda sin separaciones. Ojo: el
+   tema claro es el que sale por defecto (mini.js), asi que esto es lo
+   que ve la mayoria. La segunda regla es la banda del movil.        */
+[data-theme="light"] .fam-row + .fam-row{border-top-color:rgba(0,0,0,.09)}
+[data-theme="light"] .fam-quien{border-bottom-color:rgba(0,0,0,.09)}
+/* El verde de "samme!" viene del tema oscuro: sobre blanco no se lee. */
+[data-theme="light"] .fam-tag.ok{color:#15803d}
 [data-theme="light"] .tarjeta-n{background:rgba(0,0,0,.06)}
 [data-theme="light"] .bloque-html .ojo{
   background:rgba(176,120,64,.10);border-color:rgba(176,120,64,.35);color:#7c4a13;
@@ -274,4 +338,9 @@ a.back-btn{text-decoration:none}
   html{--text-strong:#111}   /* si se imprime en modo noche, la negrita seguia siendo blanca */
   .tabla-scroll{overflow:visible !important}
   .tabla-scroll table{min-width:0 !important}
+  .fam{border-color:#bbb !important;break-inside:avoid}
+  .fam :where(.fam-cab,.fam-quien){background:#f4f4f4 !important}
+  .fam :where(.fam-row,.fam-word,.fam-quien,.fam-cab){border-color:#ddd !important;color:#111 !important}
+  .fam-word b{color:#111 !important}
+  .fam-tag,.fam-tag.ok{color:#555 !important}
 }

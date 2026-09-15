@@ -1206,7 +1206,11 @@ body{overflow:hidden;overscroll-behavior:none}
      regla base de #view-home / .home-inner: aplica a todos los anchos. */
   .home-inner{gap:1.5rem;padding:4.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom,0px))}
   .cards-grid{grid-template-columns:1fr;gap:1rem}
-  .card-inner{height:150px;padding:1.35rem}
+  /* En movil la rejilla es de UNA columna, asi que las tarjetas no tienen
+     que medir lo mismo entre si: con altura fija (150px) las descripciones
+     de dos lineas se cortaban a media letra contra el overflow:hidden.
+     min-height mantiene el ritmo visual y deja crecer a las que lo pidan. */
+  .card-inner{height:auto;min-height:150px;padding:1.35rem}
 
   /* safe-area-inset: account for notch / Dynamic Island / home bar
      (viewport-fit=cover is set in the meta tag) */
