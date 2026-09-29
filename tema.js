@@ -98,12 +98,77 @@ function renderNums(items){
   }).join('') +'</div>';
 }
 
+/* ── Ejercicio corto DEBAJO de un bloque (opcional: b.ej) ───
+   b.ej = [{ titulo, nota, tipo:'elige'|'escribe', ops, items }]
+   elige:   items [{q:'html', ops:[...], ok:'x'}]  — si el ejercicio
+            trae ops comunes (p.ej. Infinitivo/Bøjet) no se barajan.
+   escribe: items [{q:'html', ok:'x' | ['x','y'], pista:'-ir'}]
+   Se comparan sin tildes, mayúsculas ni signos: en un teclado danés
+   las tildes cuestan, y aquí lo que se practica es otra cosa.     */
+var EJB = [];
+function norm(s){
+  return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+                  .replace(/[¿?¡!.,;:]/g,'').replace(/\s+/g,' ').trim();
+}
+function pintaEjb(i){
+  var e = EJB[i];
+  var items = e.items.map(function(it,k){
+    var cuerpo;
+    if(e.tipo === 'escribe'){
+      cuerpo =
+        '<div class="ejb-fila">'+
+          '<input class="ejb-in admin-input" type="text" autocomplete="off" spellcheck="false" placeholder="…" />'+
+          '<button class="opt-btn ejb-tjek" type="button">Tjek ✓</button>'+
+        '</div>';
+    } else {
+      var ops = e.ops || shuffle(it.ops);
+      cuerpo = '<div class="ejb-fila">'+ ops.map(function(o){
+        return '<button class="opt-btn ejb-op" type="button" data-o="'+esc(o)+'">'+esc(o)+'</button>';
+      }).join('') +'</div>';
+    }
+    return '<div class="ejb-q" data-k="'+k+'">'+
+      '<div class="ejb-p"><span class="ejb-n">'+(k+1)+'</span><span>'+it.q+'</span>'+
+        (it.pista ? '<span class="ejb-pista">💡 '+esc(it.pista)+'</span>' : '')+
+      '</div>'+
+      cuerpo+
+      '<div class="ejb-res"></div>'+
+    '</div>';
+  }).join('');
+  return '<p class="ejb-t">✏️ '+(e.titulo||'Øvelse')+'</p>'+
+    (e.nota ? '<p class="ejb-nota">'+e.nota+'</p>' : '')+
+    '<div class="ejb-lista">'+items+'</div>'+
+    '<div class="ejb-pie"><span class="ejb-score">0 / '+e.items.length+'</span>'+
+      '<button class="opt-btn ejb-reset" type="button">🔄 Prøv igen</button></div>';
+}
+function renderEjb(lista){
+  return (lista||[]).map(function(e){
+    EJB.push({ tipo:e.tipo, titulo:e.titulo, nota:e.nota, ops:e.ops, items:e.items, score:0 });
+    var i = EJB.length-1;
+    return '<div class="ejb" data-ejb="'+i+'">'+pintaEjb(i)+'</div>';
+  }).join('');
+}
+function responde(box, q, dada){
+  var e  = EJB[+box.dataset.ejb];
+  var it = e.items[+q.dataset.k];
+  var oks = [].concat(it.ok);
+  var bien = oks.some(function(o){ return norm(o) === norm(dada); });
+  q.dataset.done = '1';
+  q.classList.add(bien ? 'ok' : 'mal');
+  var res = q.querySelector('.ejb-res');
+  res.innerHTML = bien ? '✅ <b>'+esc(oks[0])+'</b>' : '❌ Det rigtige er <b>'+esc(oks[0])+'</b>';
+  if(bien){ e.score++; say(oks[0]); }
+  var sc = box.querySelector('.ejb-score');
+  sc.textContent = (e.score === e.items.length) ? '🎉 Perfekt! '+e.score+' / '+e.items.length
+                                               : e.score+' / '+e.items.length;
+}
+
 function renderBloque(b){
   var cuerpo = '';
   if(b.frases) cuerpo += renderFrases(b.frases);
   if(b.chips)  cuerpo += renderChips(b.chips);
   if(b.nums)   cuerpo += renderNums(b.nums);
   if(b.html)   cuerpo += '<div class="bloque-html">'+b.html+'</div>';
+  if(b.ej)     cuerpo += renderEjb(b.ej);
 
   return '<section class="bloque">'+
     '<div class="bloque-head">'+
@@ -380,13 +445,21 @@ function ejPuzzle(panel){
 
 /* 🔧 Vælg endelsen — solo aparece si el tema define T.conjuga */
 function ejConjuga(panel){
+  /* Cada verbo puede traer sus propias terminaciones (v.fin), para
+     mezclar -ar/-er/-ir en un mismo tema; una cuarta es nosotros. */
   var PERS = [
-    {es:'yo',        da:'jeg',     fin:FINALES[0]},
-    {es:'tú',        da:'du',      fin:FINALES[1]},
-    {es:'él / ella', da:'han/hun', fin:FINALES[2]}
+    {es:'yo',        da:'jeg'},
+    {es:'tú',        da:'du'},
+    {es:'él / ella', da:'han/hun'},
+    {es:'nosotros',  da:'vi'}
   ];
   var todas = [];
-  CONJUGA.forEach(function(v){ PERS.forEach(function(p){ todas.push({v:v,p:p}); }); });
+  CONJUGA.forEach(function(v){
+    var fins = (v.fin && v.fin.length >= 3) ? v.fin : FINALES;
+    fins.forEach(function(f,i){
+      if(PERS[i]) todas.push({v:v, fins:fins, p:{es:PERS[i].es, da:PERS[i].da, fin:f}});
+    });
+  });
   var qs = shuffle(todas).slice(0, Math.min(9, todas.length));
   var total = qs.length, score = 0;
 
@@ -406,7 +479,7 @@ function ejConjuga(panel){
           '<span style="font-size:.85rem;color:var(--text-dim)">'+esc(q.p.da+' '+q.v.pres)+' · <i>'+esc(q.v.inf)+'</i></span>'+
         '</div>'+
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">'+
-          FINALES.map(function(f){
+          q.fins.map(function(f){
             return '<button class="opt-btn" type="button" data-f="'+f+'" style="font-size:1.05rem;font-weight:600;min-width:4.5rem">-'+f+'</button>';
           }).join('')+
         '</div>'+
@@ -488,6 +561,32 @@ document.title = 'Tema '+T.num+' · '+String(T.es).replace(/<[^>]+>/g,'');
 document.getElementById('tema-root').addEventListener('click', function(e){
   var t = e.target.closest('[data-say]');
   if(t) say(t.dataset.say);
+});
+
+/* ejercicios cortos debajo de los bloques */
+document.getElementById('tema-root').addEventListener('click', function(e){
+  var box = e.target.closest('.ejb');
+  if(!box) return;
+  if(e.target.closest('.ejb-reset')){
+    EJB[+box.dataset.ejb].score = 0;
+    box.innerHTML = pintaEjb(+box.dataset.ejb);
+    return;
+  }
+  var q = e.target.closest('.ejb-q');
+  if(!q || q.dataset.done) return;
+  var op = e.target.closest('.ejb-op');
+  if(op){ op.classList.add('elegida'); responde(box, q, op.dataset.o); return; }
+  if(e.target.closest('.ejb-tjek')){
+    var inp = q.querySelector('.ejb-in');
+    if(!inp.value.trim()){ inp.focus(); return; }
+    inp.disabled = true;
+    responde(box, q, inp.value);
+  }
+});
+document.getElementById('tema-root').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' || !e.target.classList.contains('ejb-in')) return;
+  var b = e.target.closest('.ejb-q').querySelector('.ejb-tjek');
+  if(b) b.click();
 });
 
 /* imprimir */

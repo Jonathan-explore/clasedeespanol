@@ -324,8 +324,89 @@ a.back-btn{text-decoration:none}
   background:rgba(176,120,64,.10);border-color:rgba(176,120,64,.35);color:#7c4a13;
 }
 
+/* ── TRES FAMILIAS (-ar / -er / -ir) ───────────────────────────
+   Esquema de Tema 6: una fila por persona, una columna por familia.
+   Solo la terminación va en color; la raíz se queda quieta.      */
+.v3{width:100%;border-collapse:separate;border-spacing:0;margin-top:.4rem;
+    border:1px solid var(--glass-border);border-radius:16px;overflow:hidden}
+.v3 th,.v3 td{padding:.65rem .5rem;text-align:center;border-bottom:1px solid var(--glass-border)}
+.v3 tr:last-child td{border-bottom:0}
+.v3 th{font-size:.95rem;font-weight:600;color:var(--text-strong);background:rgba(255,255,255,.04)}
+.v3 th small,.v3 td small{display:block;font-size:.68rem;font-weight:500;color:var(--text-dim);letter-spacing:.04em}
+.v3 td{font-size:1.2rem;color:var(--text-strong);font-family:'Share Tech Mono',monospace}
+.v3 td.v3-quien{font-family:inherit;font-size:.95rem;font-weight:600;color:var(--text);text-align:left;
+                background:rgba(255,255,255,.03);white-space:nowrap}
+.v3 b{color:var(--glow);font-weight:700}
+.v3 tr.v3-ny td{background:rgba(94,234,212,.08)}
+.v3-badge{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.08em;padding:.1rem .4rem;
+          border-radius:6px;background:var(--glow);color:#0b1020;margin-left:.3rem;vertical-align:middle}
+@media (max-width:520px){
+  .v3 th,.v3 td{padding:.55rem .2rem}
+  .v3 th{font-size:.85rem}
+  .v3 td{font-size:.9rem}
+  .v3 td.v3-quien{font-size:.78rem;padding-left:.45rem}
+  .v3-badge{display:table;margin:.15rem 0 0}
+}
+
+/* Pasos numerados (cómo sacar el infinitivo) */
+.pasos{display:flex;flex-direction:column;gap:.6rem;margin:1rem 0}
+.paso{display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;border-radius:14px;
+      background:rgba(255,255,255,.03);border:1px solid var(--glass-border)}
+.paso-n{flex:none;width:1.8rem;height:1.8rem;border-radius:50%;display:grid;place-items:center;
+        background:var(--glow);color:#0b1020;font-weight:700;font-size:.9rem}
+/* Cortar el verbo: raíz | terminación → infinitivo */
+.corte{font-family:'Share Tech Mono',monospace;font-size:1.15rem;text-align:center;margin:.35rem 0;color:var(--text-strong)}
+.corte s{color:var(--bad-line);text-decoration-thickness:2px}
+.corte b{color:var(--glow)}
+.corte i{font-style:normal;opacity:.45;margin:0 .35rem}
+
+/* Fórmula grande: PODER + INFINITIVO */
+.formula{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap;margin:1rem 0 .4rem}
+.formula span{padding:.55rem 1rem;border-radius:12px;font-weight:700;letter-spacing:.04em;
+              background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-strong)}
+.formula span.inf{border-color:var(--glow);color:var(--glow)}
+.formula em{font-style:normal;opacity:.5;font-weight:700}
+
+/* ── EJERCICIO DEBAJO DE UN BLOQUE (b.ej) ──────────────────── */
+.ejb{margin-top:1.4rem;padding:1.1rem;border-radius:16px;border:1px dashed var(--glass-border);
+     background:rgba(255,255,255,.02)}
+.ejb-t{font-weight:700;color:var(--text-strong);font-size:1rem}
+.ejb-nota{font-size:.85rem;color:var(--text-dim);margin-top:.2rem}
+.ejb-lista{display:flex;flex-direction:column;gap:.7rem;margin-top:.9rem}
+.ejb-q{padding:.75rem .85rem;border-radius:12px;border:1px solid var(--glass-border);transition:border-color .2s}
+.ejb-q.ok{border-color:var(--ok-line)}
+.ejb-q.mal{border-color:var(--bad-line)}
+.ejb-p{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:1.05rem;color:var(--text-strong);margin-bottom:.55rem}
+.ejb-p small{color:var(--text-dim);font-size:.8rem}
+.ejb-n{flex:none;width:1.5rem;height:1.5rem;border-radius:50%;display:grid;place-items:center;
+       font-size:.75rem;font-weight:700;background:rgba(255,255,255,.08);color:var(--text)}
+.ejb-pista{font-size:.75rem;color:var(--text-dim);padding:.1rem .45rem;border-radius:8px;border:1px solid var(--glass-border)}
+.ejb-fila{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}
+.ejb-fila .opt-btn{padding:.5rem .9rem;font-size:.95rem}
+.ejb-in{flex:1;min-width:0;max-width:16rem;font-size:1rem;padding:.5rem .9rem}
+.ejb-q[data-done] .opt-btn{pointer-events:none;opacity:.4}
+.ejb-q[data-done] .opt-btn.elegida{opacity:1}
+.ejb-q.ok .opt-btn.elegida{border-color:var(--ok-line);color:var(--ok);background:rgba(34,197,94,.12)}
+.ejb-q.mal .opt-btn.elegida{border-color:var(--bad-line);color:var(--bad-line);background:rgba(248,113,113,.12)}
+.ejb-res{font-size:.88rem;margin-top:.4rem;min-height:0}
+.ejb-q.ok .ejb-res{color:var(--ok)}
+.ejb-q.mal .ejb-res{color:var(--bad)}
+.ejb-pie{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-top:.9rem;flex-wrap:wrap}
+.ejb-score{font-weight:700;color:var(--glow)}
+.ejb-reset{font-size:.85rem;padding:.45rem .9rem}
+
+[data-theme="light"] :where(.v3,.v3 th,.v3 td,.paso,.formula span,.ejb,.ejb-q,.ejb-pista){border-color:rgba(0,0,0,.12)}
+[data-theme="light"] .v3 th,[data-theme="light"] .v3 td.v3-quien,[data-theme="light"] .paso{background:rgba(0,0,0,.035)}
+[data-theme="light"] .v3 tr.v3-ny td{background:rgba(42,117,96,.10)}
+[data-theme="light"] .ejb-n{background:rgba(0,0,0,.07)}
+[data-theme="light"] .v3-badge,[data-theme="light"] .paso-n{color:#fff}
+[data-theme="light"] .ejb-q.ok .ejb-res,[data-theme="light"] .ejb-q.ok .opt-btn.elegida{color:#15803d}
+[data-theme="light"] .ejb-q.mal .ejb-res,[data-theme="light"] .ejb-q.mal .opt-btn.elegida{color:#b91c1c}
+
 /* ── IMPRIMIR ─────────────────────────────────────────────── */
 @media print{
+  .ejb{display:none !important}
+  .v3 td,.v3 th,.corte{color:#111 !important}
   #fluid-bg,#noise-overlay,.orb,.particle,.back-btn,.quick-dict-fab,
   .ejercicios,.tema-tools,.tema-footer,.top-bar{display:none !important}
   html,body{background:#fff !important;color:#111 !important;overflow:visible !important;height:auto !important}

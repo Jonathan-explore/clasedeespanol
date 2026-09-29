@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tema 6 · Repaso + poder y querer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active" id="tema-root"></div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Tema 6 · repaso de -ar/-er/-ir + nosotros, el infinitivo, y poder/querer.
+     Es la guía de la clase en el orden en que se da: cada bloque lleva su
+     ejercicio corto debajo (b.ej, ver tema.js). -->
+<script>
+window.TEMA = {
+
+num: 6,
+es:  'Repaso <em>+ poder y querer</em>',
+da:  'Udsagnsord, infinitiv og kan / må / vil',
+intro: 'Tre trin i dag: <b>1</b> endelserne for -ar, -er og -ir (nyt: <b>nosotros</b> = vi) · '+
+       '<b>2</b> find <b>infinitivet</b> · <b>3</b> spørg om lov: <b>¿Puedo…?</b> <b>¿Podemos…?</b>',
+hoja: '',
+
+bloques: [
+
+  /* ── A · ESQUEMA DE LAS TRES FAMILIAS ─────────────────── */
+  { letra:'A', es:'Los verbos: -AR, -ER, -IR', da:'Tre familier',
+    nota:'Stammen står stille. Kun <b>endelsen</b> (den farvede del) skifter. Nyt i dag: <b>nosotros</b> = vi.',
+    html:
+      '<div class="tabla-scroll">'+
+      '<table class="v3">'+
+        '<tr><th></th>'+
+            '<th>habl<b>ar</b><small>at tale</small></th>'+
+            '<th>com<b>er</b><small>at spise</small></th>'+
+            '<th>viv<b>ir</b><small>at bo</small></th></tr>'+
+        '<tr><td class="v3-quien">yo<small>jeg</small></td>'+
+            '<td>habl<b>o</b></td><td>com<b>o</b></td><td>viv<b>o</b></td></tr>'+
+        '<tr><td class="v3-quien">tú<small>du</small></td>'+
+            '<td>habl<b>as</b></td><td>com<b>es</b></td><td>viv<b>es</b></td></tr>'+
+        '<tr><td class="v3-quien">él / ella<small>han / hun</small></td>'+
+            '<td>habl<b>a</b></td><td>com<b>e</b></td><td>viv<b>e</b></td></tr>'+
+        '<tr class="v3-ny"><td class="v3-quien">nosotros<span class="v3-badge">NY</span><small>vi</small></td>'+
+            '<td>habl<b>amos</b></td><td>com<b>emos</b></td><td>viv<b>imos</b></td></tr>'+
+      '</table></div>'+
+      '<div class="ojo">💡 <b>nosotros</b> er let: tag vokalen fra infinitivet og sæt <b>-mos</b> på.<br>'+
+      'habl<b>a</b>r → habl<b>amos</b> · com<b>e</b>r → com<b>emos</b> · viv<b>i</b>r → viv<b>imos</b></div>' },
+
+  /* ── B · EJEMPLOS + EJERCICIO DE TERMINACIONES ────────── */
+  { letra:'B', es:'Ejemplos', da:'Eksempler',
+    nota:'Tryk på 🔊 og læs højt. Kig på <b>slutningen</b> af verbet.',
+    frases:[
+      ['Yo hablo español.','Jeg taler spansk.'],
+      ['Tú comes pizza.','Du spiser pizza.'],
+      ['Ella vive en Dinamarca.','Hun bor i Danmark.'],
+      ['Nosotros hablamos español.','Vi taler spansk.'],
+      ['Nosotros comemos en el instituto.','Vi spiser i skolen.'],
+      ['Nosotros vivimos en Dinamarca.','Vi bor i Danmark.']
+    ],
+    ej:[{
+      titulo:'Vælg den rigtige endelse',
+      nota:'Hvem gør det? Se på personen og på -ar / -er / -ir.',
+      tipo:'elige',
+      items:[
+        {q:'yo habl___ <small>(hablar)</small>',        ops:['o','as','amos'],      ok:'o'},
+        {q:'tú com___ <small>(comer)</small>',          ops:['es','e','emos'],      ok:'es'},
+        {q:'ella escuch___ <small>(escuchar)</small>',  ops:['a','as','o'],         ok:'a'},
+        {q:'nosotros habl___ <small>(hablar)</small>',  ops:['amos','emos','imos'], ok:'amos'},
+        {q:'nosotros beb___ <small>(beber)</small>',    ops:['amos','emos','imos'], ok:'emos'},
+        {q:'nosotros viv___ <small>(vivir)</small>',    ops:['amos','emos','imos'], ok:'imos'},
+        {q:'él escrib___ <small>(escribir)</small>',    ops:['e','a','imos'],       ok:'e'},
+        {q:'nosotros bail___ <small>(bailar)</small>',  ops:['amos','emos','o'],    ok:'amos'}
+      ]
+    }] },
+
+  /* ── C · EL INFINITIVO ────────────────────────────────── */
+  { letra:'C', es:'¿Qué es el infinitivo?', da:'Hvad er infinitiv?',
+    nota:'Infinitivet er verbets <b>navn</b> — det, der står i ordbogen. På dansk: <b>at</b> spise.',
+    html:
+      '<div class="tabla-scroll">'+
+      '<table class="v3">'+
+        '<tr><th>Infinitivo<small>navnet · ender på -ar, -er, -ir</small></th>'+
+            '<th>Bøjet<small>nogen gør det</small></th></tr>'+
+        '<tr><td>habl<b>ar</b></td><td>habl<b>o</b> · habl<b>amos</b></td></tr>'+
+        '<tr><td>com<b>er</b></td><td>com<b>es</b> · com<b>e</b></td></tr>'+
+        '<tr><td>viv<b>ir</b></td><td>viv<b>o</b> · viv<b>imos</b></td></tr>'+
+      '</table></div>'+
+
+      '<p style="margin-top:1.3rem"><b>Sådan finder du infinitivet — 3 trin:</b></p>'+
+      '<div class="pasos">'+
+        '<div class="paso"><span class="paso-n">1</span><div>Find <b>endelsen</b> og streg den ud.'+
+          '<div class="corte">com<s>emos</s></div></div></div>'+
+        '<div class="paso"><span class="paso-n">2</span><div>Nu har du <b>stammen</b>.'+
+          '<div class="corte">com</div></div></div>'+
+        '<div class="paso"><span class="paso-n">3</span><div>Sæt <b>-ar</b>, <b>-er</b> eller <b>-ir</b> på.'+
+          '<div class="corte">com <i>+</i> <b>er</b> <i>=</i> comer</div></div></div>'+
+      '</div>'+
+
+      '<div class="corte">habl<s>amos</s> <i>→</i> habl<b>ar</b></div>'+
+      '<div class="corte">beb<s>es</s> <i>→</i> beb<b>er</b></div>'+
+      '<div class="corte">viv<s>imos</s> <i>→</i> viv<b>ir</b></div>'+
+
+      '<div class="ojo">💡 Vokalen hjælper dig: <b>a</b> → -ar · <b>e</b> → -er (eller -ir) · <b>i</b> → -ir.<br>'+
+      'Er du i tvivl, så står der et tip ved siden af — eller spørg læreren.</div>',
+    ej:[{
+      titulo:'Infinitiv eller bøjet?',
+      nota:'Er det verbets navn (infinitivo) — eller gør nogen det (bøjet)?',
+      tipo:'elige',
+      ops:['Infinitivo','Bøjet'],
+      items:[
+        {q:'<b>hablar</b>',   ok:'Infinitivo'},
+        {q:'<b>comemos</b>',  ok:'Bøjet'},
+        {q:'<b>vivir</b>',    ok:'Infinitivo'},
+        {q:'<b>bailas</b>',   ok:'Bøjet'},
+        {q:'<b>leo</b>',      ok:'Bøjet'},
+        {q:'<b>escribir</b>', ok:'Infinitivo'},
+        {q:'<b>cantamos</b>', ok:'Bøjet'},
+        {q:'<b>beber</b>',    ok:'Infinitivo'}
+      ]
+    },{
+      titulo:'Find infinitivet',
+      nota:'Skriv infinitivet. Streg endelsen ud i hovedet, og sæt -ar, -er eller -ir på.',
+      tipo:'escribe',
+      items:[
+        {q:'bailas <small>(du danser)</small>',        ok:'bailar'},
+        {q:'comemos <small>(vi spiser)</small>',       ok:'comer'},
+        {q:'vivimos <small>(vi bor)</small>',          ok:'vivir'},
+        {q:'escucha <small>(han lytter)</small>',      ok:'escuchar'},
+        {q:'bebes <small>(du drikker)</small>',        ok:'beber',    pista:'-er'},
+        {q:'cantamos <small>(vi synger)</small>',      ok:'cantar'},
+        {q:'escribe <small>(hun skriver)</small>',     ok:'escribir', pista:'-ir'},
+        {q:'hablo <small>(jeg taler)</small>',         ok:'hablar',   pista:'-ar'},
+        {q:'aprendemos <small>(vi lærer)</small>',     ok:'aprender'},
+        {q:'abro <small>(jeg åbner)</small>',          ok:'abrir',    pista:'-ir'}
+      ]
+    }] },
+
+  /* ── D · PODER Y QUERER ───────────────────────────────── */
+  { letra:'D', es:'Poder y querer', da:'kan / må og vil',
+    nota:'To super-nyttige verber. Med dem kan du spørge om næsten alt i timen.',
+    html:
+      '<div class="tabla-scroll">'+
+      '<table class="v3">'+
+        '<tr><th></th>'+
+            '<th>poder<small>kan / må</small></th>'+
+            '<th>querer<small>vil</small></th></tr>'+
+        '<tr><td class="v3-quien">yo<small>jeg</small></td>'+
+            '<td>p<b>ue</b>d<b>o</b></td><td>qu<b>ie</b>r<b>o</b></td></tr>'+
+        '<tr><td class="v3-quien">tú<small>du</small></td>'+
+            '<td>p<b>ue</b>d<b>es</b></td><td>qu<b>ie</b>r<b>es</b></td></tr>'+
+        '<tr><td class="v3-quien">él / ella<small>han / hun</small></td>'+
+            '<td>p<b>ue</b>d<b>e</b></td><td>qu<b>ie</b>r<b>e</b></td></tr>'+
+        '<tr class="v3-ny"><td class="v3-quien">nosotros<small>vi</small></td>'+
+            '<td>pod<b>emos</b></td><td>quer<b>emos</b></td></tr>'+
+      '</table></div>'+
+      '<p style="font-size:.85rem;color:var(--text-dim);margin-top:.5rem">o → <b>ue</b> og e → <b>ie</b>… men ikke i <b>nosotros</b>: der er de normale igen.</p>'+
+
+      '<div class="formula"><span>PODER</span><em>+</em><span class="inf">INFINITIVO</span></div>'+
+      '<div class="corte">¿Puedo <b>ir</b> al baño?</div>'+
+      '<div class="corte">¿Podemos <b>jugar</b>?</div>'+
+
+      '<p style="margin-top:1.1rem"><b>🇩🇰 Det er præcis som på dansk!</b> Efter <b>kan</b>, <b>må</b> og <b>vil</b> kommer verbet i navneform:</p>'+
+      '<ul>'+
+        '<li>Jeg kan <b>danse</b> — ikke <s>danser</s> → Puedo <b>bailar</b>.</li>'+
+        '<li>Må jeg <b>gå</b> på toilettet? → ¿Puedo <b>ir</b> al baño?</li>'+
+        '<li>Jeg vil <b>spille</b> → Quiero <b>jugar</b>.</li>'+
+      '</ul>'+
+      '<div class="ojo">⭐ <b>poder</b> er både <b>kan</b> og <b>må</b> på dansk.<br>'+
+      'Kun det første verbum bøjes: ❌ <s>Puedo bailo</s> ✅ <b>Puedo bailar</b></div>' },
+
+  /* ── E · PREGUNTAS PARA LA CLASE ──────────────────────── */
+  { letra:'E', es:'Preguntas para la clase', da:'Spørg om lov på spansk',
+    nota:'Brug dem hver time! Tryk på 🔊.',
+    frases:[
+      ['¿Puedo ir al baño?','Må jeg gå på toilettet?'],
+      ['¿Podemos ir al recreo?','Må vi gå til frikvarter?'],
+      ['¿Podemos ir a tomar agua?','Må vi gå hen og drikke vand?'],
+      ['¿Puedes repetir, por favor?','Kan du gentage, tak?'],
+      ['¿Podemos cantar?','Må vi synge?'],
+      ['¿Puedes bailar?','Kan du danse?'],
+      ['¿Podemos jugar?','Må vi spille?'],
+      ['¿Puedo abrir la ventana?','Må jeg åbne vinduet?'],
+      ['¿Podemos ver un vídeo?','Må vi se en video?'],
+      ['Quiero jugar.','Jeg vil spille.'],
+      ['Queremos ir al recreo.','Vi vil gå til frikvarter.'],
+      ['¿Quieres bailar?','Vil du danse?']
+    ],
+    ej:[{
+      titulo:'Vælg det rigtige ord',
+      nota:'Husk: efter poder og querer kommer <b>infinitivet</b>.',
+      tipo:'elige',
+      items:[
+        {q:'¿Puedo ___ al baño?',      ops:['ir','voy','va'],               ok:'ir'},
+        {q:'¿Podemos ___?',            ops:['jugar','jugamos','juego'],     ok:'jugar'},
+        {q:'¿Puedes ___, por favor?',  ops:['repetir','repites','repito'],  ok:'repetir'},
+        {q:'Quiero ___ agua.',         ops:['beber','bebo','bebes'],        ok:'beber'},
+        {q:'Nosotros ___ cantar.',     ops:['podemos','puedo','puede'],     ok:'podemos'},
+        {q:'¿Tú ___ bailar?',          ops:['puedes','puedo','podemos'],    ok:'puedes'},
+        {q:'Yo ___ jugar.',            ops:['quiero','quieres','queremos'], ok:'quiero'}
+      ]
+    },{
+      titulo:'Hvad hedder det på spansk?',
+      tipo:'elige',
+      items:[
+        {q:'Må vi spille?',            ops:['¿Podemos jugar?','¿Puedo jugar?','¿Podemos jugamos?'], ok:'¿Podemos jugar?'},
+        {q:'Må jeg gå på toilettet?',  ops:['¿Puedo ir al baño?','¿Puedes ir al baño?','¿Puedo voy al baño?'], ok:'¿Puedo ir al baño?'},
+        {q:'Kan du gentage, tak?',     ops:['¿Puedes repetir, por favor?','¿Puedo repetir, por favor?','¿Puedes repites, por favor?'], ok:'¿Puedes repetir, por favor?'},
+        {q:'Vi vil synge.',            ops:['Queremos cantar.','Quiero cantar.','Queremos cantamos.'], ok:'Queremos cantar.'},
+        {q:'Må vi gå til frikvarter?', ops:['¿Podemos ir al recreo?','¿Queremos ir al recreo?','¿Puede ir al recreo?'], ok:'¿Podemos ir al recreo?'}
+      ]
+    }] }
+
+],
+
+/* ── MI TARJETA ──────────────────────────────────────────── */
+tarjeta: {
+  es:'Mis preguntas',
+  da:'Mine spørgsmål',
+  nota:'Skriv et <b>infinitiv</b> i hullet og læs det højt for din sidemakker.',
+  lineas:[
+    ['¿Puedo ',   'ir al baño, abrir la ventana…', '?'],
+    ['¿Podemos ', 'jugar, cantar, ver un vídeo…',  '?'],
+    ['¿Puedes ',  'repetir, bailar…',              '?'],
+    ['Quiero ',   'jugar, comer pizza…',           '.']
+  ]
+},
+
+/* ── CHECKLIST ───────────────────────────────────────────── */
+checklist: [
+  ['Me sé las terminaciones de -ar, -er, -ir.','Jeg kan endelserne for -ar, -er og -ir.'],
+  ['Sé decir nosotros: -amos, -emos, -imos.','Jeg kan sige "vi": -amos, -emos, -imos.'],
+  ['Sé encontrar el infinitivo.','Jeg kan finde infinitivet.'],
+  ['Puedo preguntar: ¿Puedo…? ¿Podemos…?','Jeg kan spørge om lov på spansk.']
+],
+
+/* ── Verbos para el ejercicio de terminaciones (con nosotros) ── */
+conjuga: [
+  {inf:'hablar',   raiz:'habl',   fin:['o','as','a','amos'], da:'at tale',   pres:'taler'},
+  {inf:'bailar',   raiz:'bail',   fin:['o','as','a','amos'], da:'at danse',  pres:'danser'},
+  {inf:'escuchar', raiz:'escuch', fin:['o','as','a','amos'], da:'at lytte',  pres:'lytter'},
+  {inf:'comer',    raiz:'com',    fin:['o','es','e','emos'], da:'at spise',  pres:'spiser'},
+  {inf:'beber',    raiz:'beb',    fin:['o','es','e','emos'], da:'at drikke', pres:'drikker'},
+  {inf:'leer',     raiz:'le',     fin:['o','es','e','emos'], da:'at læse',   pres:'læser'},
+  {inf:'vivir',    raiz:'viv',    fin:['o','es','e','imos'], da:'at bo',     pres:'bor'},
+  {inf:'escribir', raiz:'escrib', fin:['o','es','e','imos'], da:'at skrive', pres:'skriver'},
+  {inf:'abrir',    raiz:'abr',    fin:['o','es','e','imos'], da:'at åbne',   pres:'åbner'}
+],
+
+/* ── Palabras para escucha, puzle y LinguaStrike ─────────── */
+vocab: [
+  {es:'puedo',    da:'jeg kan / må'},
+  {es:'puedes',   da:'du kan / må'},
+  {es:'puede',    da:'han/hun kan'},
+  {es:'podemos',  da:'vi kan / må'},
+  {es:'quiero',   da:'jeg vil'},
+  {es:'quieres',  da:'du vil'},
+  {es:'queremos', da:'vi vil'},
+  {es:'hablamos', da:'vi taler'},
+  {es:'comemos',  da:'vi spiser'},
+  {es:'vivimos',  da:'vi bor'},
+  {es:'bailar',   da:'at danse'},
+  {es:'cantar',   da:'at synge'},
+  {es:'jugar',    da:'at spille / lege'},
+  {es:'repetir',  da:'at gentage'},
+  {es:'abrir',    da:'at åbne'}
+],
+
+/* ── Frases para el ejercicio de parejas ─────────────────── */
+frases: [
+  {es:'¿Puedo ir al baño?',             da:'Må jeg gå på toilettet?'},
+  {es:'¿Podemos ir al recreo?',         da:'Må vi gå til frikvarter?'},
+  {es:'¿Podemos ir a tomar agua?',      da:'Må vi gå hen og drikke vand?'},
+  {es:'¿Puedes repetir, por favor?',    da:'Kan du gentage, tak?'},
+  {es:'¿Podemos cantar?',               da:'Må vi synge?'},
+  {es:'¿Puedes bailar?',                da:'Kan du danse?'},
+  {es:'¿Podemos jugar?',                da:'Må vi spille?'},
+  {es:'¿Puedo abrir la ventana?',       da:'Må jeg åbne vinduet?'},
+  {es:'Quiero jugar.',                  da:'Jeg vil spille.'},
+  {es:'Nosotros hablamos español.',     da:'Vi taler spansk.'},
+  {es:'Nosotros vivimos en Dinamarca.', da:'Vi bor i Danmark.'}
+]
+
+};
+</script>
+
+  <script src="mini.js"></script>
+  <script src="tema.js"></script>
+</body>
+</html>
