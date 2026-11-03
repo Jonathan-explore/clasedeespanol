@@ -54,6 +54,7 @@
 .card{aspect-ratio:3/4;border-radius:18px;border:1px solid var(--glass-border-hover);display:flex;flex-direction:column;
   align-items:center;justify-content:center;cursor:pointer;
   background:repeating-linear-gradient(45deg,rgba(129,140,248,.12) 0 10px,rgba(94,234,212,.07) 10px 20px);transition:transform .2s}
+.card:focus-visible,.fig:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
 .card:hover{transform:translateY(-3px);border-color:var(--glow)}
 .card .q{font-size:clamp(2.2rem,9vw,3.4rem);font-weight:800;color:var(--glow4);line-height:1}
 .card .num{font-weight:700;color:var(--text-dim)}
@@ -193,7 +194,7 @@ td:last-child{color:var(--glow);text-align:right}
 </div>
 
 <!-- Galería -->
-<div class="overlay" id="gal" hidden>
+<div class="overlay" id="gal" hidden role="dialog" aria-modal="true" aria-label="Figurerne">
   <div class="panel pop">
     <div class="bar" style="margin-top:0">
       <h2 style="margin:0">Figurerne</h2>
@@ -277,15 +278,15 @@ const VOCAB = {};
 /* ── Figuras: solo con palabras de la lista de arriba ── */
 const PERSONAJES = [
   {n:"Bob Esponja", da:"SvampeBob", e:"🧽", g:"el", t:["amarillo","pequeno","divertido","simpatico","bueno"]},
-  {n:"Patricio", da:"Patrick", e:"⭐", g:"el", t:["rosa","grande","gordo","divertido"]},
+  {n:"Patricio", da:"Patrick", e:"⭐", g:"el", t:["rosa","grande","gordo","divertido","animal"]},
   {n:"Shrek", e:"🧌", g:"el", t:["verde","grande","gordo","fuerte","hombre"]},
   {n:"Elsa", e:"❄️", g:"ella", t:["rubio","alto","delgado","guapo","azul","princesa","hombre"]},
   {n:"Olaf", e:"⛄", g:"el", t:["blanco","pequeno","divertido","simpatico","bueno"]},
   {n:"Pikachu", e:"⚡", g:"el", t:["amarillo","pequeno","rapido","animal"]},
-  {n:"Mario", e:"🍄", g:"el", t:["rojo","bajo","moreno","bueno","hombre"]},
+  {n:"Mario", e:"🍄", g:"el", t:["rojo","azul","bajo","moreno","bueno","hombre"]},
   {n:"Homer Simpson", e:"🍩", g:"el", t:["amarillo","gordo","alto","perezoso","divertido","hombre"]},
-  {n:"Lisa Simpson", e:"📚", g:"ella", t:["amarillo","pequeno","inteligente","chico"]},
-  {n:"Peppa Pig", da:"Gurli Gris", e:"🐷", g:"ella", t:["rosa","pequeno","simpatico","animal"]},
+  {n:"Lisa Simpson", e:"📚", g:"ella", t:["amarillo","rojo","pequeno","inteligente","chico"]},
+  {n:"Peppa Pig", da:"Gurli Gris", e:"🐷", g:"ella", t:["rosa","rojo","pequeno","simpatico","animal"]},
   {n:"Mickey Mouse", e:"🐭", g:"el", t:["negro","pequeno","simpatico","bueno","animal"]},
   {n:"Stitch", e:"👽", g:"el", t:["azul","pequeno","rapido","divertido"]},
   {n:"Moana", da:"Vaiana", e:"🌊", g:"ella", t:["moreno","fuerte","simpatico","chico"]},
@@ -297,6 +298,18 @@ const PERSONAJES = [
 ];
 const word = (k,g)=> VOCAB[k][g==='ella'?2:1];
 
+/* Fisher–Yates: mezcla sin sesgo */
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+/* Que un div funcione como botón con teclado */
+function asButton(el, fn){
+  el.setAttribute('role','button'); el.tabIndex = 0;
+  el.addEventListener('click', fn);
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } });
+}
+
 /* ── Pantallas ── */
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.hidden = s.id!==id);
@@ -306,21 +319,21 @@ function show(id){
 
 /* ── Jeg har figuren ── */
 function deal(){
-  const pick = PERSONAJES.slice().sort(()=>Math.random()-.5).slice(0,9);
+  const pick = shuffle(PERSONAJES.slice()).slice(0,9);
   const el = document.getElementById('cards');
   el.innerHTML='';
   pick.forEach((c,i)=>{
     const d=document.createElement('div');
     d.className='card';
     d.innerHTML=`<div class="q">?</div><div class="num">${i+1}</div>`;
-    d.onclick=()=>openFig(c);
+    d.setAttribute('aria-label','Kort '+(i+1));
+    asButton(d, ()=>openFig(c));
     el.appendChild(d);
   });
   document.getElementById('har-pick').hidden=false;
   document.getElementById('har-fig').hidden=true;
 }
 function openFig(c){
-  const es = c.g==='el' ? 'Soy' : 'Soy';
   const chips = c.t.map(k=>{
     const v=VOCAB[k], col=v[4]?`<i style="background:${v[4]}"></i>`:'';
     return `<span class="chip">${col}${word(k,c.g)} <small>${v[3]}</small></span>`;
@@ -361,10 +374,13 @@ document.getElementById('ting').innerHTML = rows(TING);
 const galGrid = document.getElementById('gal-grid');
 galGrid.innerHTML = PERSONAJES.map((c,i)=>
   `<div class="fig" data-i="${i}"><div class="emo">${c.e}</div><b>${c.n}</b>${c.da?`<small>${c.da}</small>`:''}</div>`).join('');
-galGrid.querySelectorAll('.fig').forEach(f=>f.onclick=()=>f.classList.toggle('ud'));
+galGrid.querySelectorAll('.fig').forEach(f=>asButton(f, ()=>{ f.classList.toggle('ud'); f.setAttribute('aria-pressed', f.classList.contains('ud')); }));
 const gal = document.getElementById('gal');
-function openGal(){ gal.hidden=false; }
-function closeGal(){ gal.hidden=true; }
+/* Al <body>: dentro de #app-shell quedaba debajo del botón del diccionario */
+document.body.appendChild(gal);
+function openGal(){ gal.hidden=false; document.body.style.overflow='hidden'; }
+function closeGal(){ gal.hidden=true; document.body.style.overflow=''; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !gal.hidden) closeGal(); });
 function resetGal(){ galGrid.querySelectorAll('.fig').forEach(f=>f.classList.remove('ud')); }
 gal.addEventListener('click',e=>{ if(e.target===gal) closeGal(); });
 
