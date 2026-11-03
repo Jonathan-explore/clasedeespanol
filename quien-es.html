@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Quién es? · Adivina el personaje</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tema.css" />
+<style>
+/* ── ¿QUIÉN ES? ─────────────────────────────────────────────
+   Página suelta y autocontenida (como bingo.html). Colores de
+   style.css, así que funciona en claro y oscuro. Danés en .da;
+   el botón «Dansk» lo oculta todo con body.no-da. */
+.qe-wrap{max-width:1050px;margin:0 auto;padding:1.4rem 1.1rem 7.5rem;color:var(--text);line-height:1.5}
+.qe-head{text-align:center;padding:.6rem 0 0}
+.qe-head h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,7vw,3.4rem);margin:0;color:var(--text-strong)}
+.qe-head h1 span{font-style:italic;background:linear-gradient(90deg,var(--glow),var(--glow2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.qe-head p{color:var(--text-dim);margin:.4rem 0 0}
+.qe-nav{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:1.3rem 0 2rem}
+.qe-nav a,.qe-wrap button{font:inherit;cursor:pointer;border:1px solid var(--glass-border);background:var(--glass);color:var(--text);
+  padding:.55rem 1rem;border-radius:14px;text-decoration:none;font-weight:600;transition:all .2s ease}
+.qe-nav a:hover,.qe-wrap button:hover{border-color:var(--glass-border-hover);transform:translateY(-2px)}
+.qe-wrap button.primary{border:none;color:#04201a;background:linear-gradient(135deg,var(--glow),var(--glow2))}
+[data-theme="light"] .qe-wrap button.primary{color:#fff}
+.qe-wrap section{margin:0 0 3rem}
+.qe-wrap h2{font-family:'Playfair Display',serif;font-size:1.7rem;margin:0 0 .3rem;color:var(--text-strong)}
+.qe-wrap h3{color:var(--text-strong)}
+.sub{color:var(--text-dim);margin:0 0 1.1rem}
+.box{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);padding:1.2rem}
+.da{color:var(--glow);font-size:.92em;margin:.1rem 0 .4rem}
+small.da{display:block;font-weight:500;font-size:.8rem;margin:.1rem 0 0}
+body.no-da .da{display:none!important}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem}
+.rule{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);padding:1rem}
+.rule p{margin:.3rem 0}
+.rule b.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--glow),var(--glow2));color:#04201a;margin-right:.4rem}
+.speech{display:flex;flex-direction:column;gap:.4rem;margin:.6rem 0}
+.bubble{padding:.45rem .8rem;border-radius:14px;background:rgba(129,140,248,.16);font-weight:600;width:fit-content;color:var(--text-strong)}
+.bubble.ans{background:rgba(94,234,212,.14);align-self:flex-end;text-align:right}
+
+table{width:100%;border-collapse:collapse}
+td{padding:.35rem .4rem;border-bottom:1px solid var(--glass-border)}
+td:first-child{font-weight:600;color:var(--text-strong)}
+td:last-child{color:var(--glow);text-align:right}
+body.no-da td:last-child{visibility:hidden}
+
+.stage{background:var(--glass);border:2px dashed var(--glass-border-hover);border-radius:var(--r-lg);padding:1.8rem 1rem;min-height:300px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;text-align:center}
+.mystery{font-size:4.5rem;line-height:1;font-weight:800;color:var(--glow4)}
+.pron{font-size:2rem;font-weight:800;padding:.3rem 1.3rem;border-radius:999px;color:#fff}
+.pron.el{background:var(--glow2)} .pron.ella{background:var(--glow3)}
+.pron small.da{color:#fff;opacity:.9}
+.clues{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;font-size:1.6rem;font-weight:600;color:var(--text-strong)}
+.clues li{animation:pop .3s ease}
+.clues .da{display:block;font-size:1.05rem;font-weight:500;margin:0}
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.answer{font-size:2.5rem;font-weight:800;color:var(--text-strong)}
+.controls{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.controls small.da{color:inherit;opacity:.8}
+
+.adj-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+.adj-group h3{margin:0 0 .5rem;font-size:1.05rem}
+.tip{margin-top:1rem;background:rgba(94,234,212,.08);border-radius:14px;padding:.8rem 1rem}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem}
+.card{perspective:900px;height:310px;cursor:pointer}
+.inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--glass-border-hover);padding:1rem;display:flex;flex-direction:column;background:var(--deep2)}
+[data-theme="light"] .face{background:#fff}
+.front{align-items:center;justify-content:center;gap:.5rem;background:repeating-linear-gradient(45deg,rgba(129,140,248,.10) 0 12px,rgba(94,234,212,.06) 12px 24px)}
+.front .q{font-size:4rem;font-weight:800;color:var(--glow4);line-height:1}
+.front .num{font-weight:700;color:var(--text-dim)}
+.back{transform:rotateY(180deg)}
+.back .name{font-size:1.3rem;font-weight:800;margin:.4rem 0 .5rem;color:var(--text-strong)}
+.tag{font-size:.8rem;font-weight:800;color:#fff;padding:2px 10px;border-radius:999px;width:fit-content}
+.tag.el{background:var(--glow2)} .tag.ella{background:var(--glow3)}
+.back ul{margin:0;padding-left:1.1rem;font-size:.95rem}
+.back li .da{display:block;font-size:.8rem;margin:0}
+.hint-print{display:none}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  html,body{background:#fff!important;color:#000!important}
+  #fluid-bg,#noise-overlay,.orb,.back-btn,#quick-dict-fab,.qe-nav,#jugar,.no-print{display:none!important}
+  .qe-wrap{padding:0;color:#000}
+  .qe-wrap h1,.qe-wrap h2,.qe-wrap h3,td:first-child,.back .name,.bubble{color:#000!important;-webkit-text-fill-color:#000!important}
+  .da,td:last-child{color:#0a6b5a!important}
+  .qe-wrap section{margin:0 0 6mm}
+  #adjetivos,#tarjetas{break-before:page}
+  .box,.rule{border-color:#bbb;background:#fff}
+  .adj-groups{grid-template-columns:repeat(3,1fr)}
+  td{padding:2px 4px;font-size:.85rem}
+  .cards{grid-template-columns:repeat(3,1fr);gap:0}
+  .card{height:auto;perspective:none;cursor:default;break-inside:avoid}
+  .inner{transform:none!important}
+  .front{display:none}
+  .face.back{position:static;transform:none;border:1.5px dashed #888;border-radius:0;min-height:64mm;padding:4mm;background:#fff}
+  .hint-print{display:block}
+}
+</style>
+</head>
+<body>
+  <canvas id="fluid-bg" aria-hidden="true"></canvas>
+  <div id="noise-overlay" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div id="app-shell">
+    <section class="view active">
+      <div class="content-view active">
+        <div class="qe-wrap">
+
+<header class="qe-head">
+  <h1>¿Quién <span>es</span>?</h1>
+  <p>Adivina el personaje de dibujos animados<br><span class="da">Gæt tegnefilmsfiguren</span></p>
+</header>
+
+<nav class="qe-nav">
+  <a href="#como">Cómo jugar</a>
+  <a href="#jugar">Jugar en clase</a>
+  <a href="#adjetivos">Adjetivos</a>
+  <a href="#tarjetas">Tarjetas</a>
+  <button id="daBtn" onclick="toggleDa()">🇩🇰 Dansk: til</button>
+  <button class="primary" onclick="window.print()">🖨️ Imprimir</button>
+</nav>
+
+<!-- CÓMO JUGAR -->
+<section id="como">
+  <h2>Cómo jugar</h2>
+  <p class="sub">Sådan spiller man</p>
+  <div class="rules">
+    <div class="rule">
+      <b class="n">1</b><b>Coge una tarjeta</b>
+      <p class="da">🇩🇰 Tag et kort</p>
+      <p>Un alumno coge una tarjeta en secreto. ¡No la enseñes! Ahora <b>tú eres</b> ese personaje.</p>
+      <p class="da">En elev tager et kort i hemmelighed. Vis det ikke! Nu <b>er du</b> den figur.</p>
+    </div>
+    <div class="rule">
+      <b class="n">2</b><b>La clase pregunta</b>
+      <p class="da">🇩🇰 Klassen stiller spørgsmål</p>
+      <p>Los demás preguntan con <b>¿Eres…?</b> usando los adjetivos.</p>
+      <p class="da">De andre spørger med <b>¿Eres…?</b> (= Er du…?) og bruger tillægsordene.</p>
+      <div class="speech">
+        <span class="bubble">¿Eres amarillo? <small class="da">Er du gul?</small></span>
+        <span class="bubble ans">Sí, soy amarillo. <small class="da">Ja, jeg er gul.</small></span>
+        <span class="bubble">¿Eres alto? <small class="da">Er du høj?</small></span>
+        <span class="bubble ans">No, no soy alto. <small class="da">Nej, jeg er ikke høj.</small></span>
+      </div>
+    </div>
+    <div class="rule">
+      <b class="n">3</b><b>¡Adivina!</b>
+      <p class="da">🇩🇰 Gæt!</p>
+      <p>Máximo <b>10 preguntas</b>. Para adivinar se dice:</p>
+      <p class="da">Højst 10 spørgsmål. Når du vil gætte, siger du:</p>
+      <div class="speech">
+        <span class="bubble">¿Eres Bob Esponja? <small class="da">Er du SvampeBob?</small></span>
+        <span class="bubble ans">¡Sí, soy Bob Esponja! 🎉 <small class="da">Ja, jeg er SvampeBob!</small></span>
+      </div>
+      <p>Quien acierta coge la siguiente tarjeta.</p>
+      <p class="da">Den, der gætter rigtigt, tager det næste kort.</p>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:16px">
+    <h3 style="margin:0 0 8px">💬 Frases útiles · Nyttige sætninger</h3>
+    <table>
+      <tr><td>¿Eres…?</td><td>Er du…?</td></tr>
+      <tr><td>Sí, soy…</td><td>Ja, jeg er…</td></tr>
+      <tr><td>No, no soy…</td><td>Nej, jeg er ikke…</td></tr>
+      <tr><td>¿Eres un chico o una chica?</td><td>Er du en dreng eller en pige?</td></tr>
+      <tr><td>¿Eres un animal?</td><td>Er du et dyr?</td></tr>
+      <tr><td>Él es… / Ella es…</td><td>Han er… / Hun er…</td></tr>
+      <tr><td>¡Es…!</td><td>Det er…!</td></tr>
+      <tr><td>No sé.</td><td>Jeg ved det ikke.</td></tr>
+      <tr><td>¿Cómo se dice … en español?</td><td>Hvordan siger man … på spansk?</td></tr>
+      <tr><td>¡Mi turno!</td><td>Min tur!</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- MODO JUEGO (pantalla / proyector) -->
+<section id="jugar">
+  <h2>Jugar en clase con la pantalla</h2>
+  <p class="sub">La profesora enseña las pistas una a una. La clase adivina: <b>«¡Es…!»</b><br><span class="da">Læreren viser ledetrådene én ad gangen. Klassen gætter: «¡Es…!» (= Det er…!)</span></p>
+  <div class="game">
+    <div class="stage" id="stage">
+      <div class="mystery">?</div>
+      <p style="font-size:1.2rem;color:var(--text-dim);margin:0">Pulsa «Nuevo personaje» para empezar<br><span class="da">Tryk på «Nuevo personaje» for at starte</span></p>
+    </div>
+    <div class="controls">
+      <button class="primary" onclick="newRound()">🎲 Nuevo personaje <small class="da">Ny figur</small></button>
+      <button onclick="nextClue()">💡 Otra pista <small class="da">Ny ledetråd</small></button>
+      <button onclick="reveal()">👀 ¿Quién es? <small class="da">Hvem er det?</small></button>
+    </div>
+  </div>
+</section>
+
+<!-- ADJETIVOS -->
+<section id="adjetivos">
+  <h2>Adjetivos para jugar</h2>
+  <p class="sub">Tillægsord · Chico = <b>-o</b> · Chica = <b>-a</b></p>
+  <div class="box">
+    <div class="adj-groups">
+      <div class="adj-group">
+        <h3>👤 ¿Cómo es?</h3>
+        <table>
+          <tr><td>alto / alta</td><td>høj</td></tr>
+          <tr><td>bajo / baja</td><td>lav</td></tr>
+          <tr><td>grande</td><td>stor</td></tr>
+          <tr><td>pequeño / pequeña</td><td>lille</td></tr>
+          <tr><td>gordo / gorda</td><td>tyk</td></tr>
+          <tr><td>delgado / delgada</td><td>tynd</td></tr>
+          <tr><td>fuerte</td><td>stærk</td></tr>
+          <tr><td>rápido / rápida</td><td>hurtig</td></tr>
+          <tr><td>guapo / guapa</td><td>flot / smuk</td></tr>
+          <tr><td>rubio / rubia</td><td>lyshåret</td></tr>
+          <tr><td>moreno / morena</td><td>mørkhåret</td></tr>
+        </table>
+      </div>
+      <div class="adj-group">
+        <h3>😄 Personalidad</h3>
+        <table>
+          <tr><td>divertido / divertida</td><td>sjov</td></tr>
+          <tr><td>gracioso / graciosa</td><td>morsom</td></tr>
+          <tr><td>simpático / simpática</td><td>sød / venlig</td></tr>
+          <tr><td>inteligente</td><td>klog</td></tr>
+          <tr><td>valiente</td><td>modig</td></tr>
+          <tr><td>tímido / tímida</td><td>genert</td></tr>
+          <tr><td>serio / seria</td><td>seriøs</td></tr>
+          <tr><td>perezoso / perezosa</td><td>doven</td></tr>
+          <tr><td>famoso / famosa</td><td>berømt</td></tr>
+        </table>
+      </div>
+      <div class="adj-group">
+        <h3>🎨 Colores</h3>
+        <table>
+          <tr><td>amarillo / amarilla</td><td>gul</td></tr>
+          <tr><td>verde</td><td>grøn</td></tr>
+          <tr><td>azul</td><td>blå</td></tr>
+          <tr><td>rosa</td><td>lyserød</td></tr>
+          <tr><td>blanco / blanca</td><td>hvid</td></tr>
+          <tr><td>naranja</td><td>orange</td></tr>
+          <tr><td>marrón</td><td>brun</td></tr>
+        </table>
+        <h3 style="margin-top:14px">🐾 ¿Qué es?</h3>
+        <table>
+          <tr><td>un chico / una chica</td><td>en dreng / en pige</td></tr>
+          <tr><td>una princesa</td><td>en prinsesse</td></tr>
+          <tr><td>un animal</td><td>et dyr</td></tr>
+          <tr><td>un perro / un gato</td><td>en hund / en kat</td></tr>
+          <tr><td>un ratón / un pez</td><td>en mus / en fisk</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="tip">
+      <p class="da" style="margin:0 0 4px">jeg er = yo soy · du er = tú eres · han / hun er = él / ella es</p>
+      <b>Recuerda</b> <span class="da" style="display:inline">(Husk)</span><b>:</b> yo <b>soy</b> · tú <b>eres</b> · él / ella <b>es</b> &nbsp;→&nbsp;
+      «¿<b>Eres</b> rubia?» — «Sí, <b>soy</b> rubia.» — «¡<b>Ella es</b> Elsa!»
+    </div>
+  </div>
+</section>
+
+<!-- TARJETAS -->
+<section id="tarjetas">
+  <h2>Tarjetas de personajes</h2>
+  <p class="sub no-print">Pulsa una tarjeta para darle la vuelta. Al imprimir salen listas para recortar ✂️<br><span class="da">Tryk på et kort for at vende det.</span></p>
+  <p class="sub hint-print">✂️ Recorta las tarjetas. Las pistas ayudan a quien tiene la tarjeta a contestar.</p>
+  <div class="cards" id="cards"></div>
+</section>
+
+</div>
+      </div>
+    </section>
+    <a class="back-btn" href="index.html"><span class="back-arrow">←</span><span>Temaer</span></a>
+  </div>
+
+  <button id="quick-dict-fab" class="quick-dict-fab" aria-label="Hurtig Ordbog" title="Slå op i ordbog">📖</button>
+  <div id="quick-dict-modal" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-label="Hurtig Ordbog">
+    <div class="modal-glass" style="max-width:400px;width:90%">
+      <button id="qd-close" class="modal-close" aria-label="Luk modal">✕</button>
+      <div class="modal-icon">📖</div>
+      <h2 class="modal-title" style="font-size:1.5rem">Hurtig Ordbog</h2>
+      <div class="input-wrap" style="margin-top:1.5rem">
+        <input type="text" id="qd-input" class="admin-input" placeholder="Søg efter ord..." />
+        <div class="input-glow"></div>
+      </div>
+      <div id="qd-result" class="qd-result">
+        <span style="color:var(--text-dim);font-size:0.9rem">Skriv et ord for at se oversættelsen</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="mini.js"></script>
+<script>
+const PERSONAJES = [
+  {n:"Bob Esponja", da:"SvampeBob", g:"el", p:[["Es amarillo.","er gul."],["Es pequeño.","er lille."],["Es muy divertido.","er meget sjov."],["No es alto.","er ikke høj."]]},
+  {n:"Patricio Estrella", da:"Patrick Søstjerne", g:"el", p:[["Es rosa.","er lyserød."],["Es gracioso.","er morsom."],["Es grande.","er stor."],["No es muy inteligente.","er ikke særlig klog."]]},
+  {n:"Shrek", g:"el", p:[["Es verde.","er grøn."],["Es muy grande.","er meget stor."],["Es fuerte.","er stærk."],["Es un ogro.","er en trold."]]},
+  {n:"Elsa (Frozen)", g:"ella", p:[["Es rubia.","er lyshåret."],["Es guapa.","er smuk."],["Es seria.","er seriøs."],["Es una reina.","er en dronning."]]},
+  {n:"Olaf (Frozen)", g:"el", p:[["Es blanco.","er hvid."],["Es pequeño.","er lille."],["Es simpático.","er sød."],["Es un muñeco de nieve.","er en snemand."]]},
+  {n:"Pikachu", g:"el", p:[["Es amarillo.","er gul."],["Es pequeño.","er lille."],["Es rápido.","er hurtig."],["Es un Pokémon.","er en Pokémon."]]},
+  {n:"Mario", g:"el", p:[["Es bajo.","er lav."],["Es valiente.","er modig."],["Es italiano.","er italiener."],["Es muy famoso.","er meget berømt."]]},
+  {n:"Homer Simpson", g:"el", p:[["Es amarillo.","er gul."],["Es gordo.","er tyk."],["Es perezoso.","er doven."],["Es divertido.","er sjov."]]},
+  {n:"Lisa Simpson", g:"ella", p:[["Es amarilla.","er gul."],["Es pequeña.","er lille."],["Es muy inteligente.","er meget klog."],["Es seria.","er seriøs."]]},
+  {n:"Peppa Pig", da:"Gurli Gris", g:"ella", p:[["Es rosa.","er lyserød."],["Es pequeña.","er lille."],["Es simpática.","er sød."],["Es un animal.","er et dyr."]]},
+  {n:"Mickey Mouse", da:"Mickey Mouse", g:"el", p:[["Es pequeño.","er lille."],["Es simpático.","er sød."],["Es muy famoso.","er meget berømt."],["Es un ratón.","er en mus."]]},
+  {n:"Minnie Mouse", g:"ella", p:[["Es pequeña.","er lille."],["Es simpática.","er sød."],["Es guapa.","er smuk."],["Es un ratón.","er en mus."]]},
+  {n:"Stitch", g:"el", p:[["Es azul.","er blå."],["Es pequeño.","er lille."],["Es gracioso.","er morsom."],["Es extraterrestre.","er et rumvæsen."]]},
+  {n:"Moana", da:"Vaiana", g:"ella", p:[["Es morena.","er mørkhåret."],["Es valiente.","er modig."],["Es fuerte.","er stærk."],["Es una chica.","er en pige."]]},
+  {n:"Rapunzel", g:"ella", p:[["Es rubia.","er lyshåret."],["Es guapa.","er smuk."],["Es divertida.","er sjov."],["Es una princesa.","er en prinsesse."]]},
+  {n:"Garfield", g:"el", p:[["Es naranja.","er orange."],["Es gordo.","er tyk."],["Es muy perezoso.","er meget doven."],["Es un gato.","er en kat."]]},
+  {n:"Scooby-Doo", g:"el", p:[["Es marrón.","er brun."],["Es grande.","er stor."],["Es tímido.","er genert."],["Es un perro.","er en hund."]]},
+  {n:"Dory (Buscando a Nemo)", da:"Doris (Find Nemo)", g:"ella", p:[["Es azul.","er blå."],["Es divertida.","er sjov."],["Es simpática.","er sød."],["Es un pez.","er en fisk."]]}
+];
+const DA = (c,x)=> (c.g==='el'?'Han ':'Hun ')+x;
+const daName = c => c.da && c.da!==c.n ? ` <span class="da" style="display:inline;font-size:.75em">(${c.da})</span>` : '';
+
+
+const PRON = {el:"Él es… <small class=\"da\">Han er…</small>", ella:"Ella es… <small class=\"da\">Hun er…</small>"};
+
+/* Tarjetas */
+const cardsEl = document.getElementById('cards');
+PERSONAJES.forEach((c,i)=>{
+  const d = document.createElement('div');
+  d.className = 'card';
+  d.innerHTML = `
+    <div class="inner">
+      <div class="face front"><div class="q">?</div><div class="num">Tarjeta ${i+1}</div></div>
+      <div class="face back">
+        <span class="tag ${c.g}">${c.g==='el'?'ÉL · han':'ELLA · hun'}</span>
+        <div class="name">${c.n}${daName(c)}</div>
+        <ul>${c.p.map(x=>`<li>${x[0]}<span class="da">${DA(c,x[1])}</span></li>`).join('')}</ul>
+      </div>
+    </div>`;
+  d.onclick = ()=> d.classList.toggle('flipped');
+  cardsEl.appendChild(d);
+});
+
+/* Modo juego */
+let current=null, shown=0, pool=[];
+const stage = document.getElementById('stage');
+
+function newRound(){
+  if(!pool.length) pool = PERSONAJES.map((_,i)=>i).sort(()=>Math.random()-.5);
+  current = PERSONAJES[pool.pop()];
+  shown = 0;
+  stage.innerHTML = `
+    <div class="mystery">?</div>
+    <div class="pron ${current.g}">${PRON[current.g]}</div>
+    <ul class="clues" id="clues"></ul>`;
+}
+function nextClue(){
+  if(!current){ newRound(); return; }
+  if(shown >= current.p.length) return;
+  const li = document.createElement('li');
+  const x = current.p[shown++];
+  li.innerHTML = `${x[0]}<span class="da">${DA(current,x[1])}</span>`;
+  document.getElementById('clues').appendChild(li);
+}
+function reveal(){
+  if(!current) return;
+  while(shown < current.p.length) nextClue();
+  stage.querySelector('.mystery').outerHTML =
+    `<div class="answer">¡Es ${current.n}! 🎉${daName(current)}</div>`;
+}
+function toggleDa(){
+  document.body.classList.toggle('no-da');
+  document.getElementById('daBtn').textContent = document.body.classList.contains('no-da') ? '🇩🇰 Dansk: fra' : '🇩🇰 Dansk: til';
+}
+</script>
+</body>
+</html>
