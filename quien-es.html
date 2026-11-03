@@ -280,10 +280,8 @@ const FARVER = [
   ["rosa","rosa","rosa","lyserød","#f49ac2"],
   ["naranja","naranja","naranja","orange","#f58231"],
   ["morado","morado","morada","lilla","#9b59b6"],
-  ["marron","marrón","marrón","brun","#8b5a2b"],
   ["blanco","blanco","blanca","hvid","#ffffff"],
-  ["negro","negro","negra","sort","#111111"],
-  ["gris","gris","gris","grå","#9aa0a6"]
+  ["negro","negro","negra","sort","#111111"]
 ];
 const KROP = [
   ["grande","grande","grande","stor"],
@@ -302,7 +300,6 @@ const PERS = [
   ["simpatico","simpático","simpática","sød / venlig"],
   ["divertido","divertido","divertida","sjov"],
   ["inteligente","inteligente","inteligente","klog"],
-  ["timido","tímido","tímida","genert"],
   ["perezoso","perezoso","perezosa","doven"],
   ["bueno","bueno","buena","god"],
   ["malo","malo","mala","ond"]
@@ -333,10 +330,12 @@ const PERSONAJES = [
   {n:"Moana", da:"Vaiana", e:"🌊", g:"ella", t:["moreno","fuerte","simpatico"]},
   {n:"Rapunzel", e:"👸", g:"ella", t:["rubio","delgado","guapo","morado","princesa"]},
   {n:"Garfield", e:"🐱", g:"el", t:["naranja","gordo","perezoso","animal"]},
-  {n:"Scooby-Doo", e:"🐶", g:"el", t:["marron","grande","timido","animal"]},
+  {n:"Pato Donald", q:"el Pato Donald", da:"Anders And", e:"🦆", g:"el", t:["blanco","azul","divertido","animal"]},
   {n:"Dory", da:"Doris", e:"🐟", g:"ella", t:["azul","amarillo","pequeno","divertido","animal"]},
-  {n:"El Grinch", da:"Grinchen", e:"🎄", g:"el", t:["verde","alto","delgado","malo"]}
+  {n:"El Grinch", q:"el Grinch", da:"Grinchen", e:"🎄", g:"el", t:["verde","alto","delgado","malo"]}
 ];
+/* Nombre dentro de una frase («¿Eres el Pato Donald?») */
+const nq = c => c.q || c.n;
 const word = (k,g)=> VOCAB[k][g==='ella'?2:1];
 /* Todo lo que es verdad de una figura: chico/chica (según g) + su lista */
 const traits = c => [c.g==='el'?'chico':'chica', ...c.t];
@@ -405,7 +404,7 @@ function openFig(c){
     </div>
     <div class="box" style="text-align:center">
       <h3>🎉 Gætter de rigtigt?</h3>
-      <p style="margin:0">De siger: <span class="es">¿Eres ${c.n}?</span><br>Du svarer: <b style="font-size:1.2rem">¡Sí, soy ${c.n}!</b></p>
+      <p style="margin:0">De siger: <span class="es">¿Eres ${nq(c)}?</span><br>Du svarer: <b style="font-size:1.2rem">¡Sí, soy ${nq(c)}!</b></p>
     </div>
     <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
       <button onclick="document.getElementById('har-fig').hidden=true;document.getElementById('har-pick').hidden=false">← Vælg et andet kort</button>
@@ -482,7 +481,7 @@ function refresh(){
   }
   const m = document.getElementById('maybe');
   if(left.length===1){
-    m.innerHTML = `🎯 Det må være <b>${left[0].e} ${left[0].n}</b>! Spørg: <span class="es">¿Eres ${left[0].n}?</span>`;
+    m.innerHTML = `🎯 Det må være <b>${left[0].e} ${left[0].n}</b>! Spørg: <span class="es">¿Eres ${nq(left[0])}?</span>`;
   } else if(!left.length){
     m.innerHTML = '😅 Ingen figurer passer. Måske var et svar forkert — tryk på et svar for at slette det.';
   } else {
