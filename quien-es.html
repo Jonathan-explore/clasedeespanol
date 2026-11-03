@@ -87,6 +87,20 @@ td:last-child{color:var(--glow);text-align:right}
 .note{font-size:.92rem;color:var(--text-dim);margin:.6rem 0 0}
 .note b{color:var(--text-strong)}
 
+/* Preguntas guiadas */
+.ask{cursor:pointer;transition:all .15s}
+.farve.ask:hover{border-color:var(--glow);transform:translateY(-2px)}
+tr.ask:hover td{background:rgba(94,234,212,.08)}
+.ask:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.chip.no{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35)}
+.qe-wrap button.chip{font:inherit;font-weight:700;cursor:pointer;padding:.4rem .75rem;border-radius:999px;
+  background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.35);color:var(--text-strong)}
+.qe-wrap button.chip.no{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35)}
+.fig.ud{order:1}  /* las que quedan, primero */
+.svar button{font:inherit;font-size:1.3rem;font-weight:800;padding:.9rem;border-radius:16px;cursor:pointer;color:var(--text-strong)}
+.svar button.ja{background:rgba(94,234,212,.15);border:1px solid rgba(94,234,212,.45)}
+.svar button.nej{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.45)}
+
 /* Galería de figuras */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(5,8,15,.6);backdrop-filter:blur(6px);
   display:flex;align-items:center;justify-content:center;padding:1rem}
@@ -141,7 +155,7 @@ td:last-child{color:var(--glow);text-align:right}
   <ol class="regler">
     <li><span class="n">1</span><span>Én elev har figuren. Resten af klassen gætter.</span></li>
     <li><span class="n">2</span><span>Spørg: <span class="es">¿Eres …?</span> (= Er du …?) — fx <span class="es">¿Eres amarillo?</span></span></li>
-    <li><span class="n">3</span><span>Svar: <span class="es">Sí, soy …</span> (ja) eller <span class="es">No, no soy …</span> (nej)</span></li>
+    <li><span class="n">3</span><span>Svar: <span class="es">Sí, soy …</span> (ja) eller <span class="es">No, no soy …</span> (nej). Listen på dit kort hjælper dig.</span></li>
     <li><span class="n">4</span><span>Gæt: <span class="es">¿Eres Shrek?</span> Den, der gætter rigtigt, har figuren næste gang.</span></li>
   </ol>
 </div>
@@ -164,21 +178,31 @@ td:last-child{color:var(--glow);text-align:right}
 <div class="screen" id="s-gaet" hidden>
   <div class="bar">
     <button onclick="show('s-start')">← Tilbage</button>
-    <button class="btn-main" onclick="openGal()">👀 Se figurerne</button>
+    <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
   </div>
 
   <div class="box">
-    <h3>💬 Sådan spørger du</h3>
-    <table>
-      <tr><td>¿Eres …?</td><td>Er du …?</td></tr>
-      <tr><td>¿Eres un chico o una chica?</td><td>Er du en dreng eller en pige?</td></tr>
-      <tr><td>¿Eres un animal?</td><td>Er du et dyr?</td></tr>
-      <tr><td>¿Eres Shrek?</td><td>Er du Shrek?</td></tr>
-    </table>
-    <p class="note">Dreng → <b>-o</b> (amarill<b>o</b>) · Pige → <b>-a</b> (amarill<b>a</b>)</p>
+    <h3>🧭 Sådan gør I</h3>
+    <ol class="regler" style="margin:.2rem 0 0">
+      <li><span class="n">1</span><span><b>Tryk på et ord</b> herunder. Så ser du spørgsmålet på spansk.</span></li>
+      <li><span class="n">2</span><span><b>Læs spørgsmålet højt</b> — fx <span class="es">¿Eres amarillo?</span></span></li>
+      <li><span class="n">3</span><span>Tryk på svaret: <b>Sí</b> eller <b>No</b>. Figurerne, der ikke passer, bliver streget ud.</span></li>
+      <li><span class="n">4</span><span>Er der kun én tilbage? Spørg: <span class="es">¿Eres …?</span> med navnet.</span></li>
+    </ol>
+    <p class="note">💡 Godt første spørgsmål: <span class="es">¿Eres un animal?</span> eller <span class="es">¿Eres un chico?</span></p>
   </div>
 
-  <h2>🎨 Farver</h2>
+  <div class="box" id="status">
+    <h3>📝 Det ved vi</h3>
+    <div id="viden"></div>
+    <p id="maybe" style="margin:.6rem 0 0"></p>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
+      <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
+      <button onclick="resetGal()">↺ Ny runde</button>
+    </div>
+  </div>
+
+  <h2>🎨 Farver <small style="font-size:.9rem;color:var(--text-dim);font-family:Inter,sans-serif">— tryk for at spørge</small></h2>
   <div class="farver" id="farver"></div>
 
   <h2 style="margin-top:1.6rem">👤 Hvordan er figuren?</h2>
@@ -187,9 +211,26 @@ td:last-child{color:var(--glow);text-align:right}
     <div class="box"><h3>Personlighed</h3><table id="adj-pers"></table></div>
     <div class="box"><h3>Hvad er det?</h3><table id="ting"></table></div>
   </div>
+  <p class="note" style="text-align:center">Tryk på et ord for at spørge 👆</p>
 
   <div style="text-align:center;margin-top:.6rem">
-    <button class="btn-main" onclick="openGal()">👀 Se figurerne</button>
+    <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
+  </div>
+</div>
+
+<!-- Pregunta guiada -->
+<div class="overlay" id="ask" hidden role="dialog" aria-modal="true" aria-label="Spørg">
+  <div class="panel pop" style="max-width:440px;text-align:center">
+    <p class="note" style="margin:0">Læs højt 🗣️</p>
+    <div id="ask-q" style="font-size:2rem;font-weight:800;color:var(--text-strong);margin:.3rem 0 0;line-height:1.2"></div>
+    <div id="ask-da" style="color:var(--glow);font-weight:600"></div>
+    <p id="ask-hint" class="note"></p>
+    <p style="margin:1rem 0 .5rem;font-weight:700;color:var(--text-strong)">Hvad svarede han/hun?</p>
+    <div class="svar">
+      <button class="ja" onclick="answer(true)">✅ Sí<small>Ja</small></button>
+      <button class="nej" onclick="answer(false)">❌ No<small>Nej</small></button>
+    </div>
+    <button style="margin-top:.8rem" onclick="closeAsk()">Annuller</button>
   </div>
 </div>
 
@@ -200,9 +241,9 @@ td:last-child{color:var(--glow);text-align:right}
       <h2 style="margin:0">Figurerne</h2>
       <button onclick="closeGal()">✕ Luk</button>
     </div>
-    <p class="note" style="margin-top:0">Tryk på en figur for at strege den ud, når den ikke passer.</p>
+    <p class="note" style="margin-top:0">Figurerne, der ikke passer til jeres svar, er streget ud. Du kan også trykke selv. <b><span class="left-n">18</span> tilbage.</b></p>
     <div class="gal" id="gal-grid"></div>
-    <div style="text-align:center"><button onclick="resetGal()">↺ Start forfra</button></div>
+    <div style="text-align:center"><button onclick="resetGal()">↺ Ny runde</button></div>
   </div>
 </div>
 
@@ -267,10 +308,10 @@ const PERS = [
   ["malo","malo","mala","ond"]
 ];
 const TING = [
-  ["chico","un chico","una chica","en dreng / en pige"],
-  ["hombre","un hombre","una mujer","en mand / en kvinde"],
+  ["chico","un chico","un chico","en dreng (han)"],
+  ["chica","una chica","una chica","en pige (hun)"],
   ["animal","un animal","un animal","et dyr"],
-  ["princesa","un príncipe","una princesa","en prins / en prinsesse"]
+  ["princesa","una princesa","una princesa","en prinsesse"]
 ];
 const VOCAB = {};
 [...FARVER,...KROP,...PERS,...TING].forEach(v=>VOCAB[v[0]]=v);
@@ -279,24 +320,29 @@ const VOCAB = {};
 const PERSONAJES = [
   {n:"Bob Esponja", da:"SvampeBob", e:"🧽", g:"el", t:["amarillo","pequeno","divertido","simpatico","bueno"]},
   {n:"Patricio", da:"Patrick", e:"⭐", g:"el", t:["rosa","grande","gordo","divertido","animal"]},
-  {n:"Shrek", e:"🧌", g:"el", t:["verde","grande","gordo","fuerte","hombre"]},
-  {n:"Elsa", e:"❄️", g:"ella", t:["rubio","alto","delgado","guapo","azul","princesa","hombre"]},
+  {n:"Shrek", e:"🧌", g:"el", t:["verde","grande","gordo","fuerte"]},
+  {n:"Elsa", e:"❄️", g:"ella", t:["rubio","alto","delgado","guapo","azul","princesa"]},
   {n:"Olaf", e:"⛄", g:"el", t:["blanco","pequeno","divertido","simpatico","bueno"]},
   {n:"Pikachu", e:"⚡", g:"el", t:["amarillo","pequeno","rapido","animal"]},
-  {n:"Mario", e:"🍄", g:"el", t:["rojo","azul","bajo","moreno","bueno","hombre"]},
-  {n:"Homer Simpson", e:"🍩", g:"el", t:["amarillo","gordo","alto","perezoso","divertido","hombre"]},
-  {n:"Lisa Simpson", e:"📚", g:"ella", t:["amarillo","rojo","pequeno","inteligente","chico"]},
+  {n:"Mario", e:"🍄", g:"el", t:["rojo","azul","bajo","moreno","bueno"]},
+  {n:"Homer Simpson", e:"🍩", g:"el", t:["amarillo","gordo","alto","perezoso","divertido"]},
+  {n:"Lisa Simpson", e:"📚", g:"ella", t:["amarillo","rojo","pequeno","inteligente"]},
   {n:"Peppa Pig", da:"Gurli Gris", e:"🐷", g:"ella", t:["rosa","rojo","pequeno","simpatico","animal"]},
   {n:"Mickey Mouse", e:"🐭", g:"el", t:["negro","pequeno","simpatico","bueno","animal"]},
   {n:"Stitch", e:"👽", g:"el", t:["azul","pequeno","rapido","divertido"]},
-  {n:"Moana", da:"Vaiana", e:"🌊", g:"ella", t:["moreno","fuerte","simpatico","chico"]},
-  {n:"Rapunzel", e:"👸", g:"ella", t:["rubio","delgado","guapo","morado","princesa","chico"]},
+  {n:"Moana", da:"Vaiana", e:"🌊", g:"ella", t:["moreno","fuerte","simpatico"]},
+  {n:"Rapunzel", e:"👸", g:"ella", t:["rubio","delgado","guapo","morado","princesa"]},
   {n:"Garfield", e:"🐱", g:"el", t:["naranja","gordo","perezoso","animal"]},
   {n:"Scooby-Doo", e:"🐶", g:"el", t:["marron","grande","timido","animal"]},
   {n:"Dory", da:"Doris", e:"🐟", g:"ella", t:["azul","amarillo","pequeno","divertido","animal"]},
   {n:"El Grinch", da:"Grinchen", e:"🎄", g:"el", t:["verde","alto","delgado","malo"]}
 ];
 const word = (k,g)=> VOCAB[k][g==='ella'?2:1];
+/* Todo lo que es verdad de una figura: chico/chica (según g) + su lista */
+const traits = c => [c.g==='el'?'chico':'chica', ...c.t];
+const has = (c,k) => traits(c).includes(k);
+/* «¿Eres amarillo / amarilla?» — las dos formas si cambian */
+function forms(k){ const v=VOCAB[k]; return v[1]===v[2] ? v[1] : v[1]+' / '+v[2]; }
 
 /* Fisher–Yates: mezcla sin sesgo */
 function shuffle(a){
@@ -334,7 +380,8 @@ function deal(){
   document.getElementById('har-fig').hidden=true;
 }
 function openFig(c){
-  const chips = c.t.map(k=>{
+  const noK = ['verde','grande','azul','rosa','alto'].find(k=>!has(c,k));
+  const chips = traits(c).map(k=>{
     const v=VOCAB[k], col=v[4]?`<i style="background:${v[4]}"></i>`:'';
     return `<span class="chip">${col}${word(k,c.g)} <small>${v[3]}</small></span>`;
   }).join('');
@@ -349,9 +396,16 @@ function openFig(c){
       <h3>✅ Det er sandt om dig</h3>
       <div class="sandt">${chips}</div>
       <div class="svar">
-        <div class="ja">Sí, soy …<small>Hvis ordet står her</small></div>
-        <div class="nej">No, no soy …<small>Alt andet</small></div>
+        <div class="ja">Sí, soy …<small>Ordet står her ✅</small></div>
+        <div class="nej">No, no soy …<small>Ordet står ikke her ❌</small></div>
       </div>
+      <p class="note">Eksempel: <span class="es">¿Eres ${word(c.t[0],c.g)}?</span> → <b>Sí, soy ${word(c.t[0],c.g)}.</b><br>
+      <span class="es">¿Eres ${word(noK,c.g)}?</span> → <b>No, no soy ${word(noK,c.g)}.</b></p>
+      <p class="note">💡 Siger de <b>-o</b> eller <b>-a</b> forkert (fx <i>amarilla</i> i stedet for <i>amarillo</i>)? Det er det samme ord.</p>
+    </div>
+    <div class="box" style="text-align:center">
+      <h3>🎉 Gætter de rigtigt?</h3>
+      <p style="margin:0">De siger: <span class="es">¿Eres ${c.n}?</span><br>Du svarer: <b style="font-size:1.2rem">¡Sí, soy ${c.n}!</b></p>
     </div>
     <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
       <button onclick="document.getElementById('har-fig').hidden=true;document.getElementById('har-pick').hidden=false">← Vælg et andet kort</button>
@@ -364,8 +418,8 @@ function openFig(c){
 
 /* ── Jeg gætter ── */
 document.getElementById('farver').innerHTML = FARVER.map(v=>
-  `<div class="farve"><i style="background:${v[4]}"></i><span><b>${v[1]===v[2]?v[1]:v[1]+' / -a'}</b><small>${v[3]}</small></span></div>`).join('');
-const rows = list => list.map(v=>`<tr><td>${v[1]===v[2]?v[1]:v[1]+' / '+v[2]}</td><td>${v[3]}</td></tr>`).join('');
+  `<div class="farve ask" data-k="${v[0]}"><i style="background:${v[4]}"></i><span><b>${v[1]===v[2]?v[1]:v[1]+' / -a'}</b><small>${v[3]}</small></span></div>`).join('');
+const rows = list => list.map(v=>`<tr class="ask" data-k="${v[0]}"><td>${forms(v[0])}</td><td>${v[3]}</td></tr>`).join('');
 document.getElementById('adj-krop').innerHTML = rows(KROP);
 document.getElementById('adj-pers').innerHTML = rows(PERS);
 document.getElementById('ting').innerHTML = rows(TING);
@@ -374,16 +428,76 @@ document.getElementById('ting').innerHTML = rows(TING);
 const galGrid = document.getElementById('gal-grid');
 galGrid.innerHTML = PERSONAJES.map((c,i)=>
   `<div class="fig" data-i="${i}"><div class="emo">${c.e}</div><b>${c.n}</b>${c.da?`<small>${c.da}</small>`:''}</div>`).join('');
-galGrid.querySelectorAll('.fig').forEach(f=>asButton(f, ()=>{ f.classList.toggle('ud'); f.setAttribute('aria-pressed', f.classList.contains('ud')); }));
 const gal = document.getElementById('gal');
 /* Al <body>: dentro de #app-shell quedaba debajo del botón del diccionario */
 document.body.appendChild(gal);
 function openGal(){ gal.hidden=false; document.body.style.overflow='hidden'; }
 function closeGal(){ gal.hidden=true; document.body.style.overflow=''; }
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !gal.hidden) closeGal(); });
-function resetGal(){ galGrid.querySelectorAll('.fig').forEach(f=>f.classList.remove('ud')); }
 gal.addEventListener('click',e=>{ if(e.target===gal) closeGal(); });
 
+/* ── Spørg: pregunta guiada + respuestas ── */
+let answers = [];            // [{k, yes}]
+const manual = new Set();    // figuras tachadas a mano
+const out = c => answers.some(a=> has(c,a.k)!==a.yes);
+const askDlg = document.getElementById('ask');
+document.body.appendChild(askDlg);
+let asking = null;
+
+document.querySelectorAll('.ask').forEach(el=>asButton(el, ()=>openAsk(el.dataset.k)));
+
+function openAsk(k){
+  asking = k;
+  const v = VOCAB[k];
+  document.getElementById('ask-q').textContent = '¿Eres ' + forms(k) + '?';
+  document.getElementById('ask-da').textContent = 'Er du ' + v[3].replace(/ \(.*\)/,'') + '?';
+  document.getElementById('ask-hint').innerHTML = v[1]===v[2] ? '' :
+    'Sig <b>'+v[1]+'</b> til en han og <b>'+v[2]+'</b> til en hun.';
+  askDlg.hidden = false; document.body.style.overflow='hidden';
+}
+function closeAsk(){ askDlg.hidden = true; asking = null; if(gal.hidden) document.body.style.overflow=''; }
+function answer(yes){
+  answers = answers.filter(a=>a.k!==asking);
+  answers.push({k:asking, yes});
+  closeAsk(); refresh();
+  document.getElementById('viden').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function undo(k){ answers = answers.filter(a=>a.k!==k); refresh(); }
+askDlg.addEventListener('click', e=>{ if(e.target===askDlg) closeAsk(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !askDlg.hidden) closeAsk(); });
+
+function refresh(){
+  galGrid.querySelectorAll('.fig').forEach(f=>{
+    const c = PERSONAJES[f.dataset.i];
+    f.classList.toggle('ud', out(c) || manual.has(+f.dataset.i));
+  });
+  const left = PERSONAJES.filter((c,i)=>!out(c) && !manual.has(i));
+  document.querySelectorAll('.left-n').forEach(n=>n.textContent = left.length);
+  const v = document.getElementById('viden');
+  if(!answers.length){
+    v.innerHTML = '<p class="note" style="margin:0">Ingen svar endnu. Tryk på et ord herunder for at stille et spørgsmål.</p>';
+  } else {
+    v.innerHTML = '<div class="sandt" style="justify-content:flex-start">' + answers.map(a=>
+      `<button class="chip ${a.yes?'':'no'}" onclick="undo('${a.k}')" title="Fortryd">${a.yes?'✅':'❌'} ${forms(a.k)} <small>${VOCAB[a.k][3]}</small></button>`).join('') + '</div>';
+  }
+  const m = document.getElementById('maybe');
+  if(left.length===1){
+    m.innerHTML = `🎯 Det må være <b>${left[0].e} ${left[0].n}</b>! Spørg: <span class="es">¿Eres ${left[0].n}?</span>`;
+  } else if(!left.length){
+    m.innerHTML = '😅 Ingen figurer passer. Måske var et svar forkert — tryk på et svar for at slette det.';
+  } else {
+    m.innerHTML = `Der er <b>${left.length}</b> figurer tilbage. Stil et nyt spørgsmål!`;
+  }
+}
+
+/* Galería: tachar a mano además de lo automático */
+galGrid.querySelectorAll('.fig').forEach(f=>{
+  const i = +f.dataset.i;
+  asButton(f, ()=>{ manual.has(i) ? manual.delete(i) : manual.add(i); refresh(); });
+});
+function resetGal(){ answers = []; manual.clear(); refresh(); }
+
+refresh();
 deal();
 </script>
 </body>
