@@ -13,113 +13,188 @@
 /* ── ¿QUIÉN ES? ─────────────────────────────────────────────
    Página suelta y autocontenida (como bingo.html). Colores de
    style.css → funciona en claro y oscuro. Todo el interfaz en danés.
-   Tres pantallas en una página, sin conexión entre ellas:
-     · inicio  → elegir papel
-     · «Jeg har figuren» → elige carta; ve lo que es VERDAD de su figura
-     · «Jeg gætter»      → colores + adjetivos + galería de figuras
-   Las pistas de cada figura salen SOLO del vocabulario de la lista
-   (FARVER / ADJ / TING), para que quien tiene la figura pueda
-   contestar sí/no a cualquier pregunta. Sin imágenes de los personajes
-   (derechos de autor): cada figura lleva un emoji genérico. */
-.qe-wrap{max-width:980px;margin:0 auto;padding:1.4rem 1.1rem 7.5rem;color:var(--text);line-height:1.5}
-.qe-head{text-align:center;padding:.4rem 0 0}
-.qe-head h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,8vw,3.6rem);margin:0;color:var(--text-strong)}
+   «Klassekamp» es el único modo con conexión: salas en directo tipo Kahoot
+   por Supabase Realtime (solo «broadcast», no se guarda nada), igual que
+   Pinturillo. supabase-js se carga solo al entrar en ese modo.
+   Las otras tres formas de jugar van sin conexión entre aparatos:
+     · «Spil alene»      → el móvil tiene la figura y contesta en español
+     · «Jeg har figuren» → un alumno elige carta y ve la respuesta exacta
+                           a cada pregunta
+     · «Jeg gætter»      → tablero con fotos; pregunta, marca Sí/No y
+                           las que no encajan se van
+   REGLA DE ORO: lo que es verdad de cada figura son solo HECHOS que se
+   ven en la carta (foto, bandera, icono del oficio) — nada opinable como
+   «simpático» o «gordo». Y cada figura tiene una combinación ÚNICA de
+   respuestas: el script lo comprueba al arrancar (console.warn si no).
+   Fotos: personas reales, licencia libre de Wikimedia Commons, en
+   assets/img/quien/. Los créditos van al pie porque la licencia lo exige.
+   Nada de dibujos animados: sus imágenes tienen derechos de autor. */
+.qe-wrap{max-width:980px;margin:0 auto;padding:1.2rem 1rem 8rem;color:var(--text);line-height:1.5}
+.qe-head{text-align:center;padding:.2rem 0 0}
+.qe-head h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,8vw,3.4rem);margin:0;color:var(--text-strong)}
 .qe-head h1 span{font-style:italic;background:linear-gradient(90deg,var(--glow),var(--glow2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.qe-head p{color:var(--text-dim);margin:.2rem 0 0}
-.qe-wrap h2{font-family:'Playfair Display',serif;font-size:1.55rem;margin:0 0 .6rem;color:var(--text-strong)}
-.qe-wrap h3{margin:0 0 .5rem;font-size:1.05rem;color:var(--text-strong)}
-.qe-wrap button{font:inherit;cursor:pointer;border:1px solid var(--glass-border);background:var(--glass);color:var(--text);
-  padding:.55rem 1rem;border-radius:14px;font-weight:600;transition:all .2s ease}
-.qe-wrap button:hover{border-color:var(--glass-border-hover);transform:translateY(-2px)}
+.qe-head p{color:var(--text-dim);margin:.1rem 0 0}
+.qe-wrap h2,.panel h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin:0 0 .6rem;color:var(--text-strong)}
+.qe-wrap h3,.panel h3{margin:0 0 .45rem;font-size:1rem;color:var(--text-strong)}
+.qe-wrap button,.panel button{font:inherit;cursor:pointer;border:1px solid var(--glass-border);background:var(--glass);color:var(--text);
+  padding:.55rem 1rem;border-radius:14px;font-weight:600;transition:transform .2s ease,border-color .2s ease}
+.qe-wrap button:hover,.panel button:hover{border-color:var(--glass-border-hover);transform:translateY(-2px)}
 .btn-main{border:none!important;color:#04201a!important;background:linear-gradient(135deg,var(--glow),var(--glow2))!important}
 [data-theme="light"] .btn-main{color:#fff!important}
 .screen[hidden],#har-pick[hidden],#har-fig[hidden]{display:none}
-.bar{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:1.2rem 0 1rem}
+.bar{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:1rem 0 .8rem}
 .es{color:var(--glow);font-weight:700}
 .box{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1rem}
+.note{font-size:.92rem;color:var(--text-dim);margin:.6rem 0 0}
+.note b{color:var(--text-strong)}
+:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
 
-/* Inicio: elegir papel */
-.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1.4rem}
-.rol{text-align:left;padding:1.5rem 1.3rem!important;border-radius:var(--r)!important}
-.rol .ico{font-size:2.4rem;line-height:1}
-.rol b{display:block;font-size:1.3rem;color:var(--text-strong);margin:.5rem 0 .2rem}
-.rol span{font-size:.95rem;color:var(--text-dim);font-weight:500}
-.regler{list-style:none;padding:0;margin:1.4rem 0 0;display:grid;gap:.5rem}
-.regler li{display:flex;gap:.7rem;align-items:flex-start;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:.7rem .9rem}
-.regler .n{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800;font-size:.9rem;
-  background:linear-gradient(135deg,var(--glow),var(--glow2));color:#04201a}
+/* Inicio */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin-top:1.2rem}
+.rol{text-align:left;padding:1.2rem 1.2rem!important;border-radius:var(--r)!important}
+.rol .ico{font-size:2.2rem;line-height:1;display:inline-block;animation:bob 2.6s ease-in-out infinite}
+.rol:nth-child(2) .ico{animation-delay:.4s}.rol:nth-child(3) .ico{animation-delay:.8s}.rol:nth-child(4) .ico{animation-delay:1.2s}
+.rol b{display:block;font-size:1.25rem;color:var(--text-strong);margin:.4rem 0 .15rem}
+.rol span{font-size:.93rem;color:var(--text-dim);font-weight:500}
+.rol.top{border-color:var(--glow)!important}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin-top:1.2rem}
+.how div{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:.7rem .9rem}
+.how b{display:block;color:var(--text-strong)}
+
+/* Foto + datos de la carta */
+.foto{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;object-position:50% 18%;border-radius:12px;background:var(--glass)}
+.fig{border:1px solid var(--glass-border);border-radius:16px;padding:.3rem .3rem .45rem;text-align:center;cursor:pointer;
+  background:var(--glass);position:relative;-webkit-user-select:none;user-select:none;
+  transition:transform .25s ease,opacity .45s ease,filter .45s ease,border-color .2s ease;animation:deal .45s ease backwards}
+.fig:hover{transform:translateY(-4px) rotate(-1.5deg);border-color:var(--glow)}
+.fig b{display:block;color:var(--text-strong);font-size:.74rem;overflow-wrap:anywhere;margin-top:.25rem;line-height:1.15;min-height:2.3em}
+.tags{display:block;font-size:.95rem;line-height:1.2;letter-spacing:.1em}
+.fig.ud{opacity:.55;filter:grayscale(1)}
+.fig.ud:hover{opacity:.9;filter:none}
+.fig.ud::after{content:'✕';position:absolute;top:2px;right:4px;font-size:1rem;color:var(--glow3);font-weight:800}
+.fig.ud.man{border-style:dashed;border-color:var(--glow4)}
+.fig.ud.man::after{content:'↩';color:var(--glow4)}
+#outzone{margin-top:1.4rem;padding-top:1rem;border-top:1px dashed var(--glass-border-hover)}
+#outzone h3 small{font-weight:500;color:var(--text-dim)}
+#outboard{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
+#outboard .fig b{font-size:.62rem;min-height:0}
+#outboard .tags{display:none}
+#toast{position:fixed;left:50%;bottom:5.2rem;transform:translateX(-50%);z-index:1002;max-width:min(92vw,420px);text-align:center;
+  background:var(--deep2);color:var(--text);border:1px solid var(--glow);border-radius:16px;padding:.6rem .9rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);animation:pop .25s ease}
+#toast[hidden]{display:none}
+[data-theme="light"] #toast{background:#fff}
+#toast b{color:var(--text-strong)}
+.kode{font:inherit;font-size:1.8rem;font-weight:800;text-align:center;width:9rem;margin-top:.8rem;padding:.5rem;border-radius:14px;
+  border:1px solid var(--glass-border-hover);background:var(--glass);color:var(--text-strong)}
+.stars{animation:pop .5s ease .2s backwards}
+.kode.navn{width:100%;font-size:1.3rem;margin-top:.5rem}
+.hostcode{text-align:center}
+.hostcode small{display:block;color:var(--text-dim);font-size:1rem}
+.hostcode b{display:block;color:var(--text-strong);font-size:clamp(1.1rem,3vw,1.7rem)}
+.kode-big{font-size:clamp(4rem,17vw,9rem);font-weight:800;letter-spacing:.12em;line-height:1.1;
+  background:linear-gradient(90deg,var(--glow),var(--glow2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.teams{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.qe-wrap .team{padding:.5rem 1rem;border-radius:999px;font-weight:700;font-size:1.1rem;color:var(--text-strong);
+  background:var(--glass);border:1px solid var(--glass-border-hover);animation:pop .3s ease}
+.team.ok{background:rgba(94,234,212,.15);border-color:rgba(94,234,212,.5)}
+.team.wait{opacity:.55}
+.qe-wrap button.big{font-size:1.3rem;padding:.9rem 1.8rem;border-radius:999px}
+.qe-wrap button:disabled{opacity:.45;cursor:default;transform:none}
+.ranks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.rank{display:grid;grid-template-columns:2.4rem 1fr auto;gap:.5rem;align-items:center;padding:.5rem .8rem;margin-bottom:.35rem;
+  border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);font-size:1.1rem;animation:deal .4s ease backwards}
+.rank b{color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank.top{border-color:rgba(94,234,212,.5);background:rgba(94,234,212,.1)}
+#wait-body h2{margin:.3rem 0}
+.fig.poof{animation:poof .6s ease}
+.fig.last{border-color:var(--glow);box-shadow:0 0 0 3px rgba(94,234,212,.35);animation:bob 1.2s ease-in-out infinite}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:.4rem}
+@media(min-width:700px){.board{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:.6rem}.fig b{font-size:.9rem}}
+
+/* La figura misteriosa + bocadillo */
+.myst{display:flex;gap:.8rem;align-items:center;margin:.2rem 0 .8rem}
+.myst .q{flex:none;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-size:2.2rem;font-weight:800;
+  color:#04201a;background:linear-gradient(135deg,var(--glow),var(--glow2));animation:wob 2.4s ease-in-out infinite}
+.bub{flex:1;background:var(--glass);border:1px solid var(--glass-border-hover);border-radius:18px 18px 18px 4px;padding:.6rem .85rem;min-height:64px;
+  display:flex;flex-direction:column;justify-content:center}
+.bub b{color:var(--text-strong);font-size:1.12rem;line-height:1.25}
+.bub small{color:var(--text-dim)}
+.stats{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-bottom:.7rem}
+.stat{padding:.3rem .7rem;border-radius:999px;background:var(--glass);border:1px solid var(--glass-border);font-weight:700;color:var(--text-strong);font-size:.92rem}
+.askbar{position:sticky;bottom:.9rem;z-index:5;display:flex;justify-content:center;margin-top:1rem;padding-right:64px;pointer-events:none}
+.askbar button{pointer-events:auto;font-size:1.1rem;padding:.85rem 1.4rem!important;border-radius:999px!important;box-shadow:0 8px 28px rgba(0,0,0,.35)}
 
 /* Jeg har figuren */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:520px;margin:.8rem auto 0}
 .card{aspect-ratio:3/4;border-radius:18px;border:1px solid var(--glass-border-hover);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;cursor:pointer;
+  align-items:center;justify-content:center;cursor:pointer;animation:deal .45s ease backwards;
   background:repeating-linear-gradient(45deg,rgba(129,140,248,.12) 0 10px,rgba(94,234,212,.07) 10px 20px);transition:transform .2s}
-.card:focus-visible,.fig:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
-.card:hover{transform:translateY(-3px);border-color:var(--glow)}
+.card:hover{transform:translateY(-4px) rotate(2deg);border-color:var(--glow)}
 .card .q{font-size:clamp(2.2rem,9vw,3.4rem);font-weight:800;color:var(--glow4);line-height:1}
 .card .num{font-weight:700;color:var(--text-dim)}
 .figur{text-align:center}
-.figur .emo{font-size:4.5rem;line-height:1}
-.figur .name{font-family:'Playfair Display',serif;font-size:2.3rem;color:var(--text-strong);margin:.3rem 0 0;line-height:1.1}
-.figur .dk{color:var(--text-dim)}
-.sandt{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin:.4rem 0}
-.chip{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .75rem;border-radius:999px;font-weight:700;
-  background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.35);color:var(--text-strong);font-size:1.05rem}
-.chip i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
-.chip small{font-weight:500;color:var(--glow);font-size:.82rem}
-.svar{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.4rem}
-.svar div{border-radius:16px;padding:.8rem;text-align:center;font-weight:700;color:var(--text-strong)}
-.svar .ja{background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.35)}
-.svar .nej{background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.35)}
-.svar small{display:block;font-weight:500;color:var(--text-dim);font-size:.85rem}
+.figur .foto{width:min(210px,62%);margin:0 auto;border-radius:22px;border:1px solid var(--glass-border-hover)}
+.figur .name{font-family:'Playfair Display',serif;font-size:2rem;color:var(--text-strong);margin:.3rem 0 0;line-height:1.1}
+.svarliste{width:100%;border-collapse:separate;border-spacing:0 .3rem}
+.svarliste td{padding:.45rem .6rem;vertical-align:middle}
+.svarliste td:first-child{color:var(--text-dim);border-radius:12px 0 0 12px;width:46%}
+.svarliste td:last-child{font-weight:700;color:var(--text-strong);border-radius:0 12px 12px 0}
+.svarliste tr.ja td{background:rgba(94,234,212,.13)}
+.svarliste tr.nej td{background:rgba(244,114,182,.10)}
+.svarliste small{display:block;font-weight:500;color:var(--text-dim);font-size:.78rem}
 
-/* Jeg gætter */
-.farver{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem}
-.farve{display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border)}
-.farve i{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,.2)}
-.farve b{display:block;color:var(--text-strong);line-height:1.15}
-.farve small{color:var(--glow);font-weight:600}
-.adj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
-table{width:100%;border-collapse:collapse}
-td{padding:.32rem .3rem;border-bottom:1px solid var(--glass-border)}
-td:first-child{font-weight:600;color:var(--text-strong)}
-td:last-child{color:var(--glow);text-align:right}
-.note{font-size:.92rem;color:var(--text-dim);margin:.6rem 0 0}
-.note b{color:var(--text-strong)}
-
-/* Preguntas guiadas */
-.ask{cursor:pointer;transition:all .15s}
-.farve.ask:hover{border-color:var(--glow);transform:translateY(-2px)}
-tr.ask:hover td{background:rgba(94,234,212,.08)}
-.ask:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
-.chip.no{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35)}
-.qe-wrap button.chip{font:inherit;font-weight:700;cursor:pointer;padding:.4rem .75rem;border-radius:999px;
-  background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.35);color:var(--text-strong)}
-.qe-wrap button.chip.no{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35)}
-.fig.ud{order:1}  /* las que quedan, primero */
-.svar button{font:inherit;font-size:1.3rem;font-weight:800;padding:.9rem;border-radius:16px;cursor:pointer;color:var(--text-strong)}
-.svar button.ja{background:rgba(94,234,212,.15);border:1px solid rgba(94,234,212,.45)}
-.svar button.nej{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.45)}
-
-/* Galería de figuras */
-.overlay{position:fixed;inset:0;z-index:1000;background:rgba(5,8,15,.6);backdrop-filter:blur(6px);
-  display:flex;align-items:center;justify-content:center;padding:1rem}
+/* Ventanas */
+.overlay{position:fixed;inset:0;z-index:1000;background:rgba(5,8,15,.62);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:.8rem}
 .overlay[hidden]{display:none}
-.panel{width:min(760px,100%);max-height:88vh;overflow:auto;background:var(--deep2);border:1px solid var(--glass-border-hover);
-  border-radius:var(--r-lg);padding:1.3rem;color:var(--text)}
+.panel{width:min(620px,100%);max-height:90vh;overflow:auto;background:var(--deep2);border:1px solid var(--glass-border-hover);
+  border-radius:var(--r-lg);padding:1.1rem;color:var(--text);animation:pop .3s ease}
 [data-theme="light"] .panel{background:#fff}
-.panel h2{font-family:'Playfair Display',serif;color:var(--text-strong)}
-.panel button{font:inherit;cursor:pointer;border:1px solid var(--glass-border);background:var(--glass);color:var(--text);padding:.5rem .9rem;border-radius:14px;font-weight:600}
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.6rem;margin:.8rem 0}
-.fig{border:1px solid var(--glass-border);border-radius:16px;padding:.7rem .4rem;text-align:center;cursor:pointer;
-  background:var(--glass);transition:all .2s;position:relative;-webkit-user-select:none;user-select:none}
-.fig .emo{font-size:2.2rem;line-height:1}
-.fig b{display:block;color:var(--text-strong);font-size:.92rem;margin-top:.3rem;line-height:1.15}
-.fig small{color:var(--text-dim);font-size:.72rem}
-.fig.ud{opacity:.35}
-.fig.ud::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-size:3rem;color:var(--glow3);font-weight:800}
+.panel.small{max-width:420px;text-align:center}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.4rem;margin-bottom:.9rem}
+.formel{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem}
+.formel div{border:1px dashed var(--glass-border-hover);border-radius:14px;padding:.5rem .6rem;text-align:center}
+.formel b{display:block;font-size:1.15rem;color:var(--text-strong)}
+.formel small{color:var(--text-dim)}
+.panel i{font-style:normal}
+.qb b i,.formel b i,.bigq i{font-weight:500;color:var(--text-dim)}
+.qb.best{border-color:var(--glow);box-shadow:0 0 0 2px rgba(94,234,212,.3)}
+.qb.nul{opacity:.5}
+.qb .tip{display:block;font-size:.74rem;font-weight:700;color:var(--glow4)}
+.qb .tip.dim{color:var(--text-dim);font-weight:500}
+.panel button.qb{display:flex;align-items:center;gap:.55rem;text-align:left;padding:.5rem .65rem;border-radius:14px}
+.qb .i{font-size:1.5rem;flex:none;width:1.7rem;text-align:center}
+.qb b{display:block;color:var(--text-strong);line-height:1.15}
+.qb small{display:block;color:var(--text-dim);font-weight:500;font-size:.82rem}
+.qb.yes{background:rgba(94,234,212,.16);border-color:rgba(94,234,212,.5)}
+.qb.no{background:rgba(244,114,182,.13);border-color:rgba(244,114,182,.45)}
+.qb:disabled{cursor:default;opacity:.75;transform:none}
+.bigq{font-size:1.9rem;font-weight:800;color:var(--text-strong);margin:.3rem 0 0;line-height:1.2}
+.bigda{color:var(--glow);font-weight:600}
+.svar{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem}
+.panel .svar button{font-size:1.25rem;font-weight:800;padding:.85rem;border-radius:16px;color:var(--text-strong)}
+.svar small{display:block;font-weight:500;color:var(--text-dim);font-size:.85rem}
+.panel button.ja{background:rgba(94,234,212,.15);border-color:rgba(94,234,212,.45)}
+.panel button.nej{background:rgba(244,114,182,.15);border-color:rgba(244,114,182,.45)}
+.reply{margin:.9rem 0 .2rem;padding:.8rem;border-radius:16px;font-size:1.4rem;font-weight:800;color:var(--text-strong);animation:pop .35s ease}
+.reply.ja{background:rgba(94,234,212,.15)}.reply.nej{background:rgba(244,114,182,.14)}
+.reply small{display:block;font-size:.9rem;font-weight:600;color:var(--text-dim)}
+.winfoto{width:min(190px,60%);margin:0 auto;border-radius:24px;animation:bob 1.6s ease-in-out infinite}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1001}
+.confetti span{position:absolute;top:-2rem;font-size:1.6rem;animation:fall linear forwards}
+.credits{margin-top:2.2rem;font-size:.78rem;color:var(--text-dim)}
+.credits summary{cursor:pointer;font-weight:600}
+.credits ul{margin:.5rem 0 0;padding-left:1.1rem;columns:2 240px}
+.credits a{color:inherit}
+
 @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
-.pop{animation:pop .3s ease}
+@keyframes deal{from{transform:translateY(18px) scale(.85) rotate(-6deg);opacity:0}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.06)}}
+@keyframes poof{0%{transform:scale(1) rotate(0)}40%{transform:scale(1.12) rotate(8deg)}100%{transform:scale(.92) rotate(0)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media(prefers-reduced-motion:reduce){.qe-wrap *,.panel,.panel *{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -135,116 +210,113 @@ tr.ask:hover td{background:rgba(94,234,212,.08)}
 
 <header class="qe-head">
   <h1>¿Quién <span>es</span>?</h1>
-  <p>Gæt tegnefilmsfiguren</p>
+  <p>Gæt den kendte person</p>
 </header>
 
 <!-- ═════ INICIO ═════ -->
 <div class="screen" id="s-start">
   <div class="roles">
-    <button class="rol" onclick="show('s-har')">
-      <div class="ico">🤫</div>
-      <b>Jeg har figuren</b>
-      <span>Du vælger et kort i hemmelighed. De andre skal gætte, hvem du er. Du svarer kun ja eller nej.</span>
+    <button class="rol top" onclick="start('solo')">
+      <div class="ico">📱</div>
+      <b>Spil alene</b>
+      <span>Mobilen tænker på en kendt. Spørg på spansk, og find ud af hvem — med så få spørgsmål som muligt.</span>
     </button>
-    <button class="rol" onclick="show('s-gaet')">
+    <button class="rol" onclick="start('klasse')">
       <div class="ico">🕵️</div>
       <b>Jeg gætter</b>
-      <span>Du stiller spørgsmål på spansk og finder ud af, hvem figuren er.</span>
+      <span>En kammerat har personen. Du spørger højt på spansk og trykker på svaret.</span>
+    </button>
+    <button class="rol" onclick="askLive()">
+      <div class="ico">🏁</div>
+      <b>Klassekamp</b>
+      <span>Som Kahoot: hele klassen gætter den samme person på samme tid. Tavlen viser, hvem der vinder.</span>
+    </button>
+    <button class="rol" onclick="show('s-har')">
+      <div class="ico">🤫</div>
+      <b>Jeg har personen</b>
+      <span>Du vælger et hemmeligt kort. Kortet viser præcis, hvad du skal svare.</span>
     </button>
   </div>
-  <ol class="regler">
-    <li><span class="n">1</span><span>Én elev har figuren. Resten af klassen gætter.</span></li>
-    <li><span class="n">2</span><span>Spørg: <span class="es">¿Eres …?</span> (= Er du …?) — fx <span class="es">¿Eres amarillo?</span></span></li>
-    <li><span class="n">3</span><span>Svar: <span class="es">Sí, soy …</span> (ja) eller <span class="es">No, no soy …</span> (nej). Listen på dit kort hjælper dig.</span></li>
-    <li><span class="n">4</span><span>Gæt: <span class="es">¿Eres Shrek?</span> Den, der gætter rigtigt, har figuren næste gang.</span></li>
-  </ol>
+  <div class="how">
+    <div><b>1 · Spørg</b><span class="es">¿Es futbolista?</span><br>Er personen fodboldspiller?</div>
+    <div><b>2 · Svar</b><span class="es">Sí, es …</span> = ja<br><span class="es">No, no es …</span> = nej</div>
+    <div><b>3 · Gæt</b><span class="es">¿Es Messi?</span><br>Tryk på billedet for at gætte.</div>
+  </div>
+  <p class="note" style="text-align:center">Tryk på et billede for at <b>gætte</b> eller <b>fjerne</b> personen. Alt, du kan spørge om, står på kortet: 🇩🇰 land · ⚽ job · og det, du kan se på billedet.</p>
 </div>
 
-<!-- ═════ JEG HAR FIGUREN ═════ -->
+<!-- ═════ JEG HAR PERSONEN ═════ -->
 <div class="screen" id="s-har" hidden>
   <div class="bar">
     <button onclick="show('s-start')">← Tilbage</button>
     <button onclick="deal()">🔀 Nye kort</button>
   </div>
   <div id="har-pick">
-    <h2>Vælg et kort</h2>
-    <p class="note" style="margin-top:0">Vis det ikke til de andre! 🤫</p>
-    <div class="cards" id="cards" style="margin-top:.8rem"></div>
+    <h2 style="text-align:center">Vælg et kort</h2>
+    <p class="note" style="margin-top:0;text-align:center">Vis det ikke til de andre! 🤫</p>
+    <div class="cards" id="cards"></div>
   </div>
   <div id="har-fig" hidden></div>
 </div>
 
-<!-- ═════ JEG GÆTTER ═════ -->
+<!-- ═════ GÆT (solo + klasse) ═════ -->
 <div class="screen" id="s-gaet" hidden>
   <div class="bar">
     <button onclick="show('s-start')">← Tilbage</button>
-    <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
+    <button id="btn-ny" onclick="newRound()">↺ Ny runde</button>
   </div>
-
-  <div class="box">
-    <h3>🧭 Sådan gør I</h3>
-    <ol class="regler" style="margin:.2rem 0 0">
-      <li><span class="n">1</span><span><b>Tryk på et ord</b> herunder. Så ser du spørgsmålet på spansk.</span></li>
-      <li><span class="n">2</span><span><b>Læs spørgsmålet højt</b> — fx <span class="es">¿Eres amarillo?</span></span></li>
-      <li><span class="n">3</span><span>Tryk på svaret: <b>Sí</b> eller <b>No</b>. Figurerne, der ikke passer, bliver streget ud.</span></li>
-      <li><span class="n">4</span><span>Er der kun én tilbage? Spørg: <span class="es">¿Eres …?</span> med navnet.</span></li>
-    </ol>
-    <p class="note">💡 Godt første spørgsmål: <span class="es">¿Eres un animal?</span> eller <span class="es">¿Eres un chico?</span></p>
+  <div class="myst">
+    <div class="q" aria-hidden="true">?</div>
+    <div class="bub" id="bub" aria-live="polite"></div>
   </div>
-
-  <div class="box" id="status">
-    <h3>📝 Det ved vi</h3>
-    <div id="viden"></div>
-    <p id="maybe" style="margin:.6rem 0 0"></p>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
-      <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
-      <button onclick="resetGal()">↺ Ny runde</button>
-    </div>
+  <div class="stats">
+    <span class="stat">👥 <span id="n-left">36</span> tilbage</span>
+    <span class="stat">❓ <span id="n-q">0</span> spørgsmål</span>
+    <span class="stat" id="rekord" hidden></span>
   </div>
-
-  <h2>🎨 Farver <small style="font-size:.9rem;color:var(--text-dim);font-family:Inter,sans-serif">— tryk for at spørge</small></h2>
-  <div class="farver" id="farver"></div>
-
-  <h2 style="margin-top:1.6rem">👤 Hvordan er figuren?</h2>
-  <div class="adj-grid">
-    <div class="box"><h3>Størrelse og krop</h3><table id="adj-krop"></table></div>
-    <div class="box"><h3>Personlighed</h3><table id="adj-pers"></table></div>
-    <div class="box"><h3>Hvad er det?</h3><table id="ting"></table></div>
+  <div class="board" id="board"></div>
+  <div id="outzone" hidden>
+    <h3>🗑 Fjernet (<span id="n-out">0</span>) <small>— tryk på et kort for at se hvorfor eller hente det tilbage</small></h3>
+    <div class="board" id="outboard"></div>
   </div>
-  <p class="note" style="text-align:center">Tryk på et ord for at spørge 👆</p>
-
-  <div style="text-align:center;margin-top:.6rem">
-    <button class="btn-main" onclick="openGal()">👀 Se figurerne (<span class="left-n">18</span>)</button>
-  </div>
+  <div class="askbar"><button class="btn-main" onclick="openSheet()">❓ Stil et spørgsmål</button></div>
 </div>
 
-<!-- Pregunta guiada -->
-<div class="overlay" id="ask" hidden role="dialog" aria-modal="true" aria-label="Spørg">
-  <div class="panel pop" style="max-width:440px;text-align:center">
-    <p class="note" style="margin:0">Læs højt 🗣️</p>
-    <div id="ask-q" style="font-size:2rem;font-weight:800;color:var(--text-strong);margin:.3rem 0 0;line-height:1.2"></div>
-    <div id="ask-da" style="color:var(--glow);font-weight:600"></div>
-    <p id="ask-hint" class="note"></p>
-    <p style="margin:1rem 0 .5rem;font-weight:700;color:var(--text-strong)">Hvad svarede han/hun?</p>
-    <div class="svar">
-      <button class="ja" onclick="answer(true)">✅ Sí<small>Ja</small></button>
-      <button class="nej" onclick="answer(false)">❌ No<small>Nej</small></button>
-    </div>
-    <button style="margin-top:.8rem" onclick="closeAsk()">Annuller</button>
-  </div>
+<!-- ═════ KLASSEKAMP: el alumno espera ═════ -->
+<div class="screen" id="s-wait" hidden>
+  <div class="bar"><button onclick="show('s-start')">← Forlad rummet</button></div>
+  <div class="box" id="wait-body" style="text-align:center"></div>
 </div>
 
-<!-- Galería -->
-<div class="overlay" id="gal" hidden role="dialog" aria-modal="true" aria-label="Figurerne">
-  <div class="panel pop">
+<!-- ═════ KLASSEKAMP: pantalla de la profesora (proyector) ═════ -->
+<div class="screen" id="s-host" hidden>
+  <div class="bar"><button onclick="if(confirm('Luk rummet for alle?')) show('s-start')">✕ Luk rummet</button></div>
+  <div id="host-body"></div>
+</div>
+
+<details class="credits"><summary>📷 Fotos: Wikimedia Commons</summary><ul id="credits"></ul></details>
+
+<div id="toast" hidden role="status"></div>
+
+<!-- Elegir pregunta -->
+<div class="overlay" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Spørgsmål">
+  <div class="panel">
     <div class="bar" style="margin-top:0">
-      <h2 style="margin:0">Figurerne</h2>
-      <button onclick="closeGal()">✕ Luk</button>
+      <h2 style="margin:0">Hvad vil du spørge om?</h2>
+      <button onclick="closeAll()">✕ Luk</button>
     </div>
-    <p class="note" style="margin-top:0">Figurerne, der ikke passer til jeres svar, er streget ud. Du kan også trykke selv. <b><span class="left-n">18</span> tilbage.</b></p>
-    <div class="gal" id="gal-grid"></div>
-    <div style="text-align:center"><button onclick="resetGal()">↺ Ny runde</button></div>
+    <div id="sheet-body"></div>
   </div>
+</div>
+
+<!-- Pregunta + respuesta -->
+<div class="overlay" id="ask" hidden role="dialog" aria-modal="true" aria-label="Spørg">
+  <div class="panel small" id="ask-body"></div>
+</div>
+
+<!-- Victoria -->
+<div class="overlay" id="win" hidden role="dialog" aria-modal="true" aria-label="Rigtigt">
+  <div class="panel small" id="win-body"></div>
 </div>
 
         </div>
@@ -271,232 +343,617 @@ tr.ask:hover td{background:rgba(94,234,212,.08)}
 
   <script src="mini.js"></script>
 <script>
-/* ── Vocabulario (A1–A2). [clave, masculino, femenino, danés, (color)] ── */
-const FARVER = [
-  ["amarillo","amarillo","amarilla","gul","#f7d038"],
-  ["verde","verde","verde","grøn","#3cb44b"],
-  ["azul","azul","azul","blå","#3d7be0"],
-  ["rojo","rojo","roja","rød","#e23b3b"],
-  ["rosa","rosa","rosa","lyserød","#f49ac2"],
-  ["naranja","naranja","naranja","orange","#f58231"],
-  ["morado","morado","morada","lilla","#9b59b6"],
-  ["blanco","blanco","blanca","hvid","#ffffff"],
-  ["negro","negro","negra","sort","#111111"]
+/* ── Preguntas. clave: [masculino, femenino, danés, verbo, icono] ──
+   Todas son hechos: se ven en la foto o están en la carta (bandera, oficio). */
+const V = {
+  chico:      ["un chico","un chico","en dreng","ser","👦"],
+  chica:      ["una chica","una chica","en pige","ser","👧"],
+  deportista: ["deportista","deportista","sportsudøver","ser","🏅"],
+  futbolista: ["futbolista","futbolista","fodboldspiller","ser","⚽"],
+  tenista:    ["tenista","tenista","tennisspiller","ser","🎾"],
+  cantante:   ["cantante","cantante","sanger","ser","🎤"],
+  actor:      ["actor","actriz","skuespiller","ser","🎬"],
+  rey:        ["rey","reina","konge / dronning","ser","👑"],
+  youtuber:   ["youtuber","youtuber","youtuber","ser","▶️"],
+  danes:      ["danés","danesa","fra Danmark","ser","🇩🇰"],
+  espanol:    ["español","española","fra Spanien","ser","🇪🇸"],
+  americano:  ["americano","americana","fra USA","ser","🇺🇸"],
+  rubio:      ["rubio","rubia","lyshåret","ser","👱"],
+  moreno:     ["moreno","morena","mørkhåret","ser","🟤"],
+  barba:      ["barba","barba","skæg","tener","🧔"]
+};
+const GROUPS = [
+  ["Dreng eller pige?", ["chico","chica"]],
+  ["Hvad laver personen?", ["deportista","futbolista","tenista","cantante","actor","rey","youtuber"]],
+  ["Hvor kommer personen fra?", ["danes","espanol","americano"]],
+  ["Hvad kan du se på billedet?", ["rubio","moreno","barba"]]
 ];
-const KROP = [
-  ["grande","grande","grande","stor"],
-  ["pequeno","pequeño","pequeña","lille"],
-  ["alto","alto","alta","høj"],
-  ["bajo","bajo","baja","lav"],
-  ["gordo","gordo","gorda","tyk"],
-  ["delgado","delgado","delgada","tynd"],
-  ["rubio","rubio","rubia","lyshåret"],
-  ["moreno","moreno","morena","mørkhåret"],
-  ["guapo","guapo","guapa","flot / smuk"],
-  ["fuerte","fuerte","fuerte","stærk"],
-  ["rapido","rápido","rápida","hurtig"]
-];
-const PERS = [
-  ["simpatico","simpático","simpática","sød / venlig"],
-  ["divertido","divertido","divertida","sjov"],
-  ["inteligente","inteligente","inteligente","klog"],
-  ["perezoso","perezoso","perezosa","doven"],
-  ["bueno","bueno","buena","god"],
-  ["malo","malo","mala","ond"]
-];
-const TING = [
-  ["chico","un chico","un chico","en dreng (han)"],
-  ["chica","una chica","una chica","en pige (hun)"],
-  ["animal","un animal","un animal","et dyr"],
-  ["princesa","una princesa","una princesa","en prinsesse"]
-];
-const VOCAB = {};
-[...FARVER,...KROP,...PERS,...TING].forEach(v=>VOCAB[v[0]]=v);
+const KEYS = GROUPS.flatMap(g=>g[1]);
 
-/* ── Figuras: solo con palabras de la lista de arriba ── */
+/* ── Personas. id = nombre de la foto · f = bandera · t = lo que es verdad.
+   Un futbolista o tenista es también «deportista». Pelo gris, pelirrojo o
+   sin pelo: ni rubio ni moreno. «barba» solo si se ve clara en la foto. ── */
+const FUT=["deportista","futbolista"], TEN=["deportista","tenista"];
 const PERSONAJES = [
-  {n:"Bob Esponja", da:"SvampeBob", e:"🧽", g:"el", t:["amarillo","pequeno","divertido","simpatico","bueno"]},
-  {n:"Patricio", da:"Patrick", e:"⭐", g:"el", t:["rosa","grande","gordo","divertido","animal"]},
-  {n:"Shrek", e:"🧌", g:"el", t:["verde","grande","gordo","fuerte"]},
-  {n:"Elsa", e:"❄️", g:"ella", t:["rubio","alto","delgado","guapo","azul","princesa"]},
-  {n:"Olaf", e:"⛄", g:"el", t:["blanco","pequeno","divertido","simpatico","bueno"]},
-  {n:"Pikachu", e:"⚡", g:"el", t:["amarillo","pequeno","rapido","animal"]},
-  {n:"Mario", e:"🍄", g:"el", t:["rojo","azul","bajo","moreno","bueno"]},
-  {n:"Homer Simpson", e:"🍩", g:"el", t:["amarillo","gordo","alto","perezoso","divertido"]},
-  {n:"Lisa Simpson", e:"📚", g:"ella", t:["amarillo","rojo","pequeno","inteligente"]},
-  {n:"Peppa Pig", da:"Gurli Gris", e:"🐷", g:"ella", t:["rosa","rojo","pequeno","simpatico","animal"]},
-  {n:"Mickey Mouse", e:"🐭", g:"el", t:["negro","pequeno","simpatico","bueno","animal"]},
-  {n:"Stitch", e:"👽", g:"el", t:["azul","pequeno","rapido","divertido"]},
-  {n:"Moana", da:"Vaiana", e:"🌊", g:"ella", t:["moreno","fuerte","simpatico"]},
-  {n:"Rapunzel", e:"👸", g:"ella", t:["rubio","delgado","guapo","morado","princesa"]},
-  {n:"Garfield", e:"🐱", g:"el", t:["naranja","gordo","perezoso","animal"]},
-  {n:"Pato Donald", q:"el Pato Donald", da:"Anders And", e:"🦆", g:"el", t:["blanco","azul","divertido","animal"]},
-  {n:"Dory", da:"Doris", e:"🐟", g:"ella", t:["azul","amarillo","pequeno","divertido","animal"]},
-  {n:"El Grinch", q:"el Grinch", da:"Grinchen", e:"🎄", g:"el", t:["verde","alto","delgado","malo"]}
+  {id:"eriksen", n:"Christian Eriksen", g:"el", f:"🇩🇰", t:[...FUT,"danes","rubio"]},
+  {id:"schmeichel", n:"Kasper Schmeichel", g:"el", f:"🇩🇰", t:[...FUT,"danes","rubio","barba"]},
+  {id:"harder", n:"Pernille Harder", g:"ella", f:"🇩🇰", t:[...FUT,"danes","rubio"]},
+  {id:"vingegaard", n:"Jonas Vingegaard", g:"el", f:"🇩🇰", t:["deportista","danes","rubio"]},
+  {id:"mikkelhansen", n:"Mikkel Hansen", g:"el", f:"🇩🇰", t:["deportista","danes","rubio","barba"]},
+  {id:"gidsel", n:"Mathias Gidsel", g:"el", f:"🇩🇰", t:["deportista","danes","moreno"]},
+  {id:"rune", n:"Holger Rune", g:"el", f:"🇩🇰", t:[...TEN,"danes","rubio"]},
+  {id:"wozniacki", n:"Caroline Wozniacki", g:"ella", f:"🇩🇰", t:[...TEN,"danes","rubio"]},
+  {id:"frederik", n:"Kong Frederik", q:"el rey Frederik", g:"el", f:"🇩🇰", t:["rey","danes","barba"]},
+  {id:"mary", n:"Dronning Mary", q:"la reina Mary", g:"ella", f:"🇩🇰", t:["rey","danes","moreno"]},
+  {id:"margrethe", n:"Dronning Margrethe", q:"la reina Margrethe", g:"ella", f:"🇩🇰", t:["rey","danes"]},
+  {id:"mads", n:"Mads Mikkelsen", g:"el", f:"🇩🇰", t:["actor","danes"]},
+  {id:"coster", n:"Nikolaj Coster-Waldau", g:"el", f:"🇩🇰", t:["actor","danes","moreno","barba"]},
+  {id:"rahim", n:"Tobias Rahim", g:"el", f:"🇩🇰", t:["cantante","danes","moreno"]},
+  {id:"medina", n:"Medina", g:"ella", f:"🇩🇰", t:["cantante","danes","moreno"]},
+  {id:"messi", n:"Lionel Messi", g:"el", f:"🇦🇷", t:[...FUT,"moreno","barba"]},
+  {id:"ronaldo", n:"Cristiano Ronaldo", g:"el", f:"🇵🇹", t:[...FUT,"moreno"]},
+  {id:"haaland", n:"Erling Haaland", g:"el", f:"🇳🇴", t:[...FUT,"rubio"]},
+  {id:"yamal", n:"Lamine Yamal", g:"el", f:"🇪🇸", t:[...FUT,"espanol","moreno"]},
+  {id:"bonmati", n:"Aitana Bonmatí", g:"ella", f:"🇪🇸", t:[...FUT,"espanol","moreno"]},
+  {id:"alcaraz", n:"Carlos Alcaraz", g:"el", f:"🇪🇸", t:[...TEN,"espanol","moreno"]},
+  {id:"lebron", n:"LeBron James", g:"el", f:"🇺🇸", t:["deportista","americano","moreno","barba"]},
+  {id:"biles", n:"Simone Biles", g:"ella", f:"🇺🇸", t:["deportista","americano","moreno"]},
+  {id:"verstappen", n:"Max Verstappen", g:"el", f:"🇳🇱", t:["deportista","moreno"]},
+  {id:"swift", n:"Taylor Swift", g:"ella", f:"🇺🇸", t:["cantante","americano","rubio"]},
+  {id:"eilish", n:"Billie Eilish", g:"ella", f:"🇺🇸", t:["cantante","americano","moreno"]},
+  {id:"dualipa", n:"Dua Lipa", g:"ella", f:"🇬🇧", t:["cantante","moreno"]},
+  {id:"shakira", n:"Shakira", g:"ella", f:"🇨🇴", t:["cantante","rubio"]},
+  {id:"rosalia", n:"Rosalía", g:"ella", f:"🇪🇸", t:["cantante","espanol","moreno"]},
+  {id:"badbunny", n:"Bad Bunny", g:"el", f:"🇵🇷", t:["cantante","moreno","barba"]},
+  {id:"sheeran", n:"Ed Sheeran", g:"el", f:"🇬🇧", t:["cantante"]},
+  {id:"zendaya", n:"Zendaya", g:"ella", f:"🇺🇸", t:["actor","americano","moreno"]},
+  {id:"holland", n:"Tom Holland", g:"el", f:"🇬🇧", t:["actor","moreno"]},
+  {id:"watson", n:"Emma Watson", g:"ella", f:"🇬🇧", t:["actor","moreno"]},
+  {id:"therock", n:"The Rock", g:"el", f:"🇺🇸", t:["actor","americano"]},
+  {id:"mrbeast", n:"MrBeast", g:"el", f:"🇺🇸", t:["youtuber","americano","moreno","barba"]}
 ];
-/* Nombre dentro de una frase («¿Eres el Pato Donald?») */
-const nq = c => c.q || c.n;
-const word = (k,g)=> VOCAB[k][g==='ella'?2:1];
-/* Todo lo que es verdad de una figura: chico/chica (según g) + su lista */
-const traits = c => [c.g==='el'?'chico':'chica', ...c.t];
-const has = (c,k) => traits(c).includes(k);
-/* «¿Eres amarillo / amarilla?» — las dos formas si cambian */
-function forms(k){ const v=VOCAB[k]; return v[1]===v[2] ? v[1] : v[1]+' / '+v[2]; }
+/* Foto de cada persona: [archivo en Commons, autor, licencia] */
+const CRED = {"eriksen":["EriksenTottenham2016(cropped)_2.jpg","Дмитрий Голубович","CC BY-SA 3.0"],
+  "schmeichel":["Kasper_Schmeichel_Celtic-20240722_(cropped).jpg","Hameltion","CC BY-SA 4.0"],
+  "harder":["20170706_OEFB_AUT-DEN_Pernille_Harder_DSC_8228.jpg","Granada","CC BY-SA 4.0"],
+  "vingegaard":["David_Gaudu,_Tadej_Pogačar,_Jonas_Vingegaard,_2023_Paris-Nice_(52929456925)_(cropped2).jpg","Martino Photos","CC BY-SA 4.0"],
+  "mikkelhansen":["Mikkel_Hansen-20160416-PSG-TOULOUSE.JPG","Wenflou","CC0"],
+  "rune":["Rune_RG22_(4)_(52144534990).jpg","si.robi","CC BY-SA 2.0"],
+  "wozniacki":["Caroline_Wozniacki_(35449695422).jpg","Andrew Campbell","CC BY 2.0"],
+  "margrethe":["Drottning_Margrethe_av_Danmark.jpg","Johannes Jansson","CC BY 2.5 dk"],
+  "mads":["Mads_Mikkelsen_at_82nd_Venice_International_Film_Festival_(cropped2).jpg","LucaFazPhoto","CC BY-SA 4.0"],
+  "coster":["Nikolaj_Coster-Waldau-68363.jpg","Harald Krichel","CC BY-SA 3.0"],
+  "rahim":["Tobias_Rahim_2020.png","HEARTBEATS DK","CC BY 3.0"],
+  "gidsel":["2025-06-01_Mathias_Gidsel_by_mroptimax.jpg","Max Petershans","CC BY-SA 4.0"],
+  "ronaldo":["Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_(cropped).jpg","Bryan Berlin","CC BY-SA 4.0"],
+  "haaland":["Erling_Haaland_Morocco_v_Norway_7_June_2026-51.jpg","Bryan Berlin","CC BY-SA 4.0"],
+  "yamal":["Lamine_Yamal_France_v_Spain_7.24.26-142.jpg","Bryan Berlin","CC BY-SA 4.0"],
+  "bonmati":["25th_Laureus_World_Sports_Awards_-_240422_214032.jpg","Barcex","CC BY-SA 4.0"],
+  "eilish":["BillieEilishO2140725-39_-_54665577407_(cropped).jpg","Raph_PH","CC BY 4.0"],
+  "sheeran":["Ed_Sheeran_2022_(3x4_crop).jpg","Number 10","CC BY 2.0"],
+  "dualipa":["Dua_Lipa-69798_(cropped).jpg","Harald Krichel","CC BY-SA 4.0"],
+  "shakira":["2023-11-16_Gala_de_los_Latin_Grammy,_03_(cropped)02.jpg","Junta de Andalucía","CC BY-SA 2.0"],
+  "zendaya":["Zendaya-byPhilipRomano.jpg","PhilipRomano","CC BY-SA 4.0"],
+  "holland":["TomHolland-byPhilipRomano.jpg","PhilipRomano","CC BY-SA 4.0"],
+  "mrbeast":["MrBeast_in_2026_(cropped_4).png","Tyren Redd","CC BY 4.0"],
+  "therock":["Dwayne_Johnson-1764_(4x5_cropped_with_moderate_headroom).jpg","Harald Krichel","CC BY-SA 4.0"],
+  "watson":["Emma_Watson_2013.jpg","Georges Biard","CC BY-SA 3.0"],
+  "biles":["Simone_Biles_National_Team_2024.jpg","Ocoudis","CC BY-SA 4.0"],
+  "verstappen":["2024-08-25_Motorsport,_Formel_1,_Großer_Preis_der_Niederlande_2024_STP_3973_by_Stepro_(medium_crop).jpg","Steffen Prößdorf","CC BY-SA 4.0"],
+  "frederik":["King_Frederik_X_in_2025.jpg","Finnish Government","CC BY 2.0"],
+  "mary":["Queen_Mary_of_Denmark_in_Helsinki,_2025.jpg","FinnishGovernment","CC BY 2.0"],
+  "medina":["Medina_By_Daniel_Åhs_Karlsson_(cropped).jpg","Daniel Åhs Karlsson","CC BY 3.0"],
+  "messi":["Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg","Bryan Berlin","CC BY-SA 4.0"],
+  "alcaraz":["25th_Laureus_World_Sports_Awards_-_Red_Carpet_-_Carlos_Alcaraz_-_240422_192324_(cropped).jpg","Barcex","CC BY-SA 4.0"],
+  "swift":["Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_(3).png","iHeartRadioCA","CC BY 3.0"],
+  "rosalia":["2023-11-16_Gala_de_los_Latin_Grammy,_27_(cropped).jpg","Junta de Andalucía","CC BY-SA 2.0"],
+  "badbunny":["Bad_Bunny_2019_by_Glenn_Francis_(cropped).jpg","Toglenn","CC BY-SA 4.0"],
+  "lebron":["LeBron_James_(51959977144)_(cropped2).jpg","Erik Drost","CC BY 2.0"]};
 
-/* Fisher–Yates: mezcla sin sesgo */
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-/* Que un div funcione como botón con teclado */
+const $ = id => document.getElementById(id);
+const nq = c => c.q || c.n;                         // nombre dentro de una frase
+const has = (c,k) => k==='chico' ? c.g==='el' : k==='chica' ? c.g==='ella' : c.t.includes(k);
+const img = (c,cls='foto',lazy=true) =>
+  `<img class="${cls}" src="assets/img/quien/${c.id}.jpg" alt="${c.n}" width="330" height="330"${lazy?' loading="lazy"':''}>`;
+/* Icono del oficio que sale en la carta, junto a la bandera */
+const JOB = ["futbolista","tenista","cantante","actor","rey","youtuber","deportista"];
+const tags = c => c.f + ' ' + V[JOB.find(k=>c.t.includes(k))][4];
+
+/* Comprobación: dos personas no pueden contestar igual a todo */
+(()=>{ const seen={};
+  PERSONAJES.forEach(c=>{ const s=KEYS.map(k=>+has(c,k)).join('');
+    if(seen[s]) console.warn('¿Quién es?: misma combinación', seen[s], c.n); seen[s]=c.n; });
+})();
+
+/* ── Frases. g = 'el' | 'ella' | null (aún no se sabe → las dos formas) ── */
+function w(k,g){ const v=V[k]; return g ? v[g==='ella'?1:0] : (v[0]===v[1] ? v[0] : v[0]+' / '+v[1]); }
+/* Siempre 3.ª persona: una sola forma del verbo para preguntar y responder
+   («¿Es…?» → «Sí, es…»; «¿Tiene…?» → «Sí, tiene…»). */
+const verb = k => V[k][3]==='ser' ? 'es' : 'tiene';
+const Verb = k => verb(k)==='es' ? 'Es' : 'Tiene';
+const qEs  = (k,g) => '¿' + Verb(k) + ' ' + w(k,g) + '?';
+/* La misma pregunta con la palabra que cambia resaltada: se ve el patrón */
+const qHtml = (k,g) => `<i>¿${Verb(k)}</i> <span class="es">${w(k,g)}</span><i>?</i>`;
+const qDa  = k => (verb(k)==='es' ? 'Er personen ' : 'Har personen ') + V[k][2] + '?';
+const aEs  = (k,g,yes) => (yes ? 'Sí, ' : 'No, no ') + verb(k) + ' ' + w(k,g) + '.';
+/* Oír la frase: voz del propio navegador, sin librerías */
+let lastQ = '';
+const canSpeak = 'speechSynthesis' in window;
+function speak(){ if(!canSpeak) return;
+  const u = new SpeechSynthesisUtterance(lastQ.split(' / ').join(' o ')); u.lang='es-ES'; u.rate=.85;
+  speechSynthesis.cancel(); speechSynthesis.speak(u); }
+const hearBtn = () => canSpeak ? `<div><button onclick="speak()" style="margin-top:.5rem">🔊 Hør spørgsmålet</button></div>` : '';
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function asButton(el, fn){
   el.setAttribute('role','button'); el.tabIndex = 0;
   el.addEventListener('click', fn);
   el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } });
 }
 
-/* ── Pantallas ── */
+/* ── Pantallas y ventanas ── */
 function show(id){
+  if(id==='s-start') leaveLive();
   document.querySelectorAll('.screen').forEach(s=>s.hidden = s.id!==id);
-  if(id==='s-har'){ document.getElementById('har-pick').hidden=false; document.getElementById('har-fig').hidden=true; }
+  if(id==='s-har'){ $('har-pick').hidden=false; $('har-fig').hidden=true; }
   window.scrollTo({top:0,behavior:'smooth'});
 }
+const overlays = ['sheet','ask','win'].map($);
+overlays.forEach(o=>{ document.body.appendChild(o);   // fuera de #app-shell: si no, queda bajo el botón del diccionario
+  o.addEventListener('click', e=>{ if(e.target===o && o.id!=='win') closeAll(); }); });
+function open_(o){ overlays.forEach(x=>x.hidden = x!==o); document.body.style.overflow='hidden'; }
+function closeAll(){ overlays.forEach(x=>x.hidden=true); document.body.style.overflow=''; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('win').hidden) closeAll(); });
 
-/* ── Jeg har figuren ── */
+/* ── Jeg har personen ── */
 function deal(){
-  const pick = shuffle(PERSONAJES.slice()).slice(0,9);
-  const el = document.getElementById('cards');
-  el.innerHTML='';
-  pick.forEach((c,i)=>{
+  const el = $('cards'); el.innerHTML='';
+  shuffle(PERSONAJES.slice()).slice(0,9).forEach((c,i)=>{
     const d=document.createElement('div');
-    d.className='card';
+    d.className='card'; d.style.animationDelay=(i*50)+'ms';
     d.innerHTML=`<div class="q">?</div><div class="num">${i+1}</div>`;
     d.setAttribute('aria-label','Kort '+(i+1));
     asButton(d, ()=>openFig(c));
     el.appendChild(d);
   });
-  document.getElementById('har-pick').hidden=false;
-  document.getElementById('har-fig').hidden=true;
+  $('har-pick').hidden=false; $('har-fig').hidden=true;
 }
 function openFig(c){
-  const noK = ['verde','grande','azul','rosa','alto'].find(k=>!has(c,k));
-  const chips = traits(c).map(k=>{
-    const v=VOCAB[k], col=v[4]?`<i style="background:${v[4]}"></i>`:'';
-    return `<span class="chip">${col}${word(k,c.g)} <small>${v[3]}</small></span>`;
-  }).join('');
-  document.getElementById('har-fig').innerHTML = `
-    <div class="box figur pop">
-      <div class="emo">${c.e}</div>
+  const rows = GROUPS.map(([,keys])=>keys.map(k=>{
+    const yes = has(c,k);
+    return `<tr class="${yes?'ja':'nej'}"><td>${qEs(k,c.g)}<small>${qDa(k)}</small></td><td>${yes?'✅':'❌'} ${aEs(k,c.g,yes)}</td></tr>`;
+  }).join('')).join('');
+  $('har-fig').innerHTML = `
+    <div class="box figur">
+      ${img(c,'foto',false)}
       <div class="name">${c.n}</div>
-      ${c.da?`<div class="dk">(på dansk: ${c.da})</div>`:''}
-      <p class="note" style="margin:.4rem 0 0">Du er ${c.g==='el'?'en <b>han</b> → brug <b>-o</b>':'en <b>hun</b> → brug <b>-a</b>'}</p>
+      <div class="tags" style="font-size:1.4rem">${tags(c)}</div>
     </div>
     <div class="box">
-      <h3>✅ Det er sandt om dig</h3>
-      <div class="sandt">${chips}</div>
-      <div class="svar">
-        <div class="ja">Sí, soy …<small>Ordet står her ✅</small></div>
-        <div class="nej">No, no soy …<small>Ordet står ikke her ❌</small></div>
-      </div>
-      <p class="note">Eksempel: <span class="es">¿Eres ${word(c.t[0],c.g)}?</span> → <b>Sí, soy ${word(c.t[0],c.g)}.</b><br>
-      <span class="es">¿Eres ${word(noK,c.g)}?</span> → <b>No, no soy ${word(noK,c.g)}.</b></p>
-      <p class="note">💡 Siger de <b>-o</b> eller <b>-a</b> forkert (fx <i>amarilla</i> i stedet for <i>amarillo</i>)? Det er det samme ord.</p>
+      <h3>🗣️ De spørger — du læser svaret højt</h3>
+      <table class="svarliste">${rows}</table>
     </div>
     <div class="box" style="text-align:center">
-      <h3>🎉 Gætter de rigtigt?</h3>
-      <p style="margin:0">De siger: <span class="es">¿Eres ${nq(c)}?</span><br>Du svarer: <b style="font-size:1.2rem">¡Sí, soy ${nq(c)}!</b></p>
+      <h3>🎉 Gætter de dit navn?</h3>
+      <p style="margin:0"><span class="es">¿Es ${nq(c)}?</span><br><b style="font-size:1.2rem;color:var(--text-strong)">¡Sí, es ${nq(c)}!</b></p>
     </div>
     <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
-      <button onclick="document.getElementById('har-fig').hidden=true;document.getElementById('har-pick').hidden=false">← Vælg et andet kort</button>
+      <button onclick="$('har-fig').hidden=true;$('har-pick').hidden=false">← Vælg et andet kort</button>
       <button class="btn-main" onclick="deal();show('s-start')">🎉 Gættet! Ny runde</button>
     </div>`;
-  document.getElementById('har-pick').hidden=true;
-  document.getElementById('har-fig').hidden=false;
+  $('har-pick').hidden=true; $('har-fig').hidden=false;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ── Jeg gætter ── */
-document.getElementById('farver').innerHTML = FARVER.map(v=>
-  `<div class="farve ask" data-k="${v[0]}"><i style="background:${v[4]}"></i><span><b>${v[1]===v[2]?v[1]:v[1]+' / -a'}</b><small>${v[3]}</small></span></div>`).join('');
-const rows = list => list.map(v=>`<tr class="ask" data-k="${v[0]}"><td>${forms(v[0])}</td><td>${v[3]}</td></tr>`).join('');
-document.getElementById('adj-krop').innerHTML = rows(KROP);
-document.getElementById('adj-pers').innerHTML = rows(PERS);
-document.getElementById('ting').innerHTML = rows(TING);
-
-/* Galería: tocar para tachar */
-const galGrid = document.getElementById('gal-grid');
-galGrid.innerHTML = PERSONAJES.map((c,i)=>
-  `<div class="fig" data-i="${i}"><div class="emo">${c.e}</div><b>${c.n}</b>${c.da?`<small>${c.da}</small>`:''}</div>`).join('');
-const gal = document.getElementById('gal');
-/* Al <body>: dentro de #app-shell quedaba debajo del botón del diccionario */
-document.body.appendChild(gal);
-function openGal(){ gal.hidden=false; document.body.style.overflow='hidden'; }
-function closeGal(){ gal.hidden=true; document.body.style.overflow=''; }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !gal.hidden) closeGal(); });
-gal.addEventListener('click',e=>{ if(e.target===gal) closeGal(); });
-
-/* ── Spørg: pregunta guiada + respuestas ── */
-let answers = [];            // [{k, yes}]
-const manual = new Set();    // figuras tachadas a mano
-const out = c => answers.some(a=> has(c,a.k)!==a.yes);
-const askDlg = document.getElementById('ask');
-document.body.appendChild(askDlg);
-let asking = null;
-
-document.querySelectorAll('.ask').forEach(el=>asButton(el, ()=>openAsk(el.dataset.k)));
-
-function openAsk(k){
-  asking = k;
-  const v = VOCAB[k];
-  document.getElementById('ask-q').textContent = '¿Eres ' + forms(k) + '?';
-  document.getElementById('ask-da').textContent = 'Er du ' + v[3].replace(/ \(.*\)/,'') + '?';
-  document.getElementById('ask-hint').innerHTML = v[1]===v[2] ? '' :
-    'Sig <b>'+v[1]+'</b> til en han og <b>'+v[2]+'</b> til en hun.';
-  askDlg.hidden = false; document.body.style.overflow='hidden';
+/* ── Gæt: estado de la ronda ── */
+/* mode: 'solo' (el móvil contesta) · 'kamp' (igual, pero toda la clase con la
+   misma persona gracias a un código) · 'klasse' (contesta un compañero).
+   manual = quitadas a mano (se pueden devolver) · crossed = nombres fallados. */
+let mode='solo', secret=null, kode=0, answers=new Map(), crossed=new Set(), manual=new Set(), wrong=0, done=false;
+const auto = () => mode!=='klasse';
+const byAnswer = c => [...answers].find(([k,yes])=> has(c,k)!==yes);
+const out = c => crossed.has(c.id) || manual.has(c.id) || !!byAnswer(c);
+const left = () => PERSONAJES.filter(c=>!out(c));
+const nQ = () => answers.size + wrong;
+/* En cuanto se sabe si es chico o chica, las preguntas salen ya en -o o en -a */
+function gender(){
+  if(auto() && (answers.has('chico')||answers.has('chica'))) return secret.g;
+  if(answers.has('chico')) return answers.get('chico') ? 'el' : 'ella';
+  if(answers.has('chica')) return answers.get('chica') ? 'ella' : 'el';
+  return null;
 }
-function closeAsk(){ askDlg.hidden = true; asking = null; if(gal.hidden) document.body.style.overflow=''; }
-function answer(yes){
-  answers = answers.filter(a=>a.k!==asking);
-  answers.push({k:asking, yes});
-  closeAsk(); refresh();
-  document.getElementById('viden').scrollIntoView({behavior:'smooth',block:'center'});
-}
-function undo(k){ answers = answers.filter(a=>a.k!==k); refresh(); }
-askDlg.addEventListener('click', e=>{ if(e.target===askDlg) closeAsk(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !askDlg.hidden) closeAsk(); });
+const best = () => { try{ return +localStorage.getItem('quienes-rekord')||0; }catch(e){ return 0; } };
+/* Álbum: las personas que ya has adivinado jugando solo */
+const album = () => { try{ return JSON.parse(localStorage.getItem('quienes-album')||'[]').filter(id=>PERSONAJES.some(p=>p.id===id)); }catch(e){ return []; } };
+const stars = n => n<=5 ? '⭐⭐⭐' : n<=7 ? '⭐⭐' : '⭐';
+const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
+let toastT;
+function toast(html){ const t=$('toast'); t.innerHTML=html; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); }
 
-function refresh(){
-  galGrid.querySelectorAll('.fig').forEach(f=>{
-    const c = PERSONAJES[f.dataset.i];
-    f.classList.toggle('ud', out(c) || manual.has(+f.dataset.i));
+function start(m){ mode=m; newRound(); show('s-gaet'); }
+function newRound(){
+  answers=new Map(); crossed=new Set(); manual=new Set(); wrong=0; done=false;
+  if(mode!=='kamp'){   // en Klassekamp la persona la manda la sala
+         const got = album(), fresh = PERSONAJES.filter(p=>!got.includes(p.id));   // primero las que faltan en el álbum
+         const pool = mode==='solo' && fresh.length ? fresh : PERSONAJES;
+         secret = pool[Math.floor(Math.random()*pool.length)]; }
+  const b=$('board'); b.innerHTML=''; $('outboard').innerHTML='';
+  shuffle(PERSONAJES.slice()).forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='fig'; d.dataset.id=c.id; d.style.animationDelay=(i*25)+'ms';
+    d.innerHTML=`${img(c)}<b>${c.n}</b><span class="tags">${tags(c)}</span>`;
+    asButton(d, ()=>tapFig(c));
+    b.appendChild(d);
   });
-  const left = PERSONAJES.filter((c,i)=>!out(c) && !manual.has(i));
-  document.querySelectorAll('.left-n').forEach(n=>n.textContent = left.length);
-  const v = document.getElementById('viden');
-  if(!answers.length){
-    v.innerHTML = '<p class="note" style="margin:0">Ingen svar endnu. Tryk på et ord herunder for at stille et spørgsmål.</p>';
+  closeAll(); refresh();
+  say(mode==='klasse' ? 'Din kammerat har personen.' : mode==='kamp' ? `🏁 Runde ${L?L.round:''} — gæt hvem jeg tænker på!` : 'Jeg tænker på en kendt person. Gæt hvem! 🤫',
+      'Tryk på «Stil et spørgsmål» 👇');
+}
+function say(big, small){ $('bub').innerHTML = `<b>${big}</b>${small?`<small>${small}</small>`:''}`; }
+
+function refresh(poofIds){
+  const l = left(), board=$('board'), outb=$('outboard');
+  document.querySelectorAll('.fig[data-id]').forEach(f=>{
+    const c = PERSONAJES.find(p=>p.id===f.dataset.id), o = out(c), to = o ? outb : board;
+    f.style.animationDelay='0ms';
+    if(f.parentNode!==to) to.appendChild(f);            // baja a «Fjernet» o vuelve al tablero
+    f.classList.toggle('ud', o);
+    f.classList.toggle('man', manual.has(c.id));
+    f.classList.toggle('poof', !!poofIds && poofIds.includes(c.id));
+    f.classList.toggle('last', !o && l.length===1 && !done);
+  });
+  $('outzone').hidden = !outb.children.length;
+  $('n-out').textContent = outb.children.length;
+  $('n-left').textContent = l.length;
+  $('n-q').textContent = nQ();
+  $('btn-ny').hidden = mode==='kamp';   // en directo no se puede reiniciar la ronda
+  const r=$('rekord'); r.hidden = mode!=='solo';
+  r.textContent = `📒 ${album().length}/${PERSONAJES.length}` + (best() ? ` · 🏆 ${best()}` : '');
+}
+
+/* ── Elegir pregunta ── */
+function openSheet(){
+  if(done) return mode==='kamp' ? null : newRound();
+  const g = gender(), l = left(), open = KEYS.filter(k=>!answers.has(k));
+  /* Cuántas de las que quedan dirían «sí»: 0 o todas = no aporta nada;
+     la que más se acerca a la mitad es la mejor pregunta. */
+  const yesN = k => l.filter(c=>has(c,k)).length;
+  const useful = open.filter(k=>yesN(k)>0 && yesN(k)<l.length);
+  const bestK = mode==='kamp' ? null : useful.slice().sort((x,y)=>Math.abs(yesN(x)-l.length/2)-Math.abs(yesN(y)-l.length/2))[0];
+  $('sheet-body').innerHTML = `<div class="formel">
+      <div><b><i>¿Es</i> <span class="es">…</span><i>?</i></b><small>Er personen …?</small></div>
+      <div><b><i>¿Tiene</i> <span class="es">…</span><i>?</i></b><small>Har personen …?</small></div>
+    </div>
+    <p class="note" style="margin:0 0 .8rem">Vælg et spørgsmål 👇 Kun det <span class="es">farvede</span> ord skifter.</p>` +
+  GROUPS.map(([title,keys])=>`<h3>${title}</h3><div class="qgrid">`+keys.map(k=>{
+    const a = answers.has(k), yes = answers.get(k), nul = !a && !useful.includes(k);
+    return `<button class="qb ${a?(yes?'yes':'no'):''} ${k===bestK?'best':''} ${nul?'nul':''}" onclick="openAsk('${k}')" ${a&&auto()?'disabled':''}>
+      <span class="i">${a?(yes?'✅':'❌'):V[k][4]}</span><span><b>${qHtml(k,g)}</b><small>${qDa(k)}</small>${
+        k===bestK?'<span class="tip">💡 Godt spørgsmål nu</span>':nul?'<span class="tip dim">Hjælper ikke nu</span>':''}</span></button>`;
+  }).join('')+'</div>').join('') +
+  `<p class="note" style="margin:0">🎯 Vil du gætte navnet? Luk og tryk på et billede: <span class="es">¿Es Messi?</span></p>`;
+  open_($('sheet'));
+}
+
+/* ── Preguntar ── */
+function openAsk(k){
+  const g = gender();
+  lastQ = qEs(k,g);
+  const head = `<p class="note" style="margin:0">Læs højt 🗣️</p>
+    <div class="bigq">${qHtml(k,g)}</div><div class="bigda">${qDa(k)}</div>${hearBtn()}`;
+  if(auto()){
+    const yes = has(secret,k);
+    $('ask-body').innerHTML = head + `
+      <div class="reply ${yes?'ja':'nej'}">${yes?'✅':'❌'} ${aEs(k,secret.g,yes)}<small>${yes?'Ja':'Nej'}</small></div>
+      <button class="btn-main" style="margin-top:.7rem;font-size:1.1rem" onclick="answer('${k}',${yes})">OK 👍</button>`;
   } else {
-    v.innerHTML = '<div class="sandt" style="justify-content:flex-start">' + answers.map(a=>
-      `<button class="chip ${a.yes?'':'no'}" onclick="undo('${a.k}')" title="Fortryd">${a.yes?'✅':'❌'} ${forms(a.k)} <small>${VOCAB[a.k][3]}</small></button>`).join('') + '</div>';
+    const hint = !g && V[k][0]!==V[k][1] ? `<p class="note"><b>${V[k][0]}</b> til en dreng · <b>${V[k][1]}</b> til en pige</p>` : '';
+    $('ask-body').innerHTML = head + hint + `
+      <p style="margin:.9rem 0 0;font-weight:700;color:var(--text-strong)">Hvad svarede din kammerat?</p>
+      <div class="svar" style="grid-template-columns:1fr">
+        <button class="ja" onclick="answer('${k}',true)">✅ ${aEs(k,g,true)}<small>Ja</small></button>
+        <button class="nej" onclick="answer('${k}',false)">❌ ${aEs(k,g,false)}<small>Nej</small></button>
+      </div>
+      <div style="margin-top:.7rem;display:flex;gap:.5rem;justify-content:center">
+        ${answers.has(k)?`<button onclick="answer('${k}',null)">🗑 Slet svaret</button>`:''}
+        <button onclick="openSheet()">← Tilbage</button>
+      </div>`;
   }
-  const m = document.getElementById('maybe');
-  if(left.length===1){
-    m.innerHTML = `🎯 Det må være <b>${left[0].e} ${left[0].n}</b>! Spørg: <span class="es">¿Eres ${nq(left[0])}?</span>`;
-  } else if(!left.length){
-    m.innerHTML = '😅 Ingen figurer passer. Måske var et svar forkert — tryk på et svar for at slette det.';
+  open_($('ask'));
+}
+function answer(k, yes){
+  const before = left().map(c=>c.id);
+  yes===null ? answers.delete(k) : answers.set(k, yes);
+  const l = left(), gone = before.filter(id=>!l.some(c=>c.id===id));
+  closeAll(); refresh(gone); if(gone.length) buzz(30);
+  window.scrollTo({top:0,behavior:'smooth'});
+  const g = gender() || (auto() ? secret.g : null);
+  const txt = yes===null ? 'Svaret er slettet.' : (yes?'✅ ':'❌ ') + aEs(k,g,yes);
+  if(!l.length)        say('😅 Ingen passer!', 'Et svar var vist forkert. Åbn spørgsmålene, og ret det.');
+  else if(l.length===1) say(txt, `🎯 Kun én tilbage! Tryk på billedet og spørg: ¿Es ${nq(l[0])}?`);
+  else                  say(txt, gone.length ? `💨 ${gone.length} røg ud — ${l.length} tilbage.` : `Ingen røg ud. ${l.length} tilbage.`);
+}
+
+/* ── Tocar una foto: adivinar el nombre o quitarla a mano ── */
+function tapFig(c){
+  if(done) return;
+  if(manual.has(c.id)){ manual.delete(c.id); refresh(); return toast(`↩️ <b>${c.n}</b> er tilbage`); }
+  if(crossed.has(c.id)) return toast(`❌ No, no es ${nq(c)}.`);
+  const why = byAnswer(c);                              // quitada por una respuesta: decir por qué
+  if(why) return toast(`<b>${c.n}</b> røg ud: ${qEs(why[0],c.g)} → ${why[1]?'Sí':'No'}`);
+  lastQ = `¿Es ${nq(c)}?`;
+  const fjern = `<button onclick="remove_('${c.id}')">🗑 Det er ikke ${c.n} — fjern</button>`;
+  $('ask-body').innerHTML = `${img(c,'foto winfoto',false)}
+    <p class="note" style="margin:.5rem 0 0">Læs højt 🗣️</p>
+    <div class="bigq"><i>¿Es</i> <span class="es">${nq(c)}</span><i>?</i></div><div class="bigda">Er det ${c.n}?</div>${hearBtn()}` +
+    (auto()
+      ? `<div class="svar" style="grid-template-columns:1fr;margin-top:.8rem"><button class="ja" onclick="guess('${c.id}',null)">🎯 Gæt på ${c.n}</button></div>`
+      : `<p style="margin:.9rem 0 0;font-weight:700;color:var(--text-strong)">Hvad svarede din kammerat?</p>
+         <div class="svar" style="grid-template-columns:1fr"><button class="ja" onclick="guess('${c.id}',true)">🎉 ¡Sí, es ${nq(c)}!<small>Rigtigt</small></button>
+         <button class="nej" onclick="guess('${c.id}',false)">❌ No, no es ${nq(c)}.<small>Forkert</small></button></div>`) +
+    `<div style="margin-top:.7rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">${fjern}<button onclick="closeAll()">Fortryd</button></div>`;
+  open_($('ask'));
+}
+/* Quitar a mano: baja a «Fjernet»; tocándola allí vuelve */
+function remove_(id){
+  manual.add(id); closeAll(); refresh([id]);
+  toast('🗑 Fjernet. Tryk på kortet nederst for at hente det tilbage.');
+}
+function guess(id, right){
+  const c = PERSONAJES.find(p=>p.id===id);
+  if(right===null) right = c===secret;
+  if(right) return win(c);
+  wrong++; crossed.add(id); closeAll(); refresh([id]); buzz(80);
+  say(`❌ No, no es ${nq(c)}.`, `Prøv igen — ${left().length} tilbage.`);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function win(c){
+  done = true; wrong++;                      // el nombre también cuenta como pregunta
+  const n = nQ(); let extra = '';
+  if(mode==='solo'){
+    const got = album(), isNew = !got.includes(c.id), b = best();
+    try{ if(isNew) localStorage.setItem('quienes-album', JSON.stringify([...got, c.id]));
+         if(!b || n<b) localStorage.setItem('quienes-rekord', n); }catch(e){}
+    const total = album().length;
+    extra = `<p class="es" style="margin:.3rem 0 0">📒 ${isNew?'Ny i dit album! ':''}${total}/${PERSONAJES.length} fundet</p>` +
+      (total===PERSONAJES.length ? '<p style="margin:.2rem 0 0;font-weight:700">🏆 Du har fundet dem alle!</p>' : '') +
+      (!b || n<b ? '<p class="es" style="margin:.2rem 0 0">🏆 Ny rekord!</p>' : `<p class="note" style="margin:.2rem 0 0">Din rekord: ${b}</p>`);
+  } else if(mode==='kamp'){
+    extra = `<p class="es" style="margin:.4rem 0 0">📡 Sendt til tavlen!</p><p class="note" style="margin:.2rem 0 0">Vent på de andre 👀</p>`;
+    liveDone(n);
+  }
+  $('win-body').innerHTML = `${img(c,'foto winfoto',false)}
+    <div class="bigq" style="margin-top:.6rem">¡Sí, es ${nq(c)}!</div>
+    <div class="bigda">🎉 Rigtigt gættet</div>
+    <div style="font-size:2rem;margin-top:.3rem" class="stars">${stars(n)}</div>
+    <p style="margin:.2rem 0 0;font-weight:700;color:var(--text-strong)">${n} spørgsmål</p>${extra}
+    ${mode==='kamp' ? '' : `<div style="display:flex;gap:.5rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap">
+      <button class="btn-main" onclick="newRound()">▶ Ny runde</button>
+      <button onclick="closeAll();show('s-start')">Til start</button>
+    </div>`}`;
+  refresh(); open_($('win')); confetti(); buzz([60,40,140]);
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const box=document.createElement('div'); box.className='confetti';
+  for(let i=0;i<22;i++){ const s=document.createElement('span');
+    s.textContent=['🎉','⭐','🎊','💃','🇪🇸','✨'][i%6];
+    s.style.left=(Math.random()*100)+'%'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*.5)+'s';
+    box.appendChild(s); }
+  document.body.appendChild(box); setTimeout(()=>box.remove(), 4200);
+}
+
+/* ══════════ KLASSEKAMP — salas en directo (Supabase Realtime) ══════════
+   Un canal «quienes:<código>» solo con broadcast; no se guarda nada.
+   · La profesora (host) manda: cada 3 s y en cada cambio emite 'state'
+     {phase, round, secret, players[]}. Quien entra tarde se pone al día solo.
+   · El alumno emite 'join' {id,name} y, al acertar, 'done' {id,n,round};
+     los repite hasta que el host los refleja en 'state'.
+   · Gana la ronda quien usa menos preguntas; si empatan, quien acaba antes
+     (el tiempo lo mide el host). Puntos por puesto: 10, 8, 6 y 4 al resto. */
+const SB_URL = 'https://akontludfisgxwlnayvs.supabase.co';
+const SB_KEY = 'sb_publishable_qQ2lCD9UTN77IGsvNi6X5g_LXBeLTkq';   // clave pública, la misma de script.js
+let sb=null, ch=null, H=null, L=null;
+const esc = t => String(t).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const send = (event, payload) => { if(ch) ch.send({type:'broadcast', event, payload}); };
+const MEDAL = ['🥇','🥈','🥉'];
+
+function loadSb(){ return new Promise((ok,no)=>{
+  if(window.supabase) return ok();
+  const t = document.createElement('script');
+  t.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  t.onload = ok; t.onerror = ()=>no(new Error('lib')); document.head.appendChild(t);
+}); }
+async function connect(code, wire){
+  await loadSb();
+  sb = sb || window.supabase.createClient(SB_URL, SB_KEY);
+  if(ch){ try{ sb.removeChannel(ch); }catch(e){} }
+  ch = sb.channel('quienes:'+code, {config:{broadcast:{self:false}}});
+  wire(ch);
+  await new Promise((ok,no)=>{
+    const t = setTimeout(()=>no(new Error('timeout')), 12000);
+    ch.subscribe(st=>{ if(st==='SUBSCRIBED'){ clearTimeout(t); ok(); }
+                       else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'){ clearTimeout(t); no(new Error(st)); } });
+  });
+}
+function leaveLive(){
+  if(H){ clearInterval(H.beat); send('state', {phase:'closed', round:0, players:[]}); }
+  if(L){ clearInterval(L.tick); clearTimeout(L.lost); }
+  if(ch && sb){ const c=ch; setTimeout(()=>{ try{ sb.removeChannel(c); }catch(e){} }, 300); }
+  ch=null; H=null; L=null; window.onbeforeunload=null;
+  if(mode==='kamp') mode='solo';
+}
+
+/* ── Entrada ── */
+function askLive(){
+  let last={}; try{ last = JSON.parse(sessionStorage.getItem('quienes-live')||'{}'); }catch(e){}
+  $('ask-body').innerHTML = `<div style="font-size:2.2rem">🏁</div>
+    <div class="bigq" style="font-size:1.5rem">Klassekamp</div>
+    <p class="note" style="margin:.2rem 0 0">Skriv koden fra tavlen og jeres holdnavn.</p>
+    <input id="live-kode" class="kode" inputmode="numeric" maxlength="4" placeholder="Kode" value="${esc(last.code||'')}" autocomplete="off">
+    <input id="live-navn" class="kode navn" maxlength="14" placeholder="Holdnavn" value="${esc(last.name||'')}" autocomplete="off"
+      onkeydown="if(event.key==='Enter')liveJoin()">
+    <p id="live-msg" class="note" style="min-height:1.3em"></p>
+    <div class="svar"><button class="ja" id="live-go" onclick="liveJoin()">▶ Vær med</button><button onclick="closeAll()">Fortryd</button></div>
+    <p class="note" style="margin-top:1rem;border-top:1px dashed var(--glass-border-hover);padding-top:.7rem">Er du læreren?
+      <button onclick="hostCreate()" style="margin-left:.3rem">🖥 Lav et rum på tavlen</button></p>`;
+  open_($('ask')); $(last.code ? 'live-navn' : 'live-kode').focus();
+}
+const liveMsg = t => { const m=$('live-msg'); if(m) m.textContent = t; };
+
+/* ── Alumno ── */
+async function liveJoin(){
+  const code = $('live-kode').value.replace(/\D/g,''), name = $('live-navn').value.trim().slice(0,14);
+  if(code.length!==4) return liveMsg('Koden har 4 tal.');
+  if(!name) return liveMsg('Skriv et holdnavn.');
+  let last={}; try{ last = JSON.parse(sessionStorage.getItem('quienes-live')||'{}'); }catch(e){}
+  const id = last.code===code && last.id ? last.id : Math.random().toString(36).slice(2,10);   // al recargar, mismo equipo
+  try{ sessionStorage.setItem('quienes-live', JSON.stringify({code,name,id})); }catch(e){}
+  $('live-go').disabled = true; liveMsg('Forbinder…');
+  try{
+    await connect(code, c=>{
+      c.on('broadcast', {event:'state'}, ({payload})=>liveState(payload));
+      c.on('broadcast', {event:'kick'}, ({payload})=>{ if(L && payload.id===L.id){ show('s-start'); closeAll(); toast('Læreren har fjernet jeres hold.'); } });
+    });
+  }catch(e){ $('live-go').disabled=false; return liveMsg('Ingen forbindelse. Tjek internettet, og prøv igen.'); }
+  L = {code, id, name, round:0, known:false, n:0, sentRound:0, seen:''};
+  send('join', {id, name});
+  L.tick = setInterval(()=>{ if(L && !L.known) send('join', {id:L.id, name:L.name}); }, 2000);
+  L.lost = setTimeout(()=>{ if(L && !L.known){ show('s-start'); askLive(); liveMsg('Der er ikke noget rum med den kode.'); } }, 8000);
+  closeAll(); show('s-wait');
+  $('wait-body').innerHTML = `<div style="font-size:2.6rem">📡</div><h2>Finder rummet …</h2>`;
+}
+function liveState(st){
+  if(!L) return;
+  if(st.phase==='closed'){ show('s-start'); closeAll(); return toast('Læreren har lukket rummet.'); }
+  const me = st.players.find(p=>p.id===L.id);
+  if(!me){ L.known=false; return send('join', {id:L.id, name:L.name}); }
+  L.known = true;
+  const key = st.phase+st.round, fresh = key!==L.seen; L.seen = key;
+  const total = [...st.players].sort((a,b)=>b.pts-a.pts), place = total.findIndex(p=>p.id===L.id)+1;
+  if(st.phase==='lobby' && fresh){
+    closeAll(); mode='solo'; show_('s-wait');
+    $('wait-body').innerHTML = `<div style="font-size:2.6rem">✅</div><h2>I er med, ${esc(L.name)}!</h2>
+      <p class="note" style="margin:0">Kig på tavlen. Spillet starter om lidt …</p>`;
+  }
+  if(st.phase==='play'){
+    if(st.round!==L.round){                       // ronda nueva: a jugar
+      L.round = st.round; L.n = 0;
+      mode='kamp'; secret = PERSONAJES.find(p=>p.id===st.secret);
+      newRound(); show_('s-gaet');
+    } else if(L.n && !me.done) send('done', {id:L.id, n:L.n, round:L.round});   // el host aún no lo tiene
+  }
+  if((st.phase==='podium' || st.phase==='final') && fresh){
+    const c = PERSONAJES.find(p=>p.id===st.secret);
+    const order = st.players.filter(p=>p.done).sort((a,b)=>a.n-b.n||a.ms-b.ms), r = order.findIndex(p=>p.id===L.id)+1;
+    closeAll(); L.round = st.round; done = true; show_('s-wait');
+    $('wait-body').innerHTML = st.phase==='final'
+      ? `<div style="font-size:3rem">${MEDAL[place-1]||'🎉'}</div><h2>I blev nr. ${place}</h2>
+         <p style="margin:0;font-weight:700;color:var(--text-strong)">${me.pts} point</p><p class="note">Tak for spillet! Kig på tavlen.</p>`
+      : `${c?img(c,'foto winfoto',false):''}<h2 style="margin-top:.6rem">Det var ${c?esc(c.n):'?'}!</h2>
+         <p style="margin:0;font-weight:700;color:var(--text-strong)">${r ? `${MEDAL[r-1]||''} Nr. ${r} i runden · ${me.n} spørgsmål` : 'I nåede det ikke 😅'}</p>
+         <p class="es" style="margin:.3rem 0 0">+${me.rp} point · i alt ${me.pts} (nr. ${place})</p>
+         <p class="note">Næste runde starter om lidt …</p>`;
+    if(st.phase==='final' && place<=3) confetti();
+  }
+}
+/* show() sin salir de la sala ni mover el scroll de golpe */
+function show_(id){ document.querySelectorAll('.screen').forEach(x=>x.hidden = x.id!==id); window.scrollTo({top:0}); }
+function liveDone(n){ if(L){ L.n = n; send('done', {id:L.id, n, round:L.round}); } }
+
+/* ── Profesora ── */
+async function hostCreate(){
+  const code = String(1000 + Math.floor(Math.random()*9000));
+  liveMsg('Laver rummet…');
+  try{
+    await connect(code, c=>{
+      c.on('broadcast', {event:'join'}, ({payload})=>hostJoin(payload));
+      c.on('broadcast', {event:'done'}, ({payload})=>hostDone(payload));
+    });
+  }catch(e){ return liveMsg('Ingen forbindelse. Tjek internettet, og prøv igen.'); }
+  H = {code, phase:'lobby', round:0, secret:null, t0:0, players:new Map(), kicked:new Set(), used:[]};
+  H.beat = setInterval(hostSend, 3000);
+  window.onbeforeunload = ()=>'Rummet lukker for alle.';
+  closeAll(); show_('s-host'); hostRender(); hostSend();
+}
+const hostList = () => [...H.players].map(([id,p])=>({id, ...p}));
+function hostSend(){ if(H) send('state', {phase:H.phase, round:H.round, secret:H.phase==='lobby'?null:H.secret, players:hostList()}); }
+function hostJoin(p){
+  if(!H || !p || !p.id) return;
+  if(H.kicked.has(p.id)) return send('kick', {id:p.id});
+  const name = String(p.name||'').trim().slice(0,14) || '?', ex = H.players.get(p.id);
+  if(ex){ if(ex.name===name) return hostSend(); ex.name = name; }
+  else H.players.set(p.id, {name, pts:0, n:0, ms:0, done:false, rp:0});
+  hostRender(); hostSend();
+}
+function hostKick(id){ H.kicked.add(id); H.players.delete(id); send('kick', {id}); hostRender(); hostSend(); }
+function hostStart(){
+  if(!H.players.size) return;
+  if(H.used.length>=PERSONAJES.length) H.used = [];
+  const pool = PERSONAJES.filter(p=>!H.used.includes(p.id));
+  H.secret = pool[Math.floor(Math.random()*pool.length)].id; H.used.push(H.secret);
+  H.round++; H.phase='play'; H.t0 = Date.now();
+  H.players.forEach(p=>{ p.n=0; p.ms=0; p.done=false; p.rp=0; });
+  hostRender(); hostSend();
+}
+function hostDone(p){
+  const pl = H && p && H.players.get(p.id);
+  if(!pl || H.phase!=='play' || p.round!==H.round || pl.done) return;
+  pl.done = true; pl.n = Math.max(1, Math.min(60, +p.n||60)); pl.ms = Date.now()-H.t0;
+  if([...H.players.values()].every(x=>x.done)) return hostEnd();
+  hostRender(); hostSend();
+}
+const roundOrder = () => hostList().filter(p=>p.done).sort((a,b)=>a.n-b.n||a.ms-b.ms);
+function hostEnd(){
+  if(H.phase!=='play') return;
+  roundOrder().forEach((p,i)=>{ const pl=H.players.get(p.id); pl.rp = [10,8,6][i]||4; pl.pts += pl.rp; });
+  H.phase='podium'; hostRender(); hostSend();
+}
+function hostFinal(){ H.phase='final'; hostRender(); hostSend(); confetti(); }
+function hostAgain(){ H.players.forEach(p=>{ p.pts=0; p.rp=0; p.done=false; p.n=0; }); H.round=0; H.phase='lobby'; hostRender(); hostSend(); }
+function hostRender(){
+  const P = hostList(), el = $('host-body');
+  if(H.phase==='lobby'){
+    el.innerHTML = `<div class="box hostcode">
+        <small>Gå ind på</small><b>${esc(location.host+location.pathname)}</b>
+        <small>tryk på 🏁 Klassekamp og skriv koden</small>
+        <div class="kode-big">${H.code}</div>
+      </div>
+      <h3>Hold (${P.length}) <small style="font-weight:500;color:var(--text-dim)">— tryk på et hold for at fjerne det</small></h3>
+      <div class="teams">${P.map(p=>`<button class="team" onclick="hostKick('${p.id}')" title="Fjern">${esc(p.name)}</button>`).join('') || '<span class="note" style="margin:0">Venter på de første hold …</span>'}</div>
+      <div style="text-align:center;margin-top:1.4rem"><button class="btn-main big" onclick="hostStart()" ${P.length?'':'disabled'}>▶ Start runde 1</button></div>`;
+  } else if(H.phase==='play'){
+    const fin = roundOrder(), wait = P.filter(p=>!p.done);
+    el.innerHTML = `<div class="box hostcode">
+        <small>Runde ${H.round} · kode ${H.code}</small>
+        <div class="myst" style="justify-content:center;margin:.6rem 0"><div class="q" style="width:96px;height:96px;font-size:3.4rem">?</div></div>
+        <b>Hvem er den hemmelige person?</b>
+        <div class="kode-big" style="font-size:clamp(2.4rem,9vw,4.5rem);letter-spacing:0">${fin.length} / ${P.length} færdige</div>
+      </div>
+      <div class="teams">${fin.map((p,i)=>`<span class="team ok">${i+1}. ${esc(p.name)} · ${p.n} ❓</span>`).join('')}${wait.map(p=>`<span class="team wait">${esc(p.name)} …</span>`).join('')}</div>
+      <div style="text-align:center;margin-top:1.4rem"><button class="btn-main big" onclick="hostEnd()">⏹ Afslut runden</button></div>`;
   } else {
-    m.innerHTML = `Der er <b>${left.length}</b> figurer tilbage. Stil et nyt spørgsmål!`;
+    const c = PERSONAJES.find(p=>p.id===H.secret), fin = roundOrder(), tot = P.slice().sort((a,b)=>b.pts-a.pts), isFinal = H.phase==='final';
+    const row = (p,i,right) => `<div class="rank ${i<3?'top':''}"><span>${MEDAL[i]||(i+1)+'.'}</span><b>${esc(p.name)}</b><span>${right}</span></div>`;
+    el.innerHTML = (isFinal
+      ? `<div class="box hostcode"><div style="font-size:4rem">🏆</div><div class="kode-big" style="font-size:clamp(2rem,8vw,4rem);letter-spacing:0">${tot[0]?esc(tot[0].name):''} vinder!</div></div>`
+      : `<div class="box hostcode"><small>Runde ${H.round} · det var …</small>${img(c,'foto winfoto',false)}
+           <div class="kode-big" style="font-size:clamp(2rem,7vw,3.6rem);letter-spacing:0">${esc(c.n)}</div></div>`) +
+      `<div class="ranks">
+        ${isFinal ? '' : `<div><h3>Denne runde</h3>${fin.map((p,i)=>row(p,i,`${p.n} ❓ · +${p.rp}`)).join('') || '<p class="note">Ingen nåede det.</p>'}</div>`}
+        <div><h3>${isFinal?'Slutstilling':'I alt'}</h3>${tot.map((p,i)=>row(p,i,`${p.pts} point`)).join('')}</div>
+      </div>
+      <div style="text-align:center;margin-top:1.4rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
+        ${isFinal ? `<button class="btn-main big" onclick="hostAgain()">↺ Nyt spil med de samme hold</button>`
+                  : `<button class="btn-main big" onclick="hostStart()">▶ Næste runde</button><button onclick="hostFinal()">🏆 Afslut spillet</button>`}
+      </div>`;
   }
 }
 
-/* Galería: tachar a mano además de lo automático */
-galGrid.querySelectorAll('.fig').forEach(f=>{
-  const i = +f.dataset.i;
-  asButton(f, ()=>{ manual.has(i) ? manual.delete(i) : manual.add(i); refresh(); });
-});
-function resetGal(){ answers = []; manual.clear(); refresh(); }
+/* Créditos de las fotos (la licencia CC obliga a citarlos) */
+$('credits').innerHTML = PERSONAJES.map(c=>{ const k=CRED[c.id];
+  return `<li><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(k[0])}" target="_blank" rel="noopener">${c.n}</a> — ${k[1]}, ${k[2]}</li>`; }).join('');
 
-refresh();
 deal();
 </script>
 </body>
